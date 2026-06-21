@@ -5,43 +5,77 @@
 {% block content %}
 <div class="space-y-8 py-6 px-4">
     
-    <!-- Top Header Profile Section -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 flex-shrink-0">
-        <div class="space-y-2">
-            <div class="section-chip">Dashboard Overview</div>
-            <h1 id="dynamic-greeting" data-name="{{ current_user.name.split()[0] }}" class="text-3xl md:text-4xl font-extrabold tracking-tight page-title select-none">Good Morning, {{ current_user.name.split()[0] }} 👋</h1>
-            <script>
-                (function() {
-                    try {
-                        const hour = new Date().getHours();
-                        let greeting = "Good Evening";
-                        if (hour >= 5 && hour < 12) {
-                            greeting = "Good Morning";
-                        } else if (hour >= 12 && hour < 17) {
-                            greeting = "Good Afternoon";
-                        }
-                        const name = document.getElementById("dynamic-greeting").getAttribute("data-name");
-                        document.getElementById("dynamic-greeting").textContent = greeting + ", " + name + " 👋";
-                    } catch (e) {
-                        console.error("Error setting greeting:", e);
-                    }
-                })();
-            </script>
-            <p class="text-sm text-brand-textMuted mt-1 flex items-center gap-2">
-                Active Goal: 
-                <span class="px-3 py-1 rounded-full bg-brand-softCream/80 border border-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
+    <!-- Top Welcome Banner Card (Liquid Glass & Ambient Glow) -->
+    <div class="welcome-banner-card overflow-hidden rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl shadow-brand-orange/5 backdrop-blur-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
+        <!-- Dynamic animated glow blob inside card -->
+        <div class="absolute -right-16 -top-16 w-52 h-52 bg-gradient-to-br from-brand-orange/20 to-brand-peach/10 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
+        
+        <div class="space-y-3 z-10">
+            <div class="flex flex-wrap items-center gap-2.5">
+                <span class="section-chip">System Active</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="text-xs text-brand-textMuted font-bold" id="live-time-ticker">Updating...</span>
+            </div>
+            
+            <h1 id="dynamic-greeting" data-name="{{ current_user.name.split()[0] }}" class="text-3xl md:text-5xl font-black tracking-tight text-brand-textDark select-none leading-tight page-title">
+                Good Morning, {{ current_user.name.split()[0] }}
+            </h1>
+            
+            <div class="flex flex-wrap items-center gap-3 pt-1">
+                <span class="text-xs font-semibold text-brand-textMuted">Focus Goal:</span>
+                <span class="px-3 py-1 rounded-xl bg-brand-orange/10 border border-brand-orange/20 text-brand-orange text-xs font-black tracking-wide uppercase flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     {{ goal.goal }}
                 </span>
-            </p>
+                <span class="px-3 py-1 rounded-xl bg-[#FF007A]/10 border border-[#FF007A]/20 text-[#FF007A] text-xs font-black tracking-wide uppercase flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    {{ goal.niche.split(',')[0] }} Niche
+                </span>
+            </div>
         </div>
         
-        <div class="flex items-center gap-2">
-            <a href="{{ url_for('content.generate') }}" class="btn-orange-primary px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-brand-orange/15">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <div class="flex items-center gap-3 z-10 flex-shrink-0">
+            <a href="{{ url_for('content.generate') }}" class="btn-orange-primary px-6 py-3.5 rounded-2xl text-sm font-black flex items-center gap-2.5 transition-all shadow-xl shadow-brand-orange/25 hover:shadow-brand-orange/35 hover:scale-105 active:scale-95 duration-300">
+                <svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Create New Post
             </a>
         </div>
     </div>
+
+    <script>
+        (function() {
+            try {
+                // Dynamic greeting
+                const hour = new Date().getHours();
+                let greeting = "Good Evening";
+                if (hour >= 5 && hour < 12) {
+                    greeting = "Good Morning";
+                } else if (hour >= 12 && hour < 17) {
+                    greeting = "Good Afternoon";
+                }
+                const name = document.getElementById("dynamic-greeting").getAttribute("data-name");
+                document.getElementById("dynamic-greeting").textContent = greeting + ", " + name;
+
+                // Live clock ticker
+                function updateTimeTicker() {
+                    const ticker = document.getElementById("live-time-ticker");
+                    if (!ticker) return;
+                    const now = new Date();
+                    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                    let hours = now.getHours();
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12;
+                    hours = hours ? hours : 12;
+                    ticker.textContent = `${days[now.getDay()]}, ${hours}:${minutes} ${ampm}`;
+                }
+                updateTimeTicker();
+                setInterval(updateTimeTicker, 1000);
+            } catch (e) {
+                console.error("Error running header scripts:", e);
+            }
+        })();
+    </script>
 
     <!-- Dashboard Content Layout Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger-enter">
@@ -91,52 +125,107 @@
                 </div>
             </div>
 
-            <!-- Card: AI Growth Insights & Reminders -->
-            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-4 card-accent-top">
+            <!-- Dynamic Niche Coach Selection -->
+            {% set niche_lower = goal.niche.lower() %}
+            {% if 'design' in niche_lower %}
+                {% set coach_img = 'creator_design_cinematic.png' %}
+                {% set coach_name = 'Sofia' %}
+                {% set coach_role = 'Design Architect AI' %}
+                {% set coach_badge_color = 'bg-indigo-500/10 text-indigo-600 border-indigo-500/25' %}
+            {% elif 'dev' in niche_lower or 'tech' in niche_lower or 'code' in niche_lower %}
+                {% set coach_img = 'creator_dev_cinematic.png' %}
+                {% set coach_name = 'Alex' %}
+                {% set coach_role = 'Tech Evangelist AI' %}
+                {% set coach_badge_color = 'bg-teal-500/10 text-teal-600 border-teal-500/25' %}
+            {% elif 'travel' in niche_lower %}
+                {% set coach_img = 'creator_travel_cinematic.png' %}
+                {% set coach_name = 'Elena' %}
+                {% set coach_role = 'Travel Storyteller AI' %}
+                {% set coach_badge_color = 'bg-sky-500/10 text-sky-600 border-sky-500/25' %}
+            {% elif 'fitness' in niche_lower or 'health' in niche_lower %}
+                {% set coach_img = 'creator_fitness_cinematic.png' %}
+                {% set coach_name = 'Marcus' %}
+                {% set coach_role = 'Wellness Catalyst AI' %}
+                {% set coach_badge_color = 'bg-emerald-500/10 text-emerald-600 border-emerald-500/25' %}
+            {% elif 'fashion' in niche_lower or 'style' in niche_lower %}
+                {% set coach_img = 'creator_fashion_cinematic.png' %}
+                {% set coach_name = 'Seraphina' %}
+                {% set coach_role = 'Fashion Authority AI' %}
+                {% set coach_badge_color = 'bg-pink-500/10 text-pink-600 border-pink-500/25' %}
+            {% elif 'food' in niche_lower or 'cook' in niche_lower %}
+                {% set coach_img = 'creator_food_cinematic.png' %}
+                {% set coach_name = 'Oliver' %}
+                {% set coach_role = 'Culinary Creator AI' %}
+                {% set coach_badge_color = 'bg-amber-500/10 text-amber-600 border-amber-500/25' %}
+            {% elif 'photo' in niche_lower or 'camera' in niche_lower %}
+                {% set coach_img = 'creator_photography_cinematic.png' %}
+                {% set coach_name = 'Lucas' %}
+                {% set coach_role = 'Visual Artist AI' %}
+                {% set coach_badge_color = 'bg-purple-500/10 text-purple-600 border-purple-500/25' %}
+            {% elif 'finance' in niche_lower or 'money' in niche_lower or 'business' in niche_lower %}
+                {% set coach_img = 'creator_finance_cinematic.png' %}
+                {% set coach_name = 'Sarah' %}
+                {% set coach_role = 'Wealth Architect AI' %}
+                {% set coach_badge_color = 'bg-blue-500/10 text-blue-600 border-blue-500/25' %}
+            {% else %}
+                {% set coach_img = 'creator_writer_cinematic.png' %}
+                {% set coach_name = 'Arthur' %}
+                {% set coach_role = 'Storytelling Mentor AI' %}
+                {% set coach_badge_color = 'bg-brand-orange/10 text-brand-orange border-brand-orange/25' %}
+            {% endif %}
+
+            <!-- Card: AI Brand Strategist Panel -->
+            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-5 card-accent-top">
                 <div class="flex items-center justify-between pb-3 border-b border-brand-border/30">
                     <div class="flex items-center gap-3">
                         <div class="icon-box-pink icon-box">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                         </div>
-                        <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">AI Growth Insights & Reminders</h3>
+                        <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">AI Brand Coach</h3>
                     </div>
-                    <span class="section-chip" style="font-size: 8px;">Personalized</span>
+                    <span class="px-2.5 py-1 rounded-lg border text-[9px] font-black uppercase tracking-wider {{ coach_badge_color }}">{{ coach_role }}</span>
                 </div>
                 
-                <div class="space-y-4">
-                    <!-- Reminders Section -->
-                    {% if reminders %}
-                    <div class="space-y-2">
-                        <span class="floating-label">Active Reminders</span>
-                        <div class="space-y-2">
-                            {% for reminder in reminders %}
-                            <div class="p-3.5 bg-brand-softCream/30 border border-brand-border/40 rounded-xl text-xs text-brand-textDark font-semibold flex items-start gap-3 hover:border-brand-orange/30 transition-all backdrop-blur-sm group">
-                                <div class="icon-box w-8 h-8 rounded-lg flex-shrink-0">
-                                    <span class="text-sm">🔔</span>
-                                </div>
-                                <span class="pt-1">{{ reminder }}</span>
-                            </div>
-                            {% endfor %}
+                <div class="flex flex-col md:flex-row gap-5 items-start">
+                    <!-- Coach Avatar Cinematic Image -->
+                    <div class="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden flex-shrink-0 border-2 border-brand-orange/30 shadow-lg shadow-brand-orange/10 hover:border-brand-orange/60 hover:scale-105 transition-all duration-300">
+                        <img src="{{ url_for('static', filename='images/' + coach_img) }}" class="w-full h-full object-cover" alt="AI Coach Avatar">
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent py-0.5 text-center">
+                            <span class="text-[9px] text-white font-bold tracking-wide">{{ coach_name }}</span>
                         </div>
                     </div>
-                    {% endif %}
                     
-                    <!-- Insights Section -->
-                    {% if insights %}
-                    <div class="space-y-2 pt-1">
-                        <span class="floating-label">Creator Strategy Insights</span>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            {% for insight in insights %}
-                            <div class="p-3.5 bg-brand-cream/30 border border-brand-border/35 rounded-xl text-xs text-brand-textDark leading-relaxed flex gap-3 hover:border-brand-orange/20 transition-all backdrop-blur-sm group">
-                                <div class="icon-box-pink icon-box w-8 h-8 rounded-lg flex-shrink-0">
-                                    <span class="text-sm font-bold">✦</span>
+                    <div class="flex-grow space-y-4 w-full">
+                        <!-- Coach Reminders Speech Bubble -->
+                        {% if reminders %}
+                        <div class="space-y-2">
+                            <span class="floating-label">Direct Action Items</span>
+                            <div class="space-y-2.5">
+                                {% for reminder in reminders %}
+                                <div class="coach-bubble p-3 rounded-2xl text-xs text-brand-textDark font-semibold flex items-start gap-3 border border-brand-border/40 hover:border-brand-orange/30 transition-all">
+                                    <svg class="w-4 h-4 text-brand-orange flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    <span>{{ reminder }}</span>
                                 </div>
-                                <span class="pt-0.5">{{ insight }}</span>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
+                        {% endif %}
+                        
+                        <!-- Strategy Insights Speech Bubble -->
+                        {% if insights %}
+                        <div class="space-y-2">
+                            <span class="floating-label">Actionable Brand Insights</span>
+                            <div class="space-y-2.5">
+                                {% for insight in insights %}
+                                <div class="coach-bubble p-3 rounded-2xl text-xs text-brand-textDark leading-relaxed flex items-start gap-3 border border-brand-border/45 hover:border-[#FF007A]/30 transition-all">
+                                    <svg class="w-4 h-4 text-[#FF007A] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    <span>{{ insight }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
             </div>
 
@@ -175,8 +264,7 @@
 
         <!-- Right 1 Column (Streak & Recent Content) -->
         <div class="space-y-6">
-            
-            <!-- Card 2: Consistency -->
+                        <!-- Card 2: Consistency -->
             <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-6 card-accent-top">
                 <div class="flex items-center gap-3 pb-3 border-b border-brand-border/30">
                     <div class="icon-box">
@@ -188,17 +276,28 @@
                 <div class="space-y-5">
                     <!-- Streak Tag -->
                     <div class="flex items-center gap-3 streak-glow p-3 rounded-2xl bg-brand-softCream/30 border border-brand-border/30">
-                        <div class="stat-ring">
-                            <span class="text-xl select-none">🔥</span>
+                        <div class="stat-ring flex items-center justify-center">
+                            <!-- SVG Flame icon instead of fire emoji -->
+                            <svg class="w-5 h-5 text-brand-orange flame-glow-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+                            </svg>
                         </div>
                         <div>
                             <div class="font-extrabold text-lg text-brand-textDark">{{ streak }} Day Streak</div>
                             <div class="text-[11px] text-brand-textMuted font-medium uppercase tracking-wider">Last Activity: {{ last_activity }}</div>
                         </div>
                     </div>
-                    
+
+                    <!-- Weekday Capsule Tracker Grid -->
+                    <div class="space-y-2 border-t border-brand-border/20 pt-4">
+                        <span class="floating-label">Weekly Activity Tracker</span>
+                        <div id="weekday-tracker" data-posts="{{ weekly_posts }}" class="weekday-grid">
+                            <!-- Populated via Javascript -->
+                        </div>
+                    </div>
+
                     <!-- Weekly Target Progress -->
-                    <div class="space-y-2.5">
+                    <div class="space-y-2.5 border-t border-brand-border/20 pt-4">
                         <div class="flex items-center justify-between text-xs font-semibold text-brand-textMuted">
                             <span class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-brand-orange"></span>
@@ -211,6 +310,46 @@
                                  style="width: {{ [100, (weekly_posts / (goal.weekly_commitment or 3) * 100)|int]|min }}%;"></div>
                         </div>
                     </div>
+
+                    <script>
+                        (function() {
+                            try {
+                                const tracker = document.getElementById("weekday-tracker");
+                                if (!tracker) return;
+                                const weeklyPosts = parseInt(tracker.getAttribute("data-posts")) || 0;
+                                
+                                const now = new Date();
+                                let currentDayIdx = now.getDay() - 1; 
+                                if (currentDayIdx === -1) currentDayIdx = 6; // Sunday is 6
+                                
+                                const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                                tracker.innerHTML = '';
+                                
+                                labels.forEach((label, idx) => {
+                                    const capsule = document.createElement('div');
+                                    
+                                    if (idx < weeklyPosts) {
+                                        capsule.className = 'weekday-capsule completed';
+                                        capsule.title = 'Activity completed';
+                                    } else if (idx === currentDayIdx) {
+                                        capsule.className = 'weekday-capsule active';
+                                        capsule.title = 'Today';
+                                    } else {
+                                        capsule.className = 'weekday-capsule';
+                                        capsule.title = 'Pending';
+                                    }
+                                    
+                                    capsule.innerHTML = `
+                                        <span class="dot"></span>
+                                        <span class="label">${label}</span>
+                                    `;
+                                    tracker.appendChild(capsule);
+                                });
+                            } catch(e) {
+                                console.error("Error drawing weekday tracker:", e);
+                            }
+                        })();
+                    </script>
 
                     <!-- Monthly Target Progress -->
                     <div class="space-y-2.5 border-t border-brand-border/20 pt-4">
@@ -259,7 +398,11 @@
                         {% endfor %}
                     {% else %}
                         <div class="flex flex-col items-center justify-center h-full text-center p-4 empty-state-visual rounded-2xl">
-                            <span class="text-2xl mb-2">📝</span>
+                            <div class="w-12 h-12 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center text-brand-orange mb-2">
+                                <svg class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                                </svg>
+                            </div>
                             <h4 class="text-xs font-bold text-brand-textDark">No saved drafts yet</h4>
                             <p class="text-[11px] text-brand-textMuted mt-0.5">Your generated content drafts will appear here.</p>
                         </div>
@@ -293,9 +436,9 @@
                 body: bodyContent,
                 cta: "What is your perspective on this? Leave a reply below.",
                 hashtags: "#" + platform + " #" + topic.replace(/\s+/g, '') + " #CreatorOS",
-                caption: "💡 " + topic + "\n\nSave this post for later!",
+                caption: topic + "\n\nSave this post for later!",
                 thread: [
-                    "🧵 Let's talk about " + topic + ". 👇",
+                    "Let's talk about " + topic + ".",
                     "1/ Actionable systems beat theoretical knowledge every single time.",
                     "2/ Focus on building, not just talking. Reach out with questions!"
                 ]

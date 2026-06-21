@@ -33,7 +33,7 @@
                         <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Get a Job" required class="sr-only" checked onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
-                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot"></span></span>
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange radio-circle"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot"></span></span>
                             </div>
                             <span class="font-bold text-brand-textDark mt-1">Get a Job</span>
                             <span class="text-xs text-brand-textMuted leading-relaxed">Attract recruiters, highlight skillsets, and build portfolio.</span>
@@ -42,7 +42,7 @@
                         <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Build Personal Brand" class="sr-only" onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
-                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange radio-circle"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
                             </div>
                             <span class="font-bold text-brand-textDark mt-1">Build Personal Brand</span>
                             <span class="text-xs text-brand-textMuted leading-relaxed">Establish niche authority and grow industry connections.</span>
@@ -51,7 +51,7 @@
                         <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Grow Followers" class="sr-only" onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
-                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange radio-circle"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
                             </div>
                             <span class="font-bold text-brand-textDark mt-1">Grow Followers</span>
                             <span class="text-xs text-brand-textMuted leading-relaxed">Boost organic engagement and scale public reach.</span>
@@ -60,7 +60,7 @@
                         <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Promote Startup" class="sr-only" onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
-                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange radio-circle"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
                             </div>
                             <span class="font-bold text-brand-textDark mt-1">Promote Startup</span>
                             <span class="text-xs text-brand-textMuted leading-relaxed">Acquire early customers and drive traffic to SaaS/business.</span>
@@ -316,47 +316,72 @@
         radioInput.form.querySelectorAll('input[name="goal"]').forEach(input => {
             const dot = input.closest('label').querySelector('.radio-dot');
             dot.classList.add('hidden');
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
         
         const dot = radioInput.closest('label').querySelector('.radio-dot');
         dot.classList.remove('hidden');
-        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = radioInput.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
     }
 
     function selectCreatorTypeRadio(radioInput) {
         radioInput.form.querySelectorAll('input[name="creator_type"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = radioInput.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
     }
 
     function selectAudienceRadio(radioInput) {
         radioInput.form.querySelectorAll('input[name="target_audience"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = radioInput.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
     }
 
+    // Commitment styling
     function selectCommitmentRadio(radioInput) {
         radioInput.form.querySelectorAll('input[name="weekly_commitment"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = radioInput.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
     }
 
     function selectPlatformRadio(radioInput) {
         radioInput.form.querySelectorAll('input[name="platform"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = radioInput.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
     }
 
     function selectToneRadio(radioInput) {
         radioInput.form.querySelectorAll('input[name="tone"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = radioInput.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
     }
 
     // Trigger visual styling for checked items on load

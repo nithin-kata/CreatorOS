@@ -12,7 +12,22 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'info'
 
+def ensure_dependencies():
+    import sys
+    import subprocess
+    dependencies = [("pypdf", "pypdf"), ("docx", "python-docx")]
+    for module_name, pip_name in dependencies:
+        try:
+            __import__(module_name)
+        except ImportError:
+            try:
+                print(f"Installing missing dependency: {pip_name}...")
+                subprocess.run([sys.executable, "-m", "pip", "install", pip_name], check=True)
+            except Exception as e:
+                print(f"Failed to install {pip_name}: {e}")
+
 def create_app():
+    ensure_dependencies()
     app = Flask(__name__)
     
     # Hot-reload image copy operations
@@ -43,7 +58,7 @@ def create_app():
     
     # Initialize Database & Login Manager with app
     # Initialize Database & Login Manager with app
-    from app.models import db, User, Goal
+    from app.models import db, User, Goal, Document
     db.init_app(app)
     login_manager.init_app(app)
     

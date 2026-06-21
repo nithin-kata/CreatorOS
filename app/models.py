@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     goal = db.relationship('Goal', backref='user', uselist=False, cascade="all, delete-orphan")
     contents = db.relationship('Content', backref='user', lazy=True, cascade="all, delete-orphan")
     activities = db.relationship('Activity', backref='user', lazy=True, cascade="all, delete-orphan")
+    documents = db.relationship('Document', backref='user', lazy=True, cascade="all, delete-orphan")
     
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -58,3 +59,12 @@ class Activity(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     activity_date = db.Column(db.Date, default=date.today, nullable=False)
+
+class Document(db.Model):
+    __tablename__ = 'documents'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+    content_text = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

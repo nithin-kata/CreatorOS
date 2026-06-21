@@ -31,7 +31,7 @@
                     <textarea id="prompt" name="prompt" rows="3" required placeholder="What is your post about? (e.g. AI Agents for students, Solopreneur tools...)"
                               class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/15 transition-all text-sm custom-scrollbar resize-none">{{ prefill_topic }}</textarea>
                 </div>
-
+                
                 <!-- Platform -->
                 <div>
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Target Network</label>
@@ -40,7 +40,17 @@
                         <label class="platform-select-card border border-brand-border p-3 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-2 bg-white/50 hover:bg-brand-softCream/60 hover:border-brand-orange hover:-translate-y-1 hover:shadow-md active:translate-y-0 duration-200 group backdrop-blur-sm">
                             <input type="radio" name="platform" value="{{ plat }}" required class="sr-only" 
                                    {% if prefill_platform == plat %}checked{% endif %} onclick="updatePlatformUI(this)">
-                            <span class="text-lg">{% if plat == 'LinkedIn' %}💼{% elif plat == 'X' %}𝕏{% elif plat == 'Instagram' %}📸{% else %}📝{% endif %}</span>
+                            <span class="text-brand-orange">
+                                {% if plat == 'LinkedIn' %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                {% elif plat == 'X' %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                {% elif plat == 'Instagram' %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 01-2-2h.93a2 2 0 012-2h.93M3 9v9a2 2 0 002 2h14a2 2 0 002-2V9M3 9h18M10 14a2 2 0 114 0 2 2 0 01-4 0z"/></svg>
+                                {% else %}
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                {% endif %}
+                            </span>
                             <span class="text-[10px] font-bold text-brand-textDark">{{ plat if plat != 'Blog' else 'Blog' }}</span>
                         </label>
                         {% endfor %}
@@ -55,10 +65,44 @@
                         <label class="platform-select-card border border-brand-border p-3 rounded-xl cursor-pointer flex items-center gap-2.5 transition-all bg-white/50 hover:bg-brand-softCream/60 hover:border-brand-orange hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 duration-200 group backdrop-blur-sm">
                             <input type="radio" name="tone" value="{{ tone_name }}" required class="sr-only"
                                    {% if prefill_tone == tone_name %}checked{% endif %} onclick="updateToneUI(this)">
-                            <span class="text-sm">{% if tone_name == 'Professional' %}🎯{% elif tone_name == 'Storytelling' %}📖{% elif tone_name == 'Educational' %}🎓{% else %}☕{% endif %}</span>
+                            <span class="text-brand-orange flex-shrink-0">
+                                {% if tone_name == 'Professional' %}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                {% elif tone_name == 'Storytelling' %}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                {% elif tone_name == 'Educational' %}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+                                {% else %}
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                {% endif %}
+                            </span>
                             <span class="text-xs font-semibold text-brand-textDark">{{ tone_name }}</span>
                         </label>
                         {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Reference Context Documents (Dashed Dropzone & List) -->
+                <div class="space-y-3 pt-3 border-t border-brand-border/20">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Reference Context Documents</label>
+                    
+                    <!-- File dropzone -->
+                    <div id="document-dropzone" class="border-2 border-dashed border-brand-border hover:border-brand-orange/60 rounded-xl p-4 text-center cursor-pointer bg-white/20 hover:bg-brand-softCream/10 transition-all backdrop-blur-sm relative group">
+                        <input type="file" id="document-file-input" accept=".txt,.md,.pdf,.docx" class="hidden">
+                        <div class="space-y-1">
+                            <div class="flex justify-center text-brand-orange">
+                                <svg class="w-8 h-8 group-hover:scale-105 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                            </div>
+                            <p class="text-xs text-brand-textDark font-semibold">Click or Drag & Drop documents here</p>
+                            <p class="text-[10px] text-brand-textMuted">Supports TXT, MD, PDF, DOCX (Max 10MB)</p>
+                        </div>
+                    </div>
+
+                    <!-- Upload list and active selection checks -->
+                    <div id="uploaded-documents-list" class="space-y-2 max-h-[150px] overflow-y-auto custom-scrollbar">
+                        <!-- Populated dynamically via AJAX -->
                     </div>
                 </div>
 
@@ -69,27 +113,6 @@
                 </button>
             </form>
 
-            <!-- Refinement Canvas Section -->
-            <div id="refinement-panel" class="hidden border-t border-brand-border/30 pt-5 space-y-4">
-                <span class="floating-label">Refine Active Draft (Canvas Co-Pilot)</span>
-                
-                <!-- Preset Quick Pills -->
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="quickRefine('Make it punchier')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">🔥 Punchier</button>
-                    <button type="button" onclick="quickRefine('Make it shorter')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">✂️ Shorter</button>
-                    <button type="button" onclick="quickRefine('Add a contrarian hook')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">🎯 Contrarian</button>
-                    <button type="button" onclick="quickRefine('Inject storytelling style')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">📖 Story</button>
-                </div>
-
-                <!-- Custom instruction field -->
-                <div class="flex gap-2">
-                    <input type="text" id="refinement-prompt" placeholder="Ask AI Co-Pilot to rewrite (e.g. Add emojis...)" 
-                           class="flex-grow px-3 py-2 text-xs rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all">
-                    <button type="button" onclick="submitRefinement()" class="px-3.5 py-2 bg-brand-textDark text-white hover:bg-black rounded-xl text-xs font-bold transition-all flex items-center justify-center">
-                        Refine
-                    </button>
-                </div>
-            </div>
         </div>
 
         <!-- Right Panel: Canvas Output Preview (7 Cols) -->
@@ -109,256 +132,50 @@
 
             <!-- Empty State -->
             <div id="empty-state-canvas" class="flex flex-col items-center justify-center flex-grow text-center p-8 space-y-4 empty-state-visual rounded-2xl m-4">
-                <div class="stat-ring" style="width:64px; height:64px;">
-                    <span class="text-3xl select-none">🎨</span>
+                <div class="w-16 h-16 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center text-brand-orange">
+                    <svg class="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
                 </div>
                 <h4 class="font-extrabold text-sm text-brand-textDark">Workspace Canvas Empty</h4>
                 <p class="text-xs text-brand-textMuted max-w-sm leading-relaxed">Your generated content drafts will paint here. Configure options on the left and tap generate.</p>
             </div>
 
-            <!-- Content Area (Initially Hidden) -->
-            <div id="content-canvas" class="hidden flex flex-col h-full space-y-3">
-                
-                <!-- Header Actions & Memory Tags -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-border/40 pb-3 flex-shrink-0">
-                    <div id="memory-badge-container" class="flex items-center gap-1.5">
-                        <!-- Similarity badges dynamically populate here -->
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="copyCurrentCanvas()" class="p-2 border border-brand-border rounded-xl bg-white hover:bg-brand-softCream text-xs font-bold text-brand-textDark flex items-center gap-1.5 transition-all">
-                            <span>Copy Draft</span>
-                        </button>
-                        <button id="save-draft-btn" class="p-2 bg-brand-orange text-white hover:bg-brand-darkOrange rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
-                            <span>Save to Memory</span>
-                        </button>
-                    </div>
-                </div>
+            <!-- Chat History Thread Container (Visible when there is history) -->
+            <div id="chat-history-container" class="hidden flex-grow overflow-y-auto pr-1 space-y-6 custom-scrollbar pb-4">
+                <!-- Dynamically populated chat bubbles and assistant cards -->
+            </div>
 
-                <!-- Tabs and Score Widget -->
-                <div class="flex items-center justify-between border-b border-brand-border/20 pb-2.5 flex-shrink-0">
-                    <!-- Toggle Tabs -->
-                    <div class="flex bg-brand-softCream/30 border border-brand-border/60 rounded-lg p-0.5">
-                        <button type="button" id="tab-raw" onclick="switchCanvasTab('raw')" class="px-3 py-1.5 text-xs font-bold text-brand-orange bg-white rounded-md shadow-sm transition-all focus:outline-none">
-                            Raw Editor
-                        </button>
-                        <button type="button" id="tab-preview" onclick="switchCanvasTab('preview')" class="px-3 py-1.5 text-xs font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none">
-                            Feed Preview
-                        </button>
-                    </div>
-                    
-                    <!-- Score Mini-widget -->
-                    <div class="flex items-center gap-3">
-                        <div class="text-right">
-                            <div class="text-[10px] text-brand-textMuted font-bold uppercase tracking-wider leading-none">Impression Forecast</div>
-                            <div id="score-text" class="text-xs font-black text-brand-orange mt-0.5">Score: --</div>
-                        </div>
-                        <div class="relative w-12 h-12 flex items-center justify-center" id="score-circle-container-wrapper">
-                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                <!-- Background Circle -->
-                                <path class="text-brand-border/40" stroke="currentColor" stroke-width="3" fill="none"
-                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                <!-- Progress Circle -->
-                                <path id="score-progress-bar" class="text-brand-orange transition-all duration-500 ease-out" 
-                                      stroke="currentColor" stroke-width="3.5" stroke-dasharray="0, 100" stroke-linecap="round" fill="none"
-                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            </svg>
-                            <span id="score-circle-text" class="absolute text-xs font-black text-brand-orange">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Scrollable Output Draft Canvas (Raw Editor) -->
-                <div class="custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-4 text-sm" id="rendered-output-box">
-                    
-                    <!-- LinkedIn Format -->
-                    <div id="linkedin-output" class="hidden space-y-4">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Hook</span>
-                            <div id="li-hook" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl font-medium text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Body Insight</span>
-                            <div id="li-body" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Call to Action</span>
-                            <div id="li-cta" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Hashtags</span>
-                            <div id="li-hashtags" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none"></div>
-                        </div>
-                    </div>
-
-                    <!-- Instagram Format -->
-                    <div id="instagram-output" class="hidden space-y-4">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Caption visual text</span>
-                            <div id="ig-caption" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Hashtags</span>
-                            <div id="ig-hashtags" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none"></div>
-                        </div>
-                    </div>
-
-                    <!-- X Thread Format -->
-                    <div id="x-output" class="hidden space-y-3">
-                        <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider block mb-1">Thread Posts</span>
-                        <div id="x-thread-container" class="space-y-3">
-                            <!-- Tweets loop dynamically injected here -->
-                        </div>
-                    </div>
-
-                    <!-- Blog Format -->
-                    <div id="blog-output" class="hidden space-y-4">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Blog Title</span>
-                            <div id="blog-title" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl font-bold text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Introduction & Hook</span>
-                            <div id="blog-intro" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Structured Outline Sections</span>
-                            <div id="blog-sections-container" class="space-y-3">
-                                <!-- Sections loop dynamically injected here -->
-                            </div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Conclusion</span>
-                            <div id="blog-conclusion" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
-                        </div>
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">SEO Keywords</span>
-                            <div id="blog-keywords" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none"></div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Feed Preview Container (Simulated Layouts) -->
-                <div id="feed-preview-output" class="hidden custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-4 text-sm">
-                    <!-- LinkedIn Simulated Card -->
-                    <div id="preview-linkedin" class="hidden border border-gray-200 bg-white rounded-xl shadow-xs p-4 text-left font-sans text-sm text-gray-900 max-w-lg mx-auto">
-                        <div class="flex items-center gap-2 mb-3">
-                            <div class="w-10 h-10 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-xs">
-                                {{ current_user.name[:2] }}
-                            </div>
-                            <div>
-                                <div class="font-bold text-xs text-gray-900 flex items-center gap-1">
-                                    <span>{{ current_user.name }}</span>
-                                    <span class="text-[10px] text-gray-500 font-normal">• 1st</span>
-                                </div>
-                                <div class="text-[10px] text-gray-500">AI Creator & Personal Branding Specialist</div>
-                                <div class="text-[9px] text-gray-400 flex items-center gap-1 mt-0.5">
-                                    <span>1h</span>
-                                    <span>•</span>
-                                    <svg class="w-2.5 h-2.5 fill-current text-gray-400" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 5.52 4.477 10 10 10s10-4.48 10-10c0-5.523-4.477-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Expandable LinkedIn Text -->
-                        <div class="space-y-2 mb-3 text-gray-800 leading-relaxed break-words text-xs" id="li-preview-text-box">
-                            <div id="li-preview-hook" class="inline"></div>
-                            <span id="li-preview-dots" class="font-semibold text-gray-500 hover:text-brand-orange cursor-pointer" onclick="expandLinkedInPreview()">...see more</span>
-                            <div id="li-preview-body-cta-hashtags" class="hidden">
-                                <div id="li-preview-body" class="mt-2 whitespace-pre-wrap"></div>
-                                <div id="li-preview-cta" class="mt-2 whitespace-pre-wrap font-semibold"></div>
-                                <div id="li-preview-hashtags" class="mt-2 text-sky-700 font-medium"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="border-t border-gray-100 pt-2 flex items-center justify-between text-[11px] text-gray-500 font-semibold px-2">
-                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">👍 Like</span>
-                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">💬 Comment</span>
-                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">🔄 Repost</span>
-                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">📤 Send</span>
-                        </div>
-                    </div>
-
-                    <!-- X Thread Simulated Card -->
-                    <div id="preview-x" class="hidden space-y-4 max-w-lg mx-auto font-sans text-left">
-                        <div id="x-preview-tweets-container" class="space-y-4">
-                            <!-- Tweets loop dynamically here -->
-                        </div>
-                    </div>
-
-                    <!-- Instagram Simulated Card -->
-                    <div id="preview-instagram" class="hidden border border-gray-200 bg-white rounded-xl shadow-xs max-w-sm mx-auto font-sans text-left overflow-hidden">
-                        <!-- Instagram Header -->
-                        <div class="flex items-center justify-between p-3 border-b border-gray-100">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-xs">
-                                    {{ current_user.name[:2] }}
-                                </div>
-                                <span class="font-bold text-xs text-gray-900">{{ current_user.name.lower().replace(" ", "") }}</span>
-                            </div>
-                            <span class="text-gray-500 font-bold tracking-widest text-xs cursor-pointer">•••</span>
-                        </div>
-                        <!-- Instagram Post Media Placeholder -->
-                        <div class="w-full aspect-square bg-gradient-to-tr from-brand-peach/20 via-brand-softCream/40 to-brand-orange/10 flex flex-col items-center justify-center text-center p-6 border-b border-gray-100 relative group">
-                            <span class="text-3xl animate-bounce">📸</span>
-                            <span class="text-[10px] font-black text-brand-orange uppercase tracking-widest mt-2">Visual Draft Asset</span>
-                            <span class="text-[9px] text-brand-textMuted mt-1 px-4">Generate branding graphics using canvas templates</span>
-                        </div>
-                        <!-- Actions Bar -->
-                        <div class="p-3 flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="cursor-pointer text-base">❤️</span>
-                                <span class="cursor-pointer text-base">💬</span>
-                                <span class="cursor-pointer text-base">✈️</span>
-                            </div>
-                            <span class="cursor-pointer text-base">🔖</span>
-                        </div>
-                        <!-- Caption Box -->
-                        <div class="px-3 pb-3 text-xs leading-relaxed text-gray-800">
-                            <span class="font-bold text-gray-900 mr-1.5">{{ current_user.name.lower().replace(" ", "") }}</span>
-                            <span id="ig-preview-caption" class="whitespace-pre-wrap"></span>
-                            <div id="ig-preview-hashtags" class="text-sky-800 font-semibold mt-1"></div>
-                        </div>
-                    </div>
-
-                    <!-- Blog Document Simulated Card -->
-                    <div id="preview-blog" class="hidden border border-brand-border bg-white rounded-xl shadow-xs p-6 max-w-xl mx-auto font-serif text-left prose prose-sm text-gray-800 leading-relaxed">
-                        <h1 id="blog-preview-title" class="text-lg font-sans font-black text-gray-900 border-b border-gray-100 pb-3"></h1>
-                        <div class="flex items-center gap-2 my-3 text-[10px] font-sans text-brand-textMuted">
-                            <div class="w-5 h-5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange text-[9px] uppercase">
-                                {{ current_user.name[:2] }}
-                            </div>
-                            <span>Written by <span class="font-bold text-brand-textDark">{{ current_user.name }}</span></span>
-                            <span>•</span>
-                            <span>3 min read</span>
-                        </div>
-                        <p id="blog-preview-intro" class="italic text-xs text-gray-700 mb-3 bg-gray-50/50 p-2.5 rounded-lg border-l-4 border-brand-orange"></p>
-                        
-                        <div id="blog-preview-sections" class="space-y-3 mt-3">
-                            <!-- Sections injected dynamically -->
-                        </div>
-                        
-                        <div id="blog-preview-conclusion" class="mt-4 pt-3 border-t border-gray-100 whitespace-pre-wrap text-[11px] text-gray-600 bg-gray-50 p-3 rounded-xl font-sans font-medium"></div>
-                        <div class="mt-3 text-[11px] font-sans text-brand-textMuted flex items-center gap-1">
-                            <span class="font-bold text-gray-900">Keywords:</span>
-                            <span id="blog-preview-keywords"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Feedback Recommendations (Forecast Checklist) -->
-                <div id="forecast-checklist-container" class="p-3 bg-brand-softCream/20 border border-brand-border/40 rounded-xl flex-shrink-0 space-y-1.5 hidden border-t">
-                    <button type="button" onclick="toggleForecastChecklist()" class="w-full flex items-center justify-between text-xs font-bold text-brand-textDark focus:outline-none">
-                        <span class="flex items-center gap-1.5">
-                            📊 AI Engagement Insights & Optimization
-                        </span>
-                        <svg id="checklist-arrow" class="w-4 h-4 text-brand-textMuted transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            <!-- Conversational Chat Refiner panel at bottom of chat panel -->
+            <div id="refinement-panel" class="hidden border-t border-brand-border/30 pt-4 space-y-3 flex-shrink-0">
+                <!-- Preset Quick Pills -->
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" onclick="quickRefine('Make it punchier')" class="px-3 py-1.5 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[10px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-xs transition-all backdrop-blur-sm flex items-center gap-1">
+                        <svg class="w-3 h-3 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Punchier
                     </button>
-                    <div id="forecast-checklist-content" class="hidden pt-1 space-y-1 text-[11px] text-brand-textMuted custom-scrollbar overflow-y-auto max-h-[80px]">
-                        <!-- Populated dynamically -->
-                    </div>
+                    <button type="button" onclick="quickRefine('Make it shorter')" class="px-3 py-1.5 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[10px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-xs transition-all backdrop-blur-sm flex items-center gap-1">
+                        <svg class="w-3 h-3 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Shorter
+                    </button>
+                    <button type="button" onclick="quickRefine('Add a contrarian hook')" class="px-3 py-1.5 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[10px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-xs transition-all backdrop-blur-sm flex items-center gap-1">
+                        <svg class="w-3 h-3 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        Contrarian
+                    </button>
+                    <button type="button" onclick="quickRefine('Inject storytelling style')" class="px-3 py-1.5 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[10px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-xs transition-all backdrop-blur-sm flex items-center gap-1">
+                        <svg class="w-3 h-3 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.168.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        Story
+                    </button>
                 </div>
 
+                <!-- Custom instruction field styled like a ChatGPT input bar -->
+                <div class="flex items-center gap-2 w-full">
+                    <input type="text" id="refinement-prompt" placeholder="Tell AI Co-Pilot about specific changes to make..." 
+                           class="flex-grow px-3.5 py-2.5 text-xs rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange/10 transition-all font-medium shadow-xs">
+                    <button type="button" onclick="submitRefinement()" class="p-2.5 bg-brand-orange hover:bg-brand-darkOrange text-white rounded-xl shadow-xs hover:shadow-md transition-all flex items-center justify-center focus:outline-none flex-shrink-0" title="Send">
+                        <svg class="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -366,25 +183,50 @@
     </div>
 </div>
 
+<style>
+/* Page-specific chat animations & overrides */
+.animate-fade-in {
+    animation: bubble-fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes bubble-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+</style>
+
 <script>
     let activePlatform = "{{ prefill_platform }}";
     let activeTone = "{{ prefill_tone }}";
-    let lastGeneratedData = null; // Store last generated response for saving drafts
+    let conversationHistory = []; // Store the list of turns
 
     // Interactive styling functions for radio selections
     function updatePlatformUI(inputElement) {
         inputElement.form.querySelectorAll('input[name="platform"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        inputElement.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = inputElement.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
         activePlatform = inputElement.value;
     }
 
     function updateToneUI(inputElement) {
         inputElement.form.querySelectorAll('input[name="tone"]').forEach(input => {
-            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const label = input.closest('label');
+            label.classList.remove('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
+            label.classList.add('border-brand-border');
         });
-        inputElement.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        const activeLabel = inputElement.closest('label');
+        activeLabel.classList.remove('border-brand-border');
+        activeLabel.classList.add('border-brand-orange', 'ring-2', 'ring-brand-orange/40', 'bg-brand-softCream/20');
         activeTone = inputElement.value;
     }
 
@@ -399,6 +241,21 @@
         toneInputs.forEach(input => {
             if (input.checked) updateToneUI(input);
         });
+
+        // Load uploaded documents
+        loadDocuments();
+        setupDropzone();
+
+        // Keydown listener for refinement prompt (Enter key triggers submitRefinement)
+        const refPrompt = document.getElementById('refinement-prompt');
+        if (refPrompt) {
+            refPrompt.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    submitRefinement();
+                }
+            });
+        }
     });
 
     // Form submit listener (AJAX call to /generate)
@@ -407,11 +264,17 @@
         
         const loader = document.getElementById('loader-overlay');
         const emptyCanvas = document.getElementById('empty-state-canvas');
-        const contentCanvas = document.getElementById('content-canvas');
+        const chatContainer = document.getElementById('chat-history-container');
         
         loader.classList.remove('hidden');
         
         const formData = new FormData(e.target);
+        
+        // Pass selected document IDs
+        const selectedDocInputs = document.querySelectorAll('input[name="document_ids"]:checked');
+        selectedDocInputs.forEach(input => {
+            formData.append('document_ids', input.value);
+        });
         
         fetch("{{ url_for('content.generate') }}", {
             method: "POST",
@@ -425,103 +288,31 @@
                 return;
             }
             
-            // Pop Content Canvas, Hide Empty state, Show Refinement panel
+            // Show Chat container, Hide Empty state, Show Refinement panel
             emptyCanvas.classList.add('hidden');
-            contentCanvas.classList.remove('hidden');
+            chatContainer.classList.remove('hidden');
             document.getElementById('refinement-panel').classList.remove('hidden');
             
-            lastGeneratedData = response.data;
+            // Clear and Reset conversation history
+            conversationHistory = [];
+            chatContainer.innerHTML = '';
             
-            // Render forecast score & checklists
-            updateScoreAndChecklist(response.analysis);
+            const mainPrompt = document.getElementById('prompt').value.trim();
             
-            // Reset to raw view tab
-            switchCanvasTab('raw');
+            const turn = {
+                turnIndex: 0,
+                userPrompt: mainPrompt,
+                type: "generate",
+                platform: activePlatform,
+                tone: activeTone,
+                data: response.data,
+                analysis: response.analysis,
+                similarity: response.similarity,
+                activeTab: 'raw'
+            };
             
-            // 1. Render Source and Memory badges
-            const badgeContainer = document.getElementById('memory-badge-container');
-            badgeContainer.innerHTML = '';
-            
-            // Source badge
-            const isApi = response.data._source === 'api';
-            const sourceBadge = document.createElement('span');
-            sourceBadge.className = isApi 
-                ? "inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-green-200 bg-green-50 text-[10px] font-bold text-green-700"
-                : "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-orange-200 bg-orange-50 text-[10px] font-bold text-orange-700";
-            sourceBadge.innerText = isApi ? "✓ Engine: Groq API Active" : "⚠ Engine: Inbuilt Copy Simulator";
-            badgeContainer.appendChild(sourceBadge);
-            
-            // Similarity badge
-            const sim = response.similarity;
-            const simBadge = document.createElement('span');
-            if (sim.is_similar) {
-                simBadge.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-yellow-300 bg-yellow-50 text-[10px] font-bold text-yellow-700";
-                simBadge.innerText = `⚠ ${sim.message}`;
-                badgeContainer.appendChild(simBadge);
-                showToast("Overlap alert! Check similarities in top badge.", "warning");
-            } else {
-                simBadge.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-green-200 bg-green-50 text-[10px] font-bold text-green-700";
-                simBadge.innerText = "✓ Not similar to your last 10 posts.";
-                badgeContainer.appendChild(simBadge);
-                
-                if (isApi) {
-                    showToast("Post drafted successfully via Groq API!", "success");
-                } else {
-                    showToast("Post drafted via Inbuilt Copy Engine (API offline).", "info");
-                }
-            }
-            
-            // 2. Hide all formats, display active platform format
-            document.getElementById('linkedin-output').classList.add('hidden');
-            document.getElementById('instagram-output').classList.add('hidden');
-            document.getElementById('x-output').classList.add('hidden');
-            document.getElementById('blog-output').classList.add('hidden');
-            
-            const plat = activePlatform.toLowerCase();
-            if (plat === 'linkedin') {
-                document.getElementById('linkedin-output').classList.remove('hidden');
-                document.getElementById('li-hook').innerText = response.data.hook || '';
-                document.getElementById('li-body').innerText = response.data.body || '';
-                document.getElementById('li-cta').innerText = response.data.cta || '';
-                document.getElementById('li-hashtags').innerText = response.data.hashtags || '';
-            } else if (plat === 'instagram') {
-                document.getElementById('instagram-output').classList.remove('hidden');
-                document.getElementById('ig-caption').innerText = response.data.caption || '';
-                document.getElementById('ig-hashtags').innerText = response.data.hashtags || '';
-            } else if (plat === 'x') {
-                document.getElementById('x-output').classList.remove('hidden');
-                const threadBox = document.getElementById('x-thread-container');
-                threadBox.innerHTML = '';
-                const tweets = response.data.thread || [];
-                tweets.forEach((tweet, index) => {
-                    const tweetDiv = document.createElement('div');
-                    tweetDiv.className = 'p-4 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1 relative';
-                    tweetDiv.innerHTML = `
-                        <span class="absolute top-2.5 right-4 text-[10px] font-bold text-brand-textMuted">${index+1}/${tweets.length}</span>
-                        <p class="text-brand-textDark whitespace-pre-wrap select-all font-medium pr-8">${tweet}</p>
-                    `;
-                    threadBox.appendChild(tweetDiv);
-                });
-            } else if (plat === 'blog') {
-                document.getElementById('blog-output').classList.remove('hidden');
-                document.getElementById('blog-title').innerText = response.data.blog_title || '';
-                document.getElementById('blog-intro').innerText = response.data.blog_introduction || '';
-                document.getElementById('blog-conclusion').innerText = response.data.blog_conclusion || '';
-                document.getElementById('blog-keywords').innerText = response.data.blog_keywords || '';
-                
-                const sectionsBox = document.getElementById('blog-sections-container');
-                sectionsBox.innerHTML = '';
-                const sections = response.data.blog_sections || [];
-                sections.forEach((sec) => {
-                    const secDiv = document.createElement('div');
-                    secDiv.className = 'p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1';
-                    secDiv.innerHTML = `
-                        <h5 class="font-bold text-xs text-brand-textDark">${sec.heading || ''}</h5>
-                        <p class="text-xs text-brand-textMuted whitespace-pre-wrap select-all">${sec.outline || ''}</p>
-                    `;
-                    sectionsBox.appendChild(secDiv);
-                });
-            }
+            conversationHistory.push(turn);
+            appendTurnToUI(turn);
         })
         .catch(err => {
             console.error(err);
@@ -531,125 +322,582 @@
     });
 
     // -------------------------------------------------------------
-    // Tab switching and feed preview simulator logic
+    // ChatGPT-style Conversation Thread stream renderer
     // -------------------------------------------------------------
-    let currentCanvasTab = 'raw';
-    
-    function switchCanvasTab(tab) {
-        if (!lastGeneratedData) return;
-        currentCanvasTab = tab;
+    function appendTurnToUI(turn) {
+        const chatContainer = document.getElementById('chat-history-container');
+        const i = turn.turnIndex;
         
-        const rawBtn = document.getElementById('tab-raw');
-        const prevBtn = document.getElementById('tab-preview');
+        // 1. Append User Bubble
+        const userBubble = document.createElement('div');
+        userBubble.className = "flex justify-end w-full animate-fade-in";
+        userBubble.innerHTML = `
+            <div class="max-w-[85%] rounded-2xl rounded-tr-none px-4 py-3 bg-brand-orange/10 border border-brand-orange/20 text-brand-textDark text-xs font-medium shadow-xs">
+                <div class="flex justify-between items-center gap-4 text-[9px] font-bold text-brand-orange uppercase tracking-wider mb-1">
+                    <span>You</span>
+                    <span class="text-brand-textMuted font-medium">${escapeHTML(turn.platform)} &bull; ${escapeHTML(turn.tone)}</span>
+                </div>
+                <div class="whitespace-pre-wrap leading-relaxed">${escapeHTML(turn.userPrompt)}</div>
+            </div>
+        `;
+        chatContainer.appendChild(userBubble);
         
-        const rawOutput = document.getElementById('rendered-output-box');
-        const prevOutput = document.getElementById('feed-preview-output');
+        // 2. Build Assistant Card HTML
+        const isApi = turn.data._source === 'api';
         
-        if (tab === 'raw') {
-            rawBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-orange bg-white rounded-md shadow-sm transition-all focus:outline-none";
-            prevBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none";
-            rawOutput.classList.remove('hidden');
-            prevOutput.classList.add('hidden');
-        } else {
-            prevBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-orange bg-white rounded-md shadow-sm transition-all focus:outline-none";
-            rawBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none";
-            rawOutput.classList.add('hidden');
-            prevOutput.classList.remove('hidden');
-            renderFeedPreview();
+        let similarityBadgeHTML = '';
+        if (turn.similarity && turn.similarity.is_similar) {
+            similarityBadgeHTML = `
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg border border-yellow-300 bg-yellow-50 text-[9px] font-bold text-yellow-700">
+                    ⚠ ${escapeHTML(turn.similarity.message)}
+                </span>
+            `;
+        } else if (turn.similarity) {
+            similarityBadgeHTML = `
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg border border-green-200 bg-green-50 text-[9px] font-bold text-green-700">
+                    ✓ Not similar to last 10 posts
+                </span>
+            `;
         }
-    }
-    
-    function renderFeedPreview() {
-        if (!lastGeneratedData) return;
         
-        document.getElementById('preview-linkedin').classList.add('hidden');
-        document.getElementById('preview-x').classList.add('hidden');
-        document.getElementById('preview-instagram').classList.add('hidden');
-        document.getElementById('preview-blog').classList.add('hidden');
+        // Define score colors
+        let scoreColorClass = 'text-brand-orange';
+        let progressColorClass = 'text-brand-orange';
+        if (turn.analysis.score >= 80) {
+            scoreColorClass = 'text-green-600';
+            progressColorClass = 'text-green-500';
+        } else if (turn.analysis.score >= 50) {
+            scoreColorClass = 'text-yellow-600';
+            progressColorClass = 'text-yellow-500';
+        } else {
+            scoreColorClass = 'text-red-600';
+            progressColorClass = 'text-red-500';
+        }
         
-        const plat = activePlatform.toLowerCase();
+        // Feedback checklist list items
+        const feedbackChecklistHTML = turn.analysis.feedback.map(item => `
+            <div class="flex items-start gap-1 py-0.5 leading-relaxed">${escapeHTML(item)}</div>
+        `).join('');
         
+        // Build Output HTML based on platform
+        let outputContentHTML = '';
+        let previewContentHTML = '';
+        
+        const plat = turn.platform.toLowerCase();
         if (plat === 'linkedin') {
-            document.getElementById('preview-linkedin').classList.remove('hidden');
-            document.getElementById('li-preview-hook').innerText = lastGeneratedData.hook || '';
-            document.getElementById('li-preview-body').innerText = lastGeneratedData.body || '';
-            document.getElementById('li-preview-cta').innerText = lastGeneratedData.cta || '';
-            document.getElementById('li-preview-hashtags').innerText = lastGeneratedData.hashtags || '';
+            outputContentHTML = `
+                <div class="space-y-2">
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Hook</span>
+                        <div id="li-hook-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl font-medium text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.hook || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Body Insight</span>
+                        <div id="li-body-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.body || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Call to Action</span>
+                        <div id="li-cta-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.cta || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Hashtags</span>
+                        <div id="li-hashtags-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.hashtags || '')}</div>
+                    </div>
+                </div>
+            `;
             
-            // Collapse body/cta by default
-            document.getElementById('li-preview-dots').classList.remove('hidden');
-            document.getElementById('li-preview-body-cta-hashtags').classList.add('hidden');
-            
-        } else if (plat === 'instagram') {
-            document.getElementById('preview-instagram').classList.remove('hidden');
-            document.getElementById('ig-preview-caption').innerText = lastGeneratedData.caption || '';
-            document.getElementById('ig-preview-hashtags').innerText = lastGeneratedData.hashtags || '';
-            
-        } else if (plat === 'x') {
-            document.getElementById('preview-x').classList.remove('hidden');
-            const container = document.getElementById('x-preview-tweets-container');
-            container.innerHTML = '';
-            
-            const tweets = lastGeneratedData.thread || [];
-            tweets.forEach((tweet, index) => {
-                const tweetNode = document.createElement('div');
-                tweetNode.className = "flex gap-3 relative";
-                
-                const showLine = index < tweets.length - 1;
-                const timelineLine = showLine 
-                    ? `<div class="absolute left-5 top-10 bottom-0 w-0.5 bg-gray-200"></div>`
-                    : '';
-                
-                tweetNode.innerHTML = `
-                    ${timelineLine}
-                    <div class="relative z-10 flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-xs">
+            previewContentHTML = `
+                <div class="border border-gray-200 bg-white rounded-xl shadow-xs p-3.5 text-left font-sans text-xs text-gray-900 max-w-lg mx-auto">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-8 h-8 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-[10px]">
                             {{ current_user.name[:2] }}
                         </div>
-                    </div>
-                    <div class="flex-grow pb-4">
-                        <div class="flex items-center gap-1.5 text-[11px]">
-                            <span class="font-bold text-gray-900 hover:underline cursor-pointer">{{ current_user.name }}</span>
-                            <span class="text-gray-500 font-normal">@{{ current_user.name.lower().replace(" ", "") }}</span>
-                            <span class="text-gray-400 font-normal">· 1h</span>
-                        </div>
-                        <p class="text-xs text-gray-900 mt-1 whitespace-pre-wrap leading-relaxed">${tweet}</p>
-                        <div class="flex items-center gap-10 mt-3 text-gray-400 text-[10px] font-semibold">
-                            <span class="hover:text-sky-500 cursor-pointer flex items-center gap-1">💬 <span class="font-normal">2</span></span>
-                            <span class="hover:text-green-500 cursor-pointer flex items-center gap-1">🔄 <span class="font-normal">4</span></span>
-                            <span class="hover:text-pink-500 cursor-pointer flex items-center gap-1">❤️ <span class="font-normal">18</span></span>
-                            <span class="hover:text-sky-500 cursor-pointer flex items-center gap-1">📊 <span class="font-normal">450</span></span>
+                        <div>
+                            <div class="font-bold text-[10px] text-gray-900 flex items-center gap-1">
+                                <span>{{ current_user.name }}</span>
+                                <span class="text-[9px] text-gray-500 font-normal">&bull; 1st</span>
+                            </div>
+                            <div class="text-[9px] text-gray-500">AI Creator & Personal Branding Specialist</div>
+                            <div class="text-[8px] text-gray-400 flex items-center gap-0.5 mt-0.5">
+                                <span>1h</span>
+                                <span>&bull;</span>
+                                <svg class="w-2 h-2 fill-current text-gray-400" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 5.52 4.477 10 10 10s10-4.48 10-10c0-5.523-4.477-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+                            </div>
                         </div>
                     </div>
-                `;
-                container.appendChild(tweetNode);
-            });
+                    
+                    <div class="space-y-2 mb-2 text-gray-800 leading-relaxed break-words">
+                        <div class="inline" id="li-preview-hook-${i}">${escapeHTML(turn.data.hook || '')}</div>
+                        <span id="dots-${i}" class="font-semibold text-gray-500 hover:text-brand-orange cursor-pointer" onclick="expandTurnLinkedIn(${i})">...see more</span>
+                        <div id="full-text-${i}" class="hidden">
+                            <div class="mt-2 whitespace-pre-wrap" id="li-preview-body-${i}">${escapeHTML(turn.data.body || '')}</div>
+                            <div class="mt-2 whitespace-pre-wrap font-semibold" id="li-preview-cta-${i}">${escapeHTML(turn.data.cta || '')}</div>
+                            <div class="mt-2 text-sky-700 font-medium" id="li-preview-hashtags-${i}">${escapeHTML(turn.data.hashtags || '')}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-100 pt-1.5 flex items-center justify-between text-[10px] text-gray-500 font-semibold px-1">
+                        <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">Like</span>
+                        <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">Comment</span>
+                        <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">Repost</span>
+                        <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">Send</span>
+                    </div>
+                </div>
+            `;
+            
+        } else if (plat === 'instagram') {
+            outputContentHTML = `
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Caption visual text</span>
+                        <div id="ig-caption-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.caption || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Hashtags</span>
+                        <div id="ig-hashtags-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.hashtags || '')}</div>
+                    </div>
+                </div>
+            `;
+            
+            previewContentHTML = `
+                <div class="border border-gray-200 bg-white rounded-xl shadow-xs max-w-sm mx-auto font-sans text-left overflow-hidden">
+                    <div class="flex items-center justify-between p-2.5 border-b border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6.5 h-6.5 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-[9px]">
+                                {{ current_user.name[:2] }}
+                            </div>
+                            <span class="font-bold text-[10px] text-gray-900">${escapeHTML('{{ current_user.name }}'.toLowerCase().replace(" ", ""))}</span>
+                        </div>
+                        <span class="text-gray-500 font-bold tracking-widest text-[9px] cursor-pointer">•••</span>
+                    </div>
+
+                    <div class="w-full aspect-square bg-gradient-to-tr from-brand-peach/15 via-brand-softCream/30 to-brand-orange/10 border-b border-gray-100 flex flex-col items-center justify-center relative overflow-hidden group">
+                        <div class="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px]"></div>
+                        <div class="absolute w-20 h-20 bg-white/30 backdrop-blur-md rounded-full border border-white/40 flex items-center justify-center shadow-inner animate-pulse">
+                            <svg class="w-8 h-8 text-brand-orange" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316A2.192 2.192 0 0 0 14.502 4h-5c-.707 0-1.363.342-1.782.918l-.822 1.317Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                            </svg>
+                        </div>
+                        <span class="absolute bottom-3 text-[8px] font-extrabold uppercase tracking-widest text-brand-orange bg-white/60 border border-brand-border/40 px-2 py-0.5 rounded-full backdrop-blur-sm shadow-xs">Visual Draft Card</span>
+                    </div>
+
+                    <div class="flex items-center justify-between px-3 py-2 flex-shrink-0">
+                        <div class="flex items-center gap-3">
+                            <span class="cursor-pointer font-semibold text-gray-700">Like</span>
+                            <span class="cursor-pointer font-semibold text-gray-700">Comment</span>
+                            <span class="cursor-pointer font-semibold text-gray-700">Share</span>
+                        </div>
+                        <span class="cursor-pointer font-semibold text-gray-700">Save</span>
+                    </div>
+
+                    <div class="px-3 pb-2 text-[10px] leading-relaxed text-gray-800">
+                        <span class="font-bold text-gray-900 mr-1.5">${escapeHTML('{{ current_user.name }}'.toLowerCase().replace(" ", ""))}</span>
+                        <span id="ig-preview-caption-${i}" class="whitespace-pre-wrap">${escapeHTML(turn.data.caption || '')}</span>
+                        <div class="text-sky-800 font-semibold mt-1" id="ig-preview-hashtags-${i}">${escapeHTML(turn.data.hashtags || '')}</div>
+                    </div>
+                </div>
+            `;
+            
+        } else if (plat === 'x') {
+            outputContentHTML = `
+                <div class="space-y-2">
+                    <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider block mb-1">Thread Posts</span>
+                    <div class="space-y-2">
+                        ${(turn.data.thread || []).map((tweet, tweetIdx) => `
+                            <div class="p-3 bg-brand-cream/15 border border-brand-border/40 rounded-xl space-y-1 relative">
+                                <span class="absolute top-2 right-3 text-[9px] font-bold text-brand-textMuted">${tweetIdx+1}/${(turn.data.thread || []).length}</span>
+                                <div id="x-tweet-${i}-${tweetIdx}" contenteditable="true" class="text-brand-textDark whitespace-pre-wrap select-all font-medium pr-8 focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(tweet)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            previewContentHTML = `
+                <div class="space-y-3 max-w-lg mx-auto font-sans text-left">
+                    ${(turn.data.thread || []).map((tweet, tweetIdx) => `
+                        <div class="flex gap-2.5 relative">
+                            ${tweetIdx < (turn.data.thread || []).length - 1 ? `<div class="absolute left-4 top-8 bottom-0 w-0.5 bg-gray-200"></div>` : ''}
+                            <div class="relative z-10 flex-shrink-0">
+                                <div class="w-8 h-8 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-[10px]">
+                                    {{ current_user.name[:2] }}
+                                </div>
+                            </div>
+                            <div class="flex-grow pb-3">
+                                <div class="flex items-center gap-1 text-[10px]">
+                                    <span class="font-bold text-gray-900 hover:underline cursor-pointer">{{ current_user.name }}</span>
+                                    <span class="text-gray-500 font-normal">@${escapeHTML('{{ current_user.name }}'.toLowerCase().replace(" ", ""))}</span>
+                                    <span class="text-gray-400 font-normal">&bull; 1h</span>
+                                </div>
+                                <p class="text-[11px] text-gray-900 mt-0.5 whitespace-pre-wrap leading-relaxed" id="x-preview-tweet-${i}-${tweetIdx}">${escapeHTML(tweet)}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
             
         } else if (plat === 'blog') {
-            document.getElementById('preview-blog').classList.remove('hidden');
-            document.getElementById('blog-preview-title').innerText = lastGeneratedData.blog_title || '';
-            document.getElementById('blog-preview-intro').innerText = lastGeneratedData.blog_introduction || '';
-            document.getElementById('blog-preview-conclusion').innerText = lastGeneratedData.blog_conclusion || '';
-            document.getElementById('blog-preview-keywords').innerText = lastGeneratedData.blog_keywords || '';
+            outputContentHTML = `
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Blog Title</span>
+                        <div id="blog-title-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl font-bold text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.blog_title || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Introduction & Hook</span>
+                        <div id="blog-intro-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.blog_introduction || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Structured Outline Sections</span>
+                        <div class="space-y-2">
+                            ${(turn.data.blog_sections || []).map((sec, secIdx) => `
+                                <div class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl space-y-1">
+                                    <h5 id="blog-sec-heading-${i}-${secIdx}" contenteditable="true" class="font-bold text-[10px] text-brand-textDark focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(sec.heading || '')}</h5>
+                                    <div id="blog-sec-outline-${i}-${secIdx}" contenteditable="true" class="text-[10px] text-brand-textMuted whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(sec.outline || '')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">Conclusion</span>
+                        <div id="blog-conclusion-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.blog_conclusion || '')}</div>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-brand-orange uppercase tracking-wider">SEO Keywords</span>
+                        <div id="blog-keywords-${i}" contenteditable="true" class="p-2.5 bg-brand-cream/15 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none focus:ring-1 focus:ring-brand-orange/30">${escapeHTML(turn.data.blog_keywords || '')}</div>
+                    </div>
+                </div>
+            `;
             
-            const secContainer = document.getElementById('blog-preview-sections');
-            secContainer.innerHTML = '';
-            const sections = lastGeneratedData.blog_sections || [];
-            sections.forEach((s) => {
-                const sNode = document.createElement('div');
-                sNode.className = "space-y-1";
-                sNode.innerHTML = `
-                    <h2 class="text-xs font-sans font-bold text-gray-900 mt-3">${s.heading || ''}</h2>
-                    <p class="text-[11px] text-gray-700 whitespace-pre-wrap leading-relaxed">${s.outline || ''}</p>
-                `;
-                secContainer.appendChild(sNode);
-            });
+            previewContentHTML = `
+                <div class="border border-brand-border bg-white rounded-xl shadow-xs p-5 max-w-xl mx-auto font-serif text-left prose prose-sm text-gray-800 leading-relaxed text-[11px]">
+                    <h1 class="text-xs font-sans font-black text-gray-900 border-b border-gray-100 pb-2" id="blog-preview-title-${i}">${escapeHTML(turn.data.blog_title || '')}</h1>
+                    <div class="flex items-center gap-1.5 my-2 text-[9px] font-sans text-brand-textMuted">
+                        <div class="w-4 h-4 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange text-[8px] uppercase">
+                            {{ current_user.name[:2] }}
+                        </div>
+                        <span>Written by <span class="font-bold text-brand-textDark">{{ current_user.name }}</span></span>
+                        <span>&bull;</span>
+                        <span>3 min read</span>
+                    </div>
+                    <p class="italic text-[10px] text-gray-700 mb-2 bg-gray-50/50 p-2 rounded-lg border-l-3 border-brand-orange" id="blog-preview-intro-${i}">${escapeHTML(turn.data.blog_introduction || '')}</p>
+                    
+                    <div class="space-y-2 mt-2" id="blog-preview-sections-${i}">
+                        ${(turn.data.blog_sections || []).map((s, sIdx) => `
+                            <div class="space-y-0.5">
+                                <h2 class="text-[10px] font-sans font-bold text-gray-900 mt-2" id="blog-preview-sec-heading-${i}-${sIdx}">${escapeHTML(s.heading || '')}</h2>
+                                <p class="text-[10px] text-gray-700 whitespace-pre-wrap leading-relaxed" id="blog-preview-sec-outline-${i}-${sIdx}">${escapeHTML(s.outline || '')}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="mt-3 pt-2 border-t border-gray-100 whitespace-pre-wrap text-[10px] text-gray-600 bg-gray-50 p-2.5 rounded-xl font-sans font-medium" id="blog-preview-conclusion-${i}">${escapeHTML(turn.data.blog_conclusion || '')}</div>
+                    <div class="mt-2 text-[9px] font-sans text-brand-textMuted flex items-center gap-1">
+                        <span class="font-bold text-gray-900">Keywords:</span>
+                        <span id="blog-preview-keywords-${i}">${escapeHTML(turn.data.blog_keywords || '')}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 3. Assemble and Append Assistant bubble
+        const assistantBubble = document.createElement('div');
+        assistantBubble.className = "flex justify-start w-full animate-fade-in";
+        assistantBubble.innerHTML = `
+            <div class="w-full rounded-2xl rounded-tl-none p-5 bg-white/40 border border-brand-border/60 backdrop-blur-md shadow-xs space-y-4">
+                <!-- Turn Header: Badges & Actions -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-border/30 pb-3">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <!-- Source Badge -->
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border ${isApi ? 'border-green-200 bg-green-50 text-green-700' : 'border-orange-200 bg-orange-50 text-orange-700'} text-[9px] font-bold">
+                            ${isApi ? 'Engine: Groq API Active' : 'Engine: Inbuilt Copy Simulator'}
+                        </span>
+                        <!-- Similarity Badge (if present) -->
+                        ${similarityBadgeHTML}
+                    </div>
+                    <!-- Actions -->
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="copyTurnDraft(${i})" class="px-2.5 py-1.5 border border-brand-border/60 hover:border-brand-orange bg-white rounded-lg text-[10px] font-bold text-brand-textDark flex items-center gap-1 transition-all active:scale-95">
+                            Copy Draft
+                        </button>
+                        <button type="button" id="save-btn-${i}" onclick="saveTurnDraft(${i})" class="px-2.5 py-1.5 bg-brand-orange hover:bg-brand-darkOrange text-white rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95">
+                            Save to Memory
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs and Score Widget -->
+                <div class="flex items-center justify-between border-b border-brand-border/20 pb-3">
+                    <!-- Toggle Tabs for this turn -->
+                    <div class="flex bg-brand-softCream/30 border border-brand-border/60 rounded-lg p-0.5">
+                        <button type="button" id="tab-raw-${i}" onclick="switchTurnTab(${i}, 'raw')" class="px-2.5 py-1 text-[10px] font-bold text-brand-orange bg-white rounded-md shadow-xs transition-all focus:outline-none">
+                            Raw Editor
+                        </button>
+                        <button type="button" id="tab-preview-${i}" onclick="switchTurnTab(${i}, 'preview')" class="px-2.5 py-1 text-[10px] font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none">
+                            Feed Preview
+                        </button>
+                    </div>
+                    
+                    <!-- Score Mini-widget -->
+                    <div class="flex items-center gap-2">
+                        <div class="text-right">
+                            <div class="text-[9px] text-brand-textMuted font-bold uppercase tracking-wider leading-none">Impression Forecast</div>
+                            <div class="text-[10px] font-black text-brand-orange mt-0.5 ${scoreColorClass}">${turn.analysis.score}/100 (${turn.analysis.readability})</div>
+                        </div>
+                        <div class="relative w-9 h-9 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-brand-border/40" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="transition-all duration-500 ease-out ${progressColorClass}" stroke="currentColor" stroke-width="3.5" stroke-dasharray="${turn.analysis.score}, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span class="absolute text-[10px] font-black ${scoreColorClass}">${turn.analysis.score}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rendered Output Draft Box (Raw Editor) -->
+                <div id="output-box-${i}" class="text-xs space-y-3">
+                    ${outputContentHTML}
+                </div>
+
+                <!-- Simulated Feed Preview Box -->
+                <div id="preview-box-${i}" class="hidden text-xs">
+                    ${previewContentHTML}
+                </div>
+
+                <!-- Suggestions Dropdown (Forecast Checklist) -->
+                <div class="border-t border-brand-border/20 pt-3 space-y-2">
+                    <button type="button" onclick="toggleTurnChecklist(${i})" class="w-full flex items-center justify-between text-[10px] font-bold text-brand-textDark focus:outline-none">
+                        <span class="flex items-center gap-1 text-brand-orange">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+                            Optimization Recommendations (${turn.analysis.feedback.length})
+                        </span>
+                        <svg id="arrow-${i}" class="w-3.5 h-3.5 text-brand-textMuted transition-transform duration-200 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="checklist-${i}" class="pt-1.5 space-y-1 text-[10px] text-brand-textMuted max-h-[80px] overflow-y-auto custom-scrollbar">
+                        ${feedbackChecklistHTML}
+                    </div>
+                </div>
+            </div>
+        `;
+        chatContainer.appendChild(assistantBubble);
+        
+        // Add real-time editing sync event listeners
+        setupEditingSync(turn);
+        
+        // Scroll container to bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function switchTurnTab(turnIndex, tab) {
+        const turn = conversationHistory[turnIndex];
+        if (!turn) return;
+        
+        turn.activeTab = tab;
+        const rawBtn = document.getElementById(`tab-raw-${turnIndex}`);
+        const prevBtn = document.getElementById(`tab-preview-${turnIndex}`);
+        const outputBox = document.getElementById(`output-box-${turnIndex}`);
+        const previewBox = document.getElementById(`preview-box-${turnIndex}`);
+        
+        if (tab === 'raw') {
+            rawBtn.className = "px-2.5 py-1 text-[10px] font-bold text-brand-orange bg-white rounded-md shadow-xs transition-all focus:outline-none";
+            prevBtn.className = "px-2.5 py-1 text-[10px] font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none";
+            outputBox.classList.remove('hidden');
+            previewBox.classList.add('hidden');
+        } else {
+            prevBtn.className = "px-2.5 py-1 text-[10px] font-bold text-brand-orange bg-white rounded-md shadow-xs transition-all focus:outline-none";
+            rawBtn.className = "px-2.5 py-1 text-[10px] font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none";
+            outputBox.classList.add('hidden');
+            previewBox.classList.remove('hidden');
         }
     }
-    
-    function expandLinkedInPreview() {
-        document.getElementById('li-preview-dots').classList.add('hidden');
-        document.getElementById('li-preview-body-cta-hashtags').classList.remove('hidden');
+
+    function toggleTurnChecklist(turnIndex) {
+        const arrow = document.getElementById(`arrow-${turnIndex}`);
+        const content = document.getElementById(`checklist-${turnIndex}`);
+        if (content.classList.contains('hidden')) {
+            arrow.classList.add('rotate-180');
+            content.classList.remove('hidden');
+        } else {
+            arrow.classList.remove('rotate-180');
+            content.classList.add('hidden');
+        }
+    }
+
+    function expandTurnLinkedIn(turnIndex) {
+        document.getElementById(`dots-${turnIndex}`).classList.add('hidden');
+        document.getElementById(`full-text-${turnIndex}`).classList.remove('hidden');
+    }
+
+    function copyTurnDraft(turnIndex) {
+        const turn = conversationHistory[turnIndex];
+        if (!turn) return;
+        
+        let textToCopy = "";
+        const plat = turn.platform.toLowerCase();
+        const data = turn.data;
+        
+        if (plat === 'linkedin') {
+            textToCopy = `${data.hook || ''}\n\n${data.body || ''}\n\n${data.cta || ''}\n\n${data.hashtags || ''}`;
+        } else if (plat === 'instagram') {
+            textToCopy = `${data.caption || ''}\n\n${data.hashtags || ''}`;
+        } else if (plat === 'x') {
+            textToCopy = (data.thread || []).join('\n\n---\n\n');
+        } else if (plat === 'blog') {
+            let sectionsText = (data.blog_sections || []).map(s => `${s.heading}\n${s.outline}`).join('\n\n');
+            textToCopy = `# ${data.blog_title}\n\n${data.blog_introduction}\n\n${sectionsText}\n\n${data.blog_conclusion}\n\nKeywords: ${data.blog_keywords}`;
+        }
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast(`${turn.platform} post copied to clipboard!`, 'success');
+        }).catch(err => {
+            console.error(err);
+            showToast('Failed to copy text.', 'danger');
+        });
+    }
+
+    function saveTurnDraft(turnIndex) {
+        const turn = conversationHistory[turnIndex];
+        if (!turn) return;
+        
+        const saveBtn = document.getElementById(`save-btn-${turnIndex}`);
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Saving...";
+        
+        const formData = new FormData();
+        formData.append('topic', turn.userPrompt);
+        formData.append('platform', turn.platform);
+        formData.append('content', JSON.stringify(turn.data));
+        
+        fetch("{{ url_for('content.save_draft') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+            if (data.success) {
+                showToast("Post draft cataloged in Creator Memory!", "success");
+            } else {
+                showToast(data.error || "Failed to save draft.", "danger");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+            showToast("Server error saving draft.", "danger");
+        });
+    }
+
+    function setupEditingSync(turn) {
+        const i = turn.turnIndex;
+        const plat = turn.platform.toLowerCase();
+        
+        if (plat === 'linkedin') {
+            const hookEl = document.getElementById(`li-hook-${i}`);
+            const bodyEl = document.getElementById(`li-body-${i}`);
+            const ctaEl = document.getElementById(`li-cta-${i}`);
+            const hashtagsEl = document.getElementById(`li-hashtags-${i}`);
+            
+            const update = () => {
+                turn.data.hook = hookEl.innerText;
+                turn.data.body = bodyEl.innerText;
+                turn.data.cta = ctaEl.innerText;
+                turn.data.hashtags = hashtagsEl.innerText;
+                
+                const prevHook = document.getElementById(`li-preview-hook-${i}`);
+                const prevBody = document.getElementById(`li-preview-body-${i}`);
+                const prevCta = document.getElementById(`li-preview-cta-${i}`);
+                const prevHashtags = document.getElementById(`li-preview-hashtags-${i}`);
+                if (prevHook) prevHook.innerText = turn.data.hook;
+                if (prevBody) prevBody.innerText = turn.data.body;
+                if (prevCta) prevCta.innerText = turn.data.cta;
+                if (prevHashtags) prevHashtags.innerText = turn.data.hashtags;
+            };
+            
+            [hookEl, bodyEl, ctaEl, hashtagsEl].forEach(el => {
+                if (el) el.addEventListener('input', update);
+            });
+            
+        } else if (plat === 'instagram') {
+            const captionEl = document.getElementById(`ig-caption-${i}`);
+            const hashtagsEl = document.getElementById(`ig-hashtags-${i}`);
+            
+            const update = () => {
+                turn.data.caption = captionEl.innerText;
+                turn.data.hashtags = hashtagsEl.innerText;
+                
+                const prevCaption = document.getElementById(`ig-preview-caption-${i}`);
+                const prevHashtags = document.getElementById(`ig-preview-hashtags-${i}`);
+                if (prevCaption) prevCaption.innerText = turn.data.caption;
+                if (prevHashtags) prevHashtags.innerText = turn.data.hashtags;
+            };
+            
+            [captionEl, hashtagsEl].forEach(el => {
+                if (el) el.addEventListener('input', update);
+            });
+            
+        } else if (plat === 'x') {
+            const tweetCount = (turn.data.thread || []).length;
+            for (let tweetIdx = 0; tweetIdx < tweetCount; tweetIdx++) {
+                const tweetEl = document.getElementById(`x-tweet-${i}-${tweetIdx}`);
+                if (tweetEl) {
+                    tweetEl.addEventListener('input', () => {
+                        turn.data.thread[tweetIdx] = tweetEl.innerText;
+                        const prevTweet = document.getElementById(`x-preview-tweet-${i}-${tweetIdx}`);
+                        if (prevTweet) prevTweet.innerText = tweetEl.innerText;
+                    });
+                }
+            }
+            
+        } else if (plat === 'blog') {
+            const titleEl = document.getElementById(`blog-title-${i}`);
+            const introEl = document.getElementById(`blog-intro-${i}`);
+            const conclusionEl = document.getElementById(`blog-conclusion-${i}`);
+            const keywordsEl = document.getElementById(`blog-keywords-${i}`);
+            
+            const update = () => {
+                turn.data.blog_title = titleEl.innerText;
+                turn.data.blog_introduction = introEl.innerText;
+                turn.data.blog_conclusion = conclusionEl.innerText;
+                turn.data.blog_keywords = keywordsEl.innerText;
+                
+                const prevTitle = document.getElementById(`blog-preview-title-${i}`);
+                const prevIntro = document.getElementById(`blog-preview-intro-${i}`);
+                const prevConclusion = document.getElementById(`blog-preview-conclusion-${i}`);
+                const prevKeywords = document.getElementById(`blog-preview-keywords-${i}`);
+                if (prevTitle) prevTitle.innerText = turn.data.blog_title;
+                if (prevIntro) prevIntro.innerText = turn.data.blog_introduction;
+                if (prevConclusion) prevConclusion.innerText = turn.data.blog_conclusion;
+                if (prevKeywords) prevKeywords.innerText = turn.data.blog_keywords;
+            };
+            
+            [titleEl, introEl, conclusionEl, keywordsEl].forEach(el => {
+                if (el) el.addEventListener('input', update);
+            });
+            
+            const sectionCount = (turn.data.blog_sections || []).length;
+            for (let secIdx = 0; secIdx < sectionCount; secIdx++) {
+                const headingEl = document.getElementById(`blog-sec-heading-${i}-${secIdx}`);
+                const outlineEl = document.getElementById(`blog-sec-outline-${i}-${secIdx}`);
+                
+                const updateSec = () => {
+                    turn.data.blog_sections[secIdx].heading = headingEl.innerText;
+                    turn.data.blog_sections[secIdx].outline = outlineEl.innerText;
+                    
+                    const prevSecHeading = document.getElementById(`blog-preview-sec-heading-${i}-${secIdx}`);
+                    const prevSecOutline = document.getElementById(`blog-preview-sec-outline-${i}-${secIdx}`);
+                    if (prevSecHeading) prevSecHeading.innerText = headingEl.innerText;
+                    if (prevSecOutline) prevSecOutline.innerText = outlineEl.innerText;
+                };
+                
+                if (headingEl) headingEl.addEventListener('input', updateSec);
+                if (outlineEl) outlineEl.addEventListener('input', updateSec);
+            }
+        }
     }
 
     // -------------------------------------------------------------
@@ -661,7 +909,7 @@
     }
 
     function submitRefinement() {
-        if (!lastGeneratedData) return;
+        if (conversationHistory.length === 0) return;
         
         const promptInput = document.getElementById('refinement-prompt');
         const refinementPrompt = promptInput.value.trim();
@@ -682,13 +930,20 @@
         loader.classList.remove('hidden');
         
         const topic = document.getElementById('prompt').value.trim();
+        const lastTurn = conversationHistory[conversationHistory.length - 1];
         
         const formData = new FormData();
-        formData.append('current_draft', JSON.stringify(lastGeneratedData));
+        formData.append('current_draft', JSON.stringify(lastTurn.data));
         formData.append('refinement_prompt', refinementPrompt);
         formData.append('platform', activePlatform);
         formData.append('tone', activeTone);
         formData.append('topic', topic);
+        
+        // Pass selected document IDs
+        const selectedDocInputs = document.querySelectorAll('input[name="document_ids"]:checked');
+        selectedDocInputs.forEach(input => {
+            formData.append('document_ids', input.value);
+        });
         
         fetch("{{ url_for('content.refine') }}", {
             method: "POST",
@@ -706,58 +961,23 @@
             }
             
             promptInput.value = '';
-            lastGeneratedData = response.data;
             
-            // Re-render UI
-            updateScoreAndChecklist(response.analysis);
+            // Build the turn object
+            const turnIndex = conversationHistory.length;
+            const turn = {
+                turnIndex: turnIndex,
+                userPrompt: refinementPrompt,
+                type: "refine",
+                platform: activePlatform,
+                tone: activeTone,
+                data: response.data,
+                analysis: response.analysis,
+                similarity: null,
+                activeTab: 'raw'
+            };
             
-            // Rerender Raw view contents
-            const plat = activePlatform.toLowerCase();
-            if (plat === 'linkedin') {
-                document.getElementById('li-hook').innerText = response.data.hook || '';
-                document.getElementById('li-body').innerText = response.data.body || '';
-                document.getElementById('li-cta').innerText = response.data.cta || '';
-                document.getElementById('li-hashtags').innerText = response.data.hashtags || '';
-            } else if (plat === 'instagram') {
-                document.getElementById('ig-caption').innerText = response.data.caption || '';
-                document.getElementById('ig-hashtags').innerText = response.data.hashtags || '';
-            } else if (plat === 'x') {
-                const threadBox = document.getElementById('x-thread-container');
-                threadBox.innerHTML = '';
-                const tweets = response.data.thread || [];
-                tweets.forEach((tweet, index) => {
-                    const tweetDiv = document.createElement('div');
-                    tweetDiv.className = 'p-4 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1 relative';
-                    tweetDiv.innerHTML = `
-                        <span class="absolute top-2.5 right-4 text-[10px] font-bold text-brand-textMuted">${index+1}/${tweets.length}</span>
-                        <p class="text-brand-textDark whitespace-pre-wrap select-all font-medium pr-8">${tweet}</p>
-                    `;
-                    threadBox.appendChild(tweetDiv);
-                });
-            } else if (plat === 'blog') {
-                document.getElementById('blog-title').innerText = response.data.blog_title || '';
-                document.getElementById('blog-intro').innerText = response.data.blog_introduction || '';
-                document.getElementById('blog-conclusion').innerText = response.data.blog_conclusion || '';
-                document.getElementById('blog-keywords').innerText = response.data.blog_keywords || '';
-                
-                const sectionsBox = document.getElementById('blog-sections-container');
-                sectionsBox.innerHTML = '';
-                const sections = response.data.blog_sections || [];
-                sections.forEach((sec) => {
-                    const secDiv = document.createElement('div');
-                    secDiv.className = 'p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1';
-                    secDiv.innerHTML = `
-                        <h5 class="font-bold text-xs text-brand-textDark">${sec.heading || ''}</h5>
-                        <p class="text-xs text-brand-textMuted whitespace-pre-wrap select-all">${sec.outline || ''}</p>
-                    `;
-                    sectionsBox.appendChild(secDiv);
-                });
-            }
-            
-            // Update feed preview in case user is on Feed Preview tab
-            if (currentCanvasTab === 'preview') {
-                renderFeedPreview();
-            }
+            conversationHistory.push(turn);
+            appendTurnToUI(turn);
             
             showToast("Draft refined by Canvas Co-Pilot!", "success");
         })
@@ -771,132 +991,153 @@
     }
 
     // -------------------------------------------------------------
-    // AI Impression Forecast Metrics checklist logic
+    // Reference Documents AJAX Handlers
     // -------------------------------------------------------------
-    function updateScoreAndChecklist(analysis) {
-        if (!analysis) return;
-        
-        document.getElementById('forecast-checklist-container').classList.remove('hidden');
-        document.getElementById('score-text').innerText = `Score: ${analysis.score}/100 (${analysis.readability})`;
-        
-        const progressBar = document.getElementById('score-progress-bar');
-        const scoreText = document.getElementById('score-circle-text');
-        
-        // Update circular progress dasharray
-        progressBar.setAttribute('stroke-dasharray', `${analysis.score}, 100`);
-        scoreText.innerText = analysis.score;
-        
-        // Color coding classes for SVG paths and texts
-        progressBar.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500', 'text-brand-orange');
-        scoreText.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600', 'text-brand-orange');
-        
-        if (analysis.score >= 80) {
-            progressBar.classList.add('text-green-500');
-            scoreText.classList.add('text-green-600');
-            document.getElementById('score-text').className = "text-xs font-black text-green-600 mt-0.5";
-        } else if (analysis.score >= 50) {
-            progressBar.classList.add('text-yellow-500');
-            scoreText.classList.add('text-yellow-600');
-            document.getElementById('score-text').className = "text-xs font-black text-yellow-600 mt-0.5";
-        } else {
-            progressBar.classList.add('text-red-500');
-            scoreText.classList.add('text-red-600');
-            document.getElementById('score-text').className = "text-xs font-black text-red-600 mt-0.5";
+    function loadDocuments() {
+        fetch("{{ url_for('content.list_documents') }}")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    renderDocumentsList(data.documents);
+                }
+            })
+            .catch(err => console.error("Error loading documents:", err));
+    }
+
+    function renderDocumentsList(documents) {
+        const list = document.getElementById('uploaded-documents-list');
+        list.innerHTML = '';
+        if (documents.length === 0) {
+            list.innerHTML = `<div class="text-[10px] text-brand-textMuted py-2 italic text-center">No reference documents uploaded.</div>`;
+            return;
         }
         
-        const listContent = document.getElementById('forecast-checklist-content');
-        listContent.innerHTML = '';
-        analysis.feedback.forEach(item => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = "flex items-start gap-1 py-0.5 leading-relaxed";
-            itemDiv.innerText = item;
-            listContent.appendChild(itemDiv);
+        documents.forEach(doc => {
+            const item = document.createElement('div');
+            item.className = "flex items-center justify-between p-2 rounded-xl bg-white/40 border border-brand-border/60 text-xs backdrop-blur-sm transition-all hover:bg-white/60 hover:-translate-y-0.5 duration-200 shadow-xs";
+            item.innerHTML = `
+                <div class="flex items-center gap-2 overflow-hidden flex-grow mr-2">
+                    <input type="checkbox" name="document_ids" value="${doc.id}" checked class="rounded border-brand-border text-brand-orange focus:ring-brand-orange/40">
+                    <span class="font-semibold text-brand-textDark truncate" title="${escapeHTML(doc.filename)}">${escapeHTML(doc.filename)}</span>
+                </div>
+                <button type="button" onclick="deleteDocument(${doc.id})" class="p-1 text-brand-textMuted hover:text-red-500 transition-colors flex-shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
+            `;
+            list.appendChild(item);
         });
-        
-        // Open the suggestions checklist automatically when score changes
-        const arrow = document.getElementById('checklist-arrow');
-        const content = document.getElementById('forecast-checklist-content');
-        isChecklistOpen = true;
-        arrow.classList.add('rotate-180');
-        content.classList.remove('hidden');
-    }
-    
-    let isChecklistOpen = false;
-    function toggleForecastChecklist() {
-        const arrow = document.getElementById('checklist-arrow');
-        const content = document.getElementById('forecast-checklist-content');
-        isChecklistOpen = !isChecklistOpen;
-        if (isChecklistOpen) {
-            arrow.classList.add('rotate-180');
-            content.classList.remove('hidden');
-        } else {
-            arrow.classList.remove('rotate-180');
-            content.classList.add('hidden');
-        }
     }
 
-
-    // Copy Current Draft Content to clipboard
-    function copyCurrentCanvas() {
-        if (!lastGeneratedData) return;
+    function deleteDocument(docId) {
+        if (!confirm("Are you sure you want to delete this document reference?")) return;
         
-        let textToCopy = "";
-        const plat = activePlatform.toLowerCase();
-        
-        if (plat === 'linkedin') {
-            textToCopy = `${lastGeneratedData.hook}\n\n${lastGeneratedData.body}\n\n${lastGeneratedData.cta}\n\n${lastGeneratedData.hashtags}`;
-        } else if (plat === 'instagram') {
-            textToCopy = `${lastGeneratedData.caption}\n\n${lastGeneratedData.hashtags}`;
-        } else if (plat === 'x') {
-            textToCopy = (lastGeneratedData.thread || []).join('\n\n---\n\n');
-        } else if (plat === 'blog') {
-            let sectionsText = (lastGeneratedData.blog_sections || []).map(s => `${s.heading}\n${s.outline}`).join('\n\n');
-            textToCopy = `# ${lastGeneratedData.blog_title}\n\n${lastGeneratedData.blog_introduction}\n\n${sectionsText}\n\n${lastGeneratedData.blog_conclusion}\n\nKeywords: ${lastGeneratedData.blog_keywords}`;
-        }
-        
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            showToast(`${activePlatform} post copied to clipboard!`, 'success');
-        }).catch(err => {
+        fetch(`/delete-document/${docId}`, {
+            method: "DELETE"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showToast("Document reference deleted.", "success");
+                loadDocuments();
+            } else {
+                showToast(data.error || "Failed to delete document.", "danger");
+            }
+        })
+        .catch(err => {
             console.error(err);
-            showToast('Failed to copy text.', 'danger');
+            showToast("Error deleting document.", "danger");
         });
     }
 
-    // Save current generated draft to DB (Creator Memory)
-    document.getElementById('save-draft-btn').addEventListener('click', () => {
-        if (!lastGeneratedData) return;
+    function setupDropzone() {
+        const dropzone = document.getElementById('document-dropzone');
+        const fileInput = document.getElementById('document-file-input');
         
-        const topic = document.getElementById('prompt').value.trim();
-        const saveBtn = document.getElementById('save-draft-btn');
+        dropzone.addEventListener('click', () => fileInput.click());
         
-        saveBtn.disabled = true;
-        saveBtn.innerText = "Saving...";
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+                fileInput.value = ''; // Reset
+            }
+        });
+    }
+
+    function handleFileUpload(file) {
+        const dropzone = document.getElementById('document-dropzone');
+        const originalHTML = dropzone.innerHTML;
+        
+        if (file.size > 10 * 1024 * 1024) {
+            showToast("File size exceeds 10MB limit.", "warning");
+            return;
+        }
+        
+        // Show spinner
+        dropzone.innerHTML = `
+            <div class="flex flex-col items-center justify-center space-y-2 py-2">
+                <div class="w-6 h-6 rounded-full border-2 border-brand-softCream border-t-brand-orange animate-spin"></div>
+                <p class="text-[11px] text-brand-textDark font-bold">Uploading & parsing document...</p>
+            </div>
+        `;
+        dropzone.style.pointerEvents = 'none';
         
         const formData = new FormData();
-        formData.append('topic', topic);
-        formData.append('platform', activePlatform);
-        formData.append('content', JSON.stringify(lastGeneratedData));
+        formData.append('file', file);
         
-        fetch("{{ url_for('content.save_draft') }}", {
+        fetch("{{ url_for('content.upload_document') }}", {
             method: "POST",
             body: formData
         })
         .then(res => res.json())
         .then(data => {
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = `<span>Save to Memory</span>`;
+            dropzone.innerHTML = originalHTML;
+            dropzone.style.pointerEvents = 'auto';
             if (data.success) {
-                showToast("Post draft cataloged in Creator Memory!", "success");
+                showToast("Document uploaded successfully!", "success");
+                loadDocuments();
             } else {
-                showToast(data.error || "Failed to save draft.", "danger");
+                showToast(data.error || "Failed to upload document.", "danger");
             }
         })
         .catch(err => {
             console.error(err);
-            saveBtn.disabled = false;
-            saveBtn.innerHTML = `<span>Save to Memory</span>`;
-            showToast("Server error saving draft.", "danger");
+            dropzone.innerHTML = originalHTML;
+            dropzone.style.pointerEvents = 'auto';
+            showToast("Error uploading document.", "danger");
         });
-    });
+    }
+
+    // Escape HTML helper
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>'"]/g, 
+            tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag] || tag)
+        );
+    }
 </script>
 {% endblock %}

@@ -16,7 +16,7 @@ def get_groq_client_headers():
         "Content-Type": "application/json"
     }
 
-def generate_post(goal, niche, platform, tone, prompt, memory_context=None, creator_type=None, target_audience=None, niche_details=None):
+def generate_post(goal, niche, platform, tone, prompt, memory_context=None, creator_type=None, target_audience=None, niche_details=None, document_context=None):
     """
     Generates structured content using Groq API, with a premium copywriting focus.
     If the API key is not configured or fails, it defaults to a high-quality fallback generator.
@@ -37,7 +37,8 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
         "   - Storytelling: Vulnerable, personal, starts in the middle of the action, shares lessons from mistakes.\n"
         "   - Educational: Actionable listicles, step-by-step blueprints, checklists, immediate value.\n"
         "   - Casual: Relatable, friendly, punchy, conversational, no buzzwords.\n"
-        "6. Never use AI clichés like 'delve', 'testament', 'revolutionize', 'tapestry', 'delve deep'.\n\n"
+        "6. Never use AI clichés like 'delve', 'testament', 'revolutionize', 'tapestry', 'delve deep'.\n"
+        "7. Strictly avoid using any emojis in the content to maintain maximum professionalism.\n\n"
         "If the target network is 'Blog', generate a JSON object matching this structure EXACTLY:\n"
         "{\n"
         '  "blog_title": "An SEO-optimized, highly click-worthy blog title targeting the audience",\n'
@@ -57,7 +58,7 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
         '  "cta": "An engaging, low-friction call-to-action to maximize comments/shares",\n'
         '  "hashtags": "3-5 relevant, high-impact hashtags",\n'
         '  "caption": "Short visual-focused caption for Instagram only",\n'
-        '  "thread": ["1/ [First tweet - Hook & outline of the thread] 👇", "2/ [Second tweet - Main value point 1]", "3/ [Third tweet - Value point 2]", "4/ [Fourth tweet - CTA and wrap-up]"]\n'
+        '  "thread": ["1/ [First tweet - Hook & outline of the thread] [No Emoji]", "2/ [Second tweet - Main value point 1]", "3/ [Third tweet - Value point 2]", "4/ [Fourth tweet - CTA and wrap-up]"]\n'
         "}\n\n"
         "Do not include any markdown framing outside the JSON, markdown code block backticks (like ```json), or explanatory text. Return raw JSON."
     )
@@ -78,6 +79,8 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
         user_prompt += f"Specific Expertise context: {niche_details}\n"
     if memory_context:
         user_prompt += f"\nCreator Memory Context (Avoid these exact angles or hooks to keep content fresh):\n{memory_context}\n"
+    if document_context:
+        user_prompt += f"\nReference Context / Source Material (Analyse and incorporate details from this content):\n{document_context}\n"
         
     if headers:
         try:
@@ -108,11 +111,11 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
                 current_app.logger.warning(f"Groq API call failed: {e}. Falling back to generator simulator.")
             
     # Fallback high-quality simulation
-    fallback_data = get_fallback_generation(goal, niche, platform, tone, prompt, creator_type, target_audience)
+    fallback_data = get_fallback_generation(goal, niche, platform, tone, prompt, creator_type, target_audience, document_context)
     fallback_data["_source"] = "fallback"
     return fallback_data
 
-def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=None, target_audience=None):
+def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=None, target_audience=None, document_context=None):
     """
     Generates premium-level realistic creator content templates dynamically when Groq is unavailable.
     It builds high-impression copy using real copywriting formulas (PAS, Hook-Insight, Contrarian).
@@ -136,7 +139,9 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
             f"As a {creator} targeting {audience}, building consistency in {primary_niche} is the highest leverage move you can make. "
             f"Here is the exact step-by-step framework to transition from chasing impressions to building authentic authority."
         )
-        
+        if document_context:
+            intro += "\n\nNote: Content outline aligned using reference documents."
+            
         sections = [
             {
                 "heading": f"1. The Core Paradigm Shift in {primary_niche}",
@@ -222,7 +227,9 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
     }
     
     selected_body = bodies.get(tone, bodies["Professional"])
-    
+    if document_context:
+        selected_body += "\n\nNote: Copy aligned with uploaded document insights."
+        
     # Call-to-actions based on goal
     ctas = {
         "Get a Job": f"Recruiters: what is the first thing you look for on a candidate's profile? Let me know below.",
@@ -241,7 +248,7 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
     
     # Thread formatting for X
     thread = [
-        f"🧵 {selected_hook.splitlines()[0]} 👇",
+        f"[Thread] {selected_hook.splitlines()[0]}",
         f"1/ Most advice about {clean_prompt} is generic.\n\nIf you want to reach {audience}, stop copying trends. Share actual blueprints, projects, or mistakes from {primary_niche}.",
         f"2/ Keep it structured.\n\nUse bullet points, focus on high-impact insights, and write simple lines. People read on their phones—whitespace matters.",
         f"3/ Stay consistent.\n\nIf you want to {goal.lower()}, you need to compound your efforts. Pick a weekly target and stick to it.",
@@ -250,9 +257,9 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
     
     # Instagram Caption
     caption = (
-        f"💡 {clean_prompt} - the honest breakdown.\n\n"
+        f"Topic Breakdown: {clean_prompt}.\n\n"
         f"If you are aiming to {goal.lower()} as a {creator}, bookmark this post right now.\n\n"
-        f"Double tap if this resonates! ❤️"
+        f"Double tap if this resonates!"
     )
     
     return {

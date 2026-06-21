@@ -135,7 +135,11 @@
             <!-- Chat Header -->
             <div class="bg-gradient-to-r from-brand-orange to-brand-peach/80 p-4 text-white flex items-center justify-between shadow-sm flex-shrink-0">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center font-black text-xs select-none">🤖</div>
+                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-white flex-shrink-0 select-none">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
                     <div>
                         <h4 class="font-extrabold text-sm tracking-tight leading-none">CreatorOS Co-Pilot</h4>
                         <div class="flex items-center gap-1 mt-1">
@@ -160,16 +164,24 @@
             <div id="copilot-message-box" class="flex-grow p-4 overflow-y-auto space-y-3.5 custom-scrollbar text-xs bg-brand-cream/10 flex flex-col">
                 <!-- Welcome Message -->
                 <div class="flex gap-2.5 items-start max-w-[85%] self-start" id="welcome-message-node">
-                    <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                    <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center text-brand-orange flex-shrink-0 select-none">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
                     <div class="p-3 bg-white border border-brand-border/60 rounded-2xl rounded-tl-none shadow-xs leading-relaxed text-brand-textDark font-medium">
-                        Hello! I am your <strong>CreatorOS Co-Pilot</strong> assistant. Ask me anything about creating content, scheduling drafts on the Content Calendar, tracking streaks, or settings updates! 🚀
+                        Hello! I am your <strong>CreatorOS Co-Pilot</strong> assistant. Ask me anything about creating content, scheduling drafts on the Content Calendar, tracking streaks, or settings updates!
                     </div>
                 </div>
             </div>
             
             <!-- Typing Indicator (Hidden by default) -->
             <div id="copilot-typing-indicator" class="px-4 py-2.5 flex gap-2.5 items-center text-brand-textMuted bg-brand-softCream/10 border-t border-brand-border/10 hidden flex-shrink-0">
-                <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center text-brand-orange flex-shrink-0 select-none">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                    </svg>
+                </div>
                 <div class="flex items-center gap-1.5 bg-white border border-brand-border/40 rounded-2xl py-1.5 px-3 shadow-xs text-[10px]">
                     <span class="font-bold text-brand-orange leading-none">Co-Pilot is drafting</span>
                     <div class="flex gap-0.5 mt-0.5">
@@ -250,7 +262,11 @@
             if (role === 'assistant') {
                 node.className = "flex gap-2.5 items-start max-w-[85%] self-start animate-[slide-in_0.2s_ease-out] mb-1.5";
                 node.innerHTML = `
-                    <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                    <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center text-brand-orange flex-shrink-0 select-none">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                        </svg>
+                    </div>
                     <div class="p-3 bg-white border border-brand-border/60 rounded-2xl rounded-tl-none shadow-xs leading-relaxed text-brand-textDark font-medium text-[11px] whitespace-pre-wrap">${text}</div>
                 `;
             } else {
@@ -310,9 +326,13 @@
                 const box = document.getElementById('copilot-message-box');
                 box.innerHTML = `
                     <div class="flex gap-2.5 items-start max-w-[85%] self-start" id="welcome-message-node">
-                        <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                        <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center text-brand-orange flex-shrink-0 select-none">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                            </svg>
+                        </div>
                         <div class="p-3 bg-white border border-brand-border/60 rounded-2xl rounded-tl-none shadow-xs leading-relaxed text-brand-textDark font-medium">
-                            Hello! I am your <strong>CreatorOS Co-Pilot</strong> assistant. Ask me anything about creating content, scheduling drafts on the Content Calendar, tracking streaks, or settings updates! 🚀
+                            Hello! I am your <strong>CreatorOS Co-Pilot</strong> assistant. Ask me anything about creating content, scheduling drafts on the Content Calendar, tracking streaks, or settings updates!
                         </div>
                     </div>
                 `;

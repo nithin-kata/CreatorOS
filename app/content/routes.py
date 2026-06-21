@@ -2,11 +2,46 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 import json
 import requests
-from app.models import db, Content, Activity
+import io
+from app.models import db, Content, Activity, Document
 from app.services import groq_service, memory_service, analyzer_service
 from app.dashboard.routes import log_activity
 
 content = Blueprint('content', __name__)
+
+def extract_text_from_file(file_stream, filename):
+    ext = filename.split('.')[-1].lower()
+    if ext in ['txt', 'md', 'csv', 'json', 'xml', 'html']:
+        return file_stream.read().decode('utf-8', errors='ignore')
+    elif ext == 'pdf':
+        try:
+            import pypdf
+            pdf_bytes = file_stream.read()
+            reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
+            text = ""
+            for page in reader.pages:
+                text += page.extract_text() or ""
+            return text
+        except Exception as e:
+            print(f"Error parsing PDF: {e}")
+            return f"[Error parsing PDF content: {e}]"
+    elif ext == 'docx':
+        try:
+            import docx
+            doc_bytes = file_stream.read()
+            doc = docx.Document(io.BytesIO(doc_bytes))
+            text = []
+            for paragraph in doc.paragraphs:
+                text.append(paragraph.text)
+            return "\n".join(text)
+        except Exception as e:
+            print(f"Error parsing DOCX: {e}")
+            return f"[Error parsing DOCX content: {e}]"
+    else:
+        try:
+            return file_stream.read().decode('utf-8', errors='ignore')
+        except Exception:
+            return ""
 
 @content.route('/generate', methods=['GET', 'POST'])
 @login_required
@@ -18,6 +53,7 @@ def generate():
         prompt = request.form.get('prompt')
         platform = request.form.get('platform')
         tone = request.form.get('tone')
+        doc_ids = request.form.getlist('document_ids')
         
         if not prompt or not platform or not tone:
             return jsonify({"error": "Missing required generation inputs."}), 400
@@ -27,7 +63,14 @@ def generate():
         # 1. Fetch Creator Memory (context of last 10 posts)
         memory_context = memory_service.get_memory_context(current_user.id)
         
-        # 2. Call Groq AI service
+        # 2. Fetch Selected reference context documents
+        document_context = ""
+        if doc_ids:
+            docs = Document.query.filter(Document.id.in_(doc_ids), Document.user_id == current_user.id).all()
+            for d in docs:
+                document_context += f"\n--- Reference Context from Document '{d.filename}' ---\n{d.content_text}\n"
+        
+        # 3. Call Groq AI service
         generated = groq_service.generate_post(
             goal=user_goal.goal,
             niche=user_goal.niche,
@@ -37,18 +80,19 @@ def generate():
             memory_context=memory_context,
             creator_type=user_goal.creator_type,
             target_audience=user_goal.target_audience,
-            niche_details=user_goal.niche_details
+            niche_details=user_goal.niche_details,
+            document_context=document_context
         )
         
         # Log active generation in Activity table
         log_activity(current_user.id)
         
-        # 3. Perform Similarity check against last 10 posts
+        # 4. Perform Similarity check against last 10 posts
         # We check similarity of the generated hook
         hook_to_check = generated.get('hook', '')
         is_similar, similarity_msg = memory_service.check_similarity(current_user.id, prompt, hook_to_check)
         
-        # 4. Perform Engagement & Readability analysis
+        # 5. Perform Engagement & Readability analysis
         analysis = analyzer_service.analyze_post_content(platform, generated)
         
         # Return standard response
@@ -167,6 +211,7 @@ def refine():
     platform = request.form.get('platform')
     tone = request.form.get('tone')
     topic = request.form.get('topic')
+    doc_ids = request.form.getlist('document_ids')
     
     if not current_draft_str or not refinement_prompt or not platform or not tone or not topic:
         return jsonify({"success": False, "error": "Missing required refinement parameters."}), 400
@@ -176,6 +221,13 @@ def refine():
     except json.JSONDecodeError:
         return jsonify({"success": False, "error": "Invalid current draft JSON format."}), 400
         
+    # Resolve document context
+    document_context = ""
+    if doc_ids:
+        docs = Document.query.filter(Document.id.in_(doc_ids), Document.user_id == current_user.id).all()
+        for d in docs:
+            document_context += f"\n--- Reference Context from Document '{d.filename}' ---\n{d.content_text}\n"
+
     headers = groq_service.get_groq_client_headers()
     
     system_prompt = (
@@ -216,6 +268,8 @@ def refine():
         f"Current Draft JSON: {current_draft_str}\n"
         f"User Refinement Instruction: {refinement_prompt}\n"
     )
+    if document_context:
+        user_prompt += f"\nReference Context / Source Material (Analyse this document data for refinement):\n{document_context}\n"
     
     refined = None
     if headers:
@@ -264,4 +318,65 @@ def refine():
         "success": True,
         "data": refined,
         "analysis": analysis
+    })
+
+@content.route('/upload-document', methods=['POST'])
+@login_required
+def upload_document():
+    if 'file' not in request.files:
+        return jsonify({"success": False, "error": "No file part in request."}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"success": False, "error": "No file selected."}), 400
+        
+    try:
+        content_text = extract_text_from_file(file, file.filename)
+        if not content_text.strip():
+            return jsonify({"success": False, "error": "Document appears to be empty or unparseable."}), 400
+            
+        new_doc = Document(
+            user_id=current_user.id,
+            filename=file.filename,
+            content_text=content_text
+        )
+        db.session.add(new_doc)
+        db.session.commit()
+        
+        return jsonify({
+            "success": True,
+            "document": {
+                "id": new_doc.id,
+                "filename": new_doc.filename,
+                "created_at": new_doc.created_at.strftime('%Y-%m-%d %H:%M')
+            }
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": f"Failed to upload document: {e}"}), 500
+
+@content.route('/delete-document/<int:doc_id>', methods=['POST', 'DELETE'])
+@login_required
+def delete_document(doc_id):
+    doc = Document.query.filter_by(id=doc_id, user_id=current_user.id).first_or_404()
+    try:
+        db.session.delete(doc)
+        db.session.commit()
+        return jsonify({"success": True, "message": "Document deleted."})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@content.route('/list-documents', methods=['GET'])
+@login_required
+def list_documents():
+    docs = Document.query.filter_by(user_id=current_user.id).order_by(Document.created_at.desc()).all()
+    return jsonify({
+        "success": True,
+        "documents": [
+            {
+                "id": d.id,
+                "filename": d.filename,
+                "created_at": d.created_at.strftime('%Y-%m-%d %H:%M')
+            } for d in docs
+        ]
     })
