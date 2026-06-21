@@ -29,7 +29,7 @@
     </script>
     
     <!-- Custom Style Sheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.2">
 </head>
 <body class="bg-brand-cream text-brand-textDark antialiased flex flex-col md:flex-row min-h-screen">
 
@@ -47,7 +47,7 @@
     <!-- Mobile Header/Navigation -->
     <div class="md:hidden flex items-center justify-between p-4 border-b border-brand-border bg-white/80 backdrop-blur-md sticky top-0 z-30">
         <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-2 font-bold text-xl tracking-tight">
-            <span class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white text-lg font-black">C</span>
+            <span class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white text-[10px] font-black uppercase tracking-tighter">cOS</span>
             <span>Creator<span class="text-brand-orange">OS</span></span>
         </a>
         <button id="mobile-sidebar-toggle" class="p-2 border border-brand-border rounded-lg hover:bg-brand-softCream">
@@ -61,8 +61,8 @@
     <aside id="sidebar-menu" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 w-64 bg-white border-r border-brand-border flex flex-col justify-between h-screen overflow-y-auto p-6 md:sticky md:top-0">
         <div class="space-y-8">
             <!-- App Logo -->
-            <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-xl bg-brand-orange flex items-center justify-center text-white text-xl font-black shadow-md shadow-brand-orange/20">C</div>
+            <div class="flex items-center gap-2.5 p-3 -mx-3 rounded-xl bg-gradient-to-r from-brand-orange/5 to-transparent">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-orange to-brand-darkOrange flex items-center justify-center text-white text-[11px] font-black uppercase tracking-tighter shadow-lg shadow-brand-orange/25">cOS</div>
                 <div class="flex flex-col">
                     <span class="font-extrabold text-lg leading-tight tracking-tight">Creator<span class="text-brand-orange">OS</span></span>
                     <span class="text-[10px] text-brand-textMuted font-medium uppercase tracking-widest">Brand engine</span>
@@ -95,11 +95,13 @@
         </div>
 
         <!-- User profile section at bottom -->
-        <div class="border-t border-brand-border pt-4">
-            <div class="flex items-center justify-between">
+        <div class="border-t border-brand-border/40 pt-4">
+            <div class="flex items-center justify-between p-2 rounded-xl bg-brand-softCream/30 backdrop-blur-sm">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="w-10 h-10 rounded-xl bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase flex-shrink-0">
-                        {{ current_user.name[:2] }}
+                    <div class="avatar-ring w-10 h-10 rounded-xl">
+                        <div class="w-10 h-10 rounded-xl bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase flex-shrink-0">
+                            {{ current_user.name[:2] }}
+                        </div>
                     </div>
                     <div class="flex flex-col min-w-0">
                         <span class="text-sm font-semibold truncate">{{ current_user.name }}</span>

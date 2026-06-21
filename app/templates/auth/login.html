@@ -3,47 +3,605 @@
 {% block title %}Sign In - CreatorOS{% endblock %}
 
 {% block content %}
-<div class="min-h-[70vh] flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-md glass-panel rounded-2xl p-8 shadow-xl space-y-6">
-        <!-- Logo Header -->
-        <div class="text-center space-y-2">
-            <div class="w-11.5 h-11.5 rounded-2xl bg-brand-orange text-white text-2xl font-black inline-flex items-center justify-center shadow-lg shadow-brand-orange/20 select-none">C</div>
-            <h1 class="text-2xl font-bold text-brand-textDark tracking-tight mt-3">Welcome Back</h1>
-            <p class="text-sm text-brand-textMuted">Access your brand workspace</p>
+<!-- Break out of base.html's padded content wrapper -->
+<style>
+  main > div { padding: 0 !important; max-width: 100% !important; }
+  main { padding: 0 !important; }
+</style>
+<div class="auth-page-wrap">
+
+    <!-- ═══ LEFT PANEL — Cinematic Background ═══ -->
+    <div class="auth-left-panel" aria-hidden="true">
+        <!-- Scrolling creator images stack -->
+        <div class="auth-img-track">
+            {% set creator_imgs = [
+                ('creator_travel_cinematic.png',      'Travel & Outdoors',   '#10B981'),
+                ('creator_fitness_cinematic.png',     'Fitness & Health',    '#EF4444'),
+                ('creator_fashion_cinematic.png',     'Fashion & Beauty',    '#EC4899'),
+                ('creator_dev_cinematic.png',         'Tech & Dev',          '#FF6B2B'),
+                ('creator_food_cinematic.png',        'Food & Lifestyle',    '#F97316'),
+                ('creator_photography_cinematic.png', 'Photography',         '#8B5CF6'),
+                ('creator_finance_cinematic.png',     'Finance & Investing', '#3B82F6'),
+                ('creator_design_cinematic.png',      'Art & Design',        '#F59E0B'),
+                ('creator_writer_cinematic.png',      'Copywriting',         '#A855F7'),
+                ('creator_travel_cinematic.png',      'Travel & Outdoors',   '#10B981'),
+                ('creator_fitness_cinematic.png',     'Fitness & Health',    '#EF4444'),
+                ('creator_fashion_cinematic.png',     'Fashion & Beauty',    '#EC4899'),
+                ('creator_dev_cinematic.png',         'Tech & Dev',          '#FF6B2B'),
+                ('creator_food_cinematic.png',        'Food & Lifestyle',    '#F97316'),
+                ('creator_photography_cinematic.png', 'Photography',         '#8B5CF6'),
+                ('creator_finance_cinematic.png',     'Finance & Investing', '#3B82F6'),
+                ('creator_design_cinematic.png',      'Art & Design',        '#F59E0B'),
+                ('creator_writer_cinematic.png',      'Copywriting',         '#A855F7')
+            ] %}
+            {% for img, label, color in creator_imgs %}
+            <div class="auth-creator-card">
+                <img src="{{ url_for('static', filename='images/' + img) }}" alt="{{ label }}" class="auth-creator-img">
+                <div class="auth-creator-label">
+                    <span class="auth-creator-dot" style="background:{{ color }};"></span>
+                    <span>{{ label }}</span>
+                </div>
+            </div>
+            {% endfor %}
         </div>
 
-        <form action="{{ url_for('auth.login') }}" method="POST" class="space-y-4">
-            <div>
-                <label for="email" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-1.5">Email Address</label>
-                <input type="email" name="email" id="email" required placeholder="name@domain.com"
-                       class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/15 transition-all text-sm">
-            </div>
+        <!-- Dark overlay -->
+        <div class="auth-left-overlay"></div>
 
-            <div>
-                <div class="flex items-center justify-between mb-1.5">
-                    <label for="password" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Password</label>
-                    <a href="{{ url_for('auth.forgot_password') }}" class="text-xs font-semibold text-brand-orange hover:text-brand-darkOrange transition-all">Forgot?</a>
+        <!-- Brand copy on top of images -->
+        <div class="auth-left-copy">
+            <div class="auth-left-badge">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse inline-block"></span>
+                AI-Powered Creator Engine
+            </div>
+            <h2 class="auth-left-heading">Every creator.<br><span class="text-brand-orange">One OS.</span></h2>
+            <p class="auth-left-sub">Turn your niche into daily content that compounds your authority — automatically.</p>
+
+            <!-- Mini stats -->
+            <div class="auth-left-stats">
+                <div class="auth-stat">
+                    <span class="auth-stat-num">1.2K+</span>
+                    <span class="auth-stat-label">Creators</span>
                 </div>
-                <input type="password" name="password" id="password" required placeholder="••••••••"
-                       class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/15 transition-all text-sm">
+                <div class="auth-stat-divider"></div>
+                <div class="auth-stat">
+                    <span class="auth-stat-num">45K+</span>
+                    <span class="auth-stat-label">Posts Made</span>
+                </div>
+                <div class="auth-stat-divider"></div>
+                <div class="auth-stat">
+                    <span class="auth-stat-num">98.7%</span>
+                    <span class="auth-stat-label text-[#FF007A]">Precision</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ RIGHT PANEL — Form ═══ -->
+    <div class="auth-right-panel">
+        <div class="auth-form-card">
+
+            <!-- Glow blobs -->
+            <div class="auth-blob auth-blob-tl"></div>
+            <div class="auth-blob auth-blob-br"></div>
+
+            <!-- Logo -->
+            <div class="auth-logo-wrap">
+                <div class="auth-logo-badge">cOS</div>
+                <div>
+                    <h1 class="auth-form-title">Welcome back</h1>
+                    <p class="auth-form-sub">Access your brand workspace</p>
+                </div>
             </div>
 
-            <div class="flex items-center">
-                <input type="checkbox" id="remember" name="remember" class="w-4 h-4 rounded text-brand-orange border-brand-border focus:ring-brand-orange">
-                <label for="remember" class="ml-2 text-xs font-medium text-brand-textMuted select-none">Remember this device</label>
+            <!-- Form -->
+            <form action="{{ url_for('auth.login') }}" method="POST" class="auth-form" novalidate>
+
+                <div class="auth-field">
+                    <label for="email" class="auth-label">Email Address</label>
+                    <input type="email" name="email" id="email" required placeholder="name@domain.com" class="auth-input">
+                </div>
+
+                <div class="auth-field">
+                    <div class="auth-label-row">
+                        <label for="password" class="auth-label">Password</label>
+                        <a href="{{ url_for('auth.forgot_password') }}" class="auth-forgot">Forgot?</a>
+                    </div>
+                    <div class="auth-input-wrapper">
+                        <input type="password" name="password" id="password" required placeholder="••••••••" class="auth-input">
+                        <button type="button" class="auth-toggle-password" onclick="togglePasswordVisibility('password', this)" aria-label="Toggle password visibility">
+                            <svg class="eye-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <label class="auth-remember">
+                    <input type="checkbox" name="remember" id="remember" class="auth-checkbox">
+                    <span>Remember this device</span>
+                </label>
+
+                <button type="submit" class="auth-submit-btn">
+                    <span>Sign In to Workspace</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="auth-divider">
+                <span></span><p>New here?</p><span></span>
             </div>
 
-            <button type="submit" class="w-full btn-orange-primary py-3.5 rounded-xl font-bold text-sm tracking-wide mt-2">
-                Sign In
-            </button>
-        </form>
+            <!-- Switch link -->
+            <a href="{{ url_for('auth.register') }}" class="auth-switch-btn">
+                Create your free account →
+            </a>
 
-        <div class="text-center pt-4 border-t border-brand-border/40">
-            <p class="text-xs text-brand-textMuted">
-                Don't have an account? 
-                <a href="{{ url_for('auth.register') }}" class="font-semibold text-brand-orange hover:text-brand-darkOrange transition-all ml-0.5">Start Building</a>
-            </p>
         </div>
     </div>
 </div>
+
+<style>
+/* ════ Page Wrap ════ */
+.auth-page-wrap {
+    display: flex;
+    min-height: calc(100vh - 64px);
+    width: 100%;
+    overflow: hidden;
+}
+
+/* ════ Left Panel ════ */
+.auth-left-panel {
+    display: none;
+    position: relative;
+    flex: 1;
+    background: #0a0a0a;
+    overflow: hidden;
+}
+@media (min-width: 1024px) {
+    .auth-left-panel { display: block; }
+}
+
+/* Vertically scrolling image strip */
+.auth-img-track {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    animation: auth-scroll-up 35s linear infinite;
+    width: 100%;
+}
+@keyframes auth-scroll-up {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+}
+.auth-creator-card {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.auth-creator-card:hover {
+    transform: scale(1.04);
+    z-index: 2;
+}
+.auth-creator-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.45;
+    transition: transform 0.5s ease, opacity 0.4s ease;
+}
+.auth-creator-card:hover .auth-creator-img {
+    transform: scale(1.08);
+    opacity: 0.6;
+}
+.auth-creator-label {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(8px);
+    border-radius: 9999px;
+    padding: 4px 12px 4px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #fff;
+}
+.auth-creator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.auth-left-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgba(5,5,5,0.70) 0%,
+        rgba(5,5,5,0.60) 60%,
+        rgba(5,5,5,0.82) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Copy overlay on left panel */
+.auth-left-copy {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    z-index: 2;
+    color: #fff;
+}
+.auth-left-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,107,43,0.15);
+    border: 1px solid rgba(255,107,43,0.3);
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #FF6B2B;
+    margin-bottom: 12px;
+}
+.auth-left-heading {
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 10px;
+    text-align: center;
+}
+.auth-left-sub {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    max-width: 320px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+.auth-left-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 1rem;
+    padding: 14px 20px;
+    backdrop-filter: blur(10px);
+}
+.auth-stat { text-align: center; }
+.auth-stat-num {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #FF6B2B;
+}
+.auth-stat-label {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.45);
+    margin-top: 2px;
+}
+.auth-stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255,255,255,0.1);
+}
+
+/* ════ Right Panel ════ */
+.auth-right-panel {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    background: #f5ede4;
+    min-height: 100%;
+}
+@media (min-width: 1024px) {
+    .auth-right-panel {
+        width: 560px;
+        flex-shrink: 0;
+        background: #0d0d0d;
+    }
+}
+
+/* ════ Form Card ════ */
+.auth-form-card {
+    width: 100%;
+    max-width: 460px;
+    background: linear-gradient(145deg, #181818 0%, #1f1f1f 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 1.75rem;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,43,0.06);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.auth-form-card:hover {
+    border-color: rgba(255,107,43,0.18);
+    box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,107,43,0.12), 0 0 60px rgba(255,107,43,0.06);
+}
+
+/* On mobile the right panel is light — override card for readability */
+@media (max-width: 1023px) {
+    .auth-form-card {
+        background: #fff;
+        border-color: rgba(0,0,0,0.08);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .auth-form-title { color: #1a1a1a !important; }
+    .auth-form-sub   { color: #888 !important; }
+    .auth-label      { color: #555 !important; }
+    .auth-input      { background: #f9f9f9 !important; border-color: #e0e0e0 !important; color: #1a1a1a !important; }
+    .auth-input::placeholder { color: #aaa !important; }
+    .auth-remember   { color: #666 !important; }
+    .auth-divider p  { color: #aaa !important; }
+    .auth-divider span { background: #e5e5e5 !important; }
+    .auth-toggle-password { color: #888 !important; }
+    .auth-toggle-password:hover { color: #333 !important; }
+}
+
+.auth-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(48px);
+    pointer-events: none;
+}
+.auth-blob-tl {
+    width: 140px; height: 140px;
+    background: rgba(255,0,122,0.12);
+    top: -50px; right: -50px;
+}
+.auth-blob-br {
+    width: 140px; height: 140px;
+    background: rgba(255,107,43,0.1);
+    bottom: -50px; left: -50px;
+}
+
+/* Logo */
+.auth-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+.auth-logo-badge {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FF6B2B, #FF007A);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(255,107,43,0.4);
+    flex-shrink: 0;
+}
+.auth-form-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+.auth-form-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 600;
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Form fields */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    position: relative;
+    z-index: 1;
+}
+.auth-field { display: flex; flex-direction: column; gap: 6px; }
+.auth-label-row { display: flex; justify-content: space-between; align-items: center; }
+.auth-label {
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: rgba(255,255,255,0.45);
+}
+.auth-forgot {
+    font-size: 10px;
+    font-weight: 800;
+    color: #FF6B2B;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+}
+.auth-forgot:hover { text-decoration: underline; }
+
+.auth-input {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.auth-input::placeholder { color: rgba(255,255,255,0.2); }
+.auth-input:focus {
+    border-color: rgba(255,107,43,0.6);
+    background: rgba(255,107,43,0.05);
+    box-shadow: 0 0 0 3px rgba(255,107,43,0.12);
+}
+.auth-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+.auth-input-wrapper .auth-input {
+    padding-right: 44px;
+}
+.auth-toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+.auth-toggle-password:hover {
+    color: rgba(255,255,255,0.8);
+}
+
+.auth-remember {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    user-select: none;
+}
+.auth-checkbox {
+    width: 16px; height: 16px;
+    border-radius: 5px;
+    accent-color: #FF6B2B;
+    cursor: pointer;
+}
+
+/* Submit button */
+.auth-submit-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #FF6B2B 0%, #FF007A 100%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 28px rgba(255,107,43,0.4);
+    transition:
+        transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s ease;
+    margin-top: 6px;
+}
+.auth-submit-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 14px 40px rgba(255,107,43,0.55);
+}
+.auth-submit-btn:active {
+    transform: translateY(0) scale(0.99);
+    box-shadow: 0 6px 20px rgba(255,107,43,0.35);
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 1.25rem 0 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+.auth-divider span {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+}
+.auth-divider p {
+    font-size: 10px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+}
+
+/* Switch link */
+.auth-switch-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.09);
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    position: relative;
+    z-index: 1;
+}
+.auth-switch-btn:hover {
+    background: rgba(255,107,43,0.08);
+    border-color: rgba(255,107,43,0.3);
+    color: #FF6B2B;
+}
+</style>
+
+<script>
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = `<svg class="eye-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>`;
+    } else {
+        input.type = 'password';
+        btn.innerHTML = `<svg class="eye-icon w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>`;
+    }
+}
+</script>
+
 {% endblock %}

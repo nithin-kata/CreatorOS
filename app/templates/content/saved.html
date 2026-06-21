@@ -6,17 +6,18 @@
 <div class="py-6 px-4 space-y-6">
     
     <!-- Title Header & Search Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-border/60 pb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6">
         <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">Saved Drafts</h1>
-            <p class="text-sm text-brand-textMuted mt-1">Review, copy, and manage your historical generated content drafts.</p>
+            <div class="section-chip mb-3">Creator Memory</div>
+            <h1 class="text-3xl font-extrabold tracking-tight page-title">Saved Drafts</h1>
+            <p class="text-sm text-brand-textMuted mt-2">Review, copy, and manage your historical generated content drafts.</p>
         </div>
         
         <!-- Search bar -->
         <form method="GET" action="{{ url_for('content.saved') }}" class="flex items-center w-full sm:w-80">
             <div class="relative w-full">
                 <input type="text" name="q" value="{{ search_query }}" placeholder="Search topics or content..."
-                       class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                       class="w-full pl-10 pr-4 py-3 rounded-xl border border-brand-border/40 bg-white/50 backdrop-blur-sm text-brand-textDark focus:outline-none focus:border-brand-orange focus:bg-white/80 transition-all text-xs shadow-sm">
                 <span class="absolute left-3.5 top-3.5 text-brand-textMuted">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </span>
@@ -26,9 +27,9 @@
 
     <!-- Saved Drafts Grid -->
     {% if drafts %}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start stagger-enter">
         {% for draft in drafts %}
-        <div id="draft-card-{{ draft.id }}" data-tilt class="reveal-on-scroll bg-white border border-brand-border rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between h-[360px] relative overflow-hidden group">
+        <div id="draft-card-{{ draft.id }}" data-tilt class="reveal-on-scroll liquid-glass rounded-2xl p-5 shadow-sm space-y-4 flex flex-col justify-between h-[360px] relative overflow-hidden group card-accent-top {% if draft.platform.lower() == 'linkedin' %}card-accent-linkedin{% elif draft.platform.lower() == 'x' %}card-accent-x{% elif draft.platform.lower() == 'instagram' %}card-accent-instagram{% else %}card-accent-blog{% endif %}">
             
             <div class="space-y-3 flex-grow overflow-hidden flex flex-col">
                 <!-- Card Header -->
@@ -54,7 +55,7 @@
                 </h3>
                 
                 <!-- Preview Text Area (Internally Scrollable) -->
-                <div class="custom-scrollbar overflow-y-auto flex-grow bg-brand-cream/10 border border-brand-border/30 rounded-xl p-3 text-xs leading-relaxed text-brand-textDark space-y-3">
+                <div class="custom-scrollbar overflow-y-auto flex-grow bg-brand-cream/15 border border-brand-border/25 rounded-xl p-3 text-xs leading-relaxed text-brand-textDark space-y-3 backdrop-blur-sm">
                     <!-- Raw Mode Container -->
                     <div id="raw-view-{{ draft.id }}" class="space-y-3 select-all">
                         {% if draft.platform.lower() == 'linkedin' %}
@@ -222,8 +223,10 @@ Keywords: {{ draft.parsed_content.blog_keywords }}{% endif %}</div>
         {% endfor %}
     </div>
     {% else %}
-    <div class="flex flex-col items-center justify-center py-20 text-center space-y-4 max-w-md mx-auto">
-        <span class="text-4xl">🗄</span>
+    <div class="flex flex-col items-center justify-center py-20 text-center space-y-5 max-w-md mx-auto empty-state-visual rounded-2xl">
+        <div class="stat-ring" style="width:64px; height:64px;">
+            <span class="text-3xl">🗄</span>
+        </div>
         <h3 class="font-extrabold text-brand-textDark text-lg">No drafts cataloged</h3>
         <p class="text-sm text-brand-textMuted leading-relaxed">
             {% if search_query %}

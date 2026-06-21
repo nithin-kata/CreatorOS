@@ -15,6 +15,27 @@ login_manager.login_message_category = 'info'
 def create_app():
     app = Flask(__name__)
     
+    # Hot-reload image copy operations
+    import shutil
+    dest_dir = r"c:\Users\NITHIN KATA\Downloads\Creator_Os\app\static\images"
+    brain_dir = r"C:\Users\NITHIN KATA\.gemini\antigravity-ide\brain\d267fd8e-83da-483a-9975-7a2db3e9229e"
+    creator_imgs = [
+        ("creator_dev_cinematic_1782027111293.png",    "creator_dev_cinematic.png"),
+        ("creator_design_cinematic_1782027128096.png", "creator_design_cinematic.png"),
+        ("creator_writer_cinematic_1782027143962.png", "creator_writer_cinematic.png"),
+        ("creator_travel_cinematic_1782027906298.png", "creator_travel_cinematic.png"),
+        ("creator_fitness_cinematic_1782027920048.png","creator_fitness_cinematic.png"),
+        ("creator_fashion_cinematic_1782027933436.png","creator_fashion_cinematic.png"),
+        ("creator_food_cinematic_1782027952221.png",   "creator_food_cinematic.png"),
+        ("creator_photography_cinematic_1782027965219.png", "creator_photography_cinematic.png"),
+        ("creator_finance_cinematic_1782027978216.png","creator_finance_cinematic.png"),
+    ]
+    for src_name, dst_name in creator_imgs:
+        src = os.path.join(brain_dir, src_name)
+        if os.path.exists(src):
+            os.makedirs(dest_dir, exist_ok=True)
+            shutil.copy(src, os.path.join(dest_dir, dst_name))
+
     # Configuration
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'creator_os_fallback_secret_key')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///creatoros.db')

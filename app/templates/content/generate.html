@@ -6,17 +6,23 @@
 <div class="py-6 px-4 space-y-6">
     
     <!-- Title Header -->
-    <div class="border-b border-brand-border/60 pb-6">
-        <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">AI Content Generator</h1>
-        <p class="text-sm text-brand-textMuted mt-1">Transform topics and trends into premium platform-optimized drafts instantly.</p>
+    <div class="pb-6">
+        <div class="section-chip mb-3">Content Studio</div>
+        <h1 class="text-3xl font-extrabold tracking-tight page-title">AI Content Generator</h1>
+        <p class="text-sm text-brand-textMuted mt-2">Transform topics and trends into premium platform-optimized drafts instantly.</p>
     </div>
 
     <!-- Generator Workspace Split Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- Left Panel: Input Configuration (5 Cols) -->
-        <div class="lg:col-span-5 bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-6">
-            <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest border-b border-brand-border/40 pb-3">Configure Draft</h3>
+        <div class="lg:col-span-5 liquid-glass rounded-2xl p-6 shadow-sm space-y-6 card-accent-top">
+            <div class="flex items-center gap-3 pb-3 border-b border-brand-border/30">
+                <div class="icon-box">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </div>
+                <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest">Configure Draft</h3>
+            </div>
             
             <form id="generator-form" class="space-y-5">
                 <!-- Topic Prompt -->
@@ -31,10 +37,11 @@
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Target Network</label>
                     <div class="grid grid-cols-4 gap-2">
                         {% for plat in ['LinkedIn', 'X', 'Instagram', 'Blog'] %}
-                        <label class="border border-brand-border p-2.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="platform-select-card border border-brand-border p-3 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-2 bg-white/50 hover:bg-brand-softCream/60 hover:border-brand-orange hover:-translate-y-1 hover:shadow-md active:translate-y-0 duration-200 group backdrop-blur-sm">
                             <input type="radio" name="platform" value="{{ plat }}" required class="sr-only" 
                                    {% if prefill_platform == plat %}checked{% endif %} onclick="updatePlatformUI(this)">
-                            <span class="text-[11px] font-bold text-brand-textDark">{{ plat if plat != 'Blog' else 'Blog Outline' }}</span>
+                            <span class="text-lg">{% if plat == 'LinkedIn' %}💼{% elif plat == 'X' %}𝕏{% elif plat == 'Instagram' %}📸{% else %}📝{% endif %}</span>
+                            <span class="text-[10px] font-bold text-brand-textDark">{{ plat if plat != 'Blog' else 'Blog' }}</span>
                         </label>
                         {% endfor %}
                     </div>
@@ -45,9 +52,10 @@
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Writing Tone</label>
                     <div class="grid grid-cols-2 gap-2">
                         {% for tone_name in ['Professional', 'Storytelling', 'Educational', 'Casual'] %}
-                        <label class="border border-brand-border p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="platform-select-card border border-brand-border p-3 rounded-xl cursor-pointer flex items-center gap-2.5 transition-all bg-white/50 hover:bg-brand-softCream/60 hover:border-brand-orange hover:-translate-y-0.5 hover:shadow-sm active:translate-y-0 duration-200 group backdrop-blur-sm">
                             <input type="radio" name="tone" value="{{ tone_name }}" required class="sr-only"
                                    {% if prefill_tone == tone_name %}checked{% endif %} onclick="updateToneUI(this)">
+                            <span class="text-sm">{% if tone_name == 'Professional' %}🎯{% elif tone_name == 'Storytelling' %}📖{% elif tone_name == 'Educational' %}🎓{% else %}☕{% endif %}</span>
                             <span class="text-xs font-semibold text-brand-textDark">{{ tone_name }}</span>
                         </label>
                         {% endfor %}
@@ -55,22 +63,22 @@
                 </div>
 
                 <!-- Action Button -->
-                <button type="submit" id="generate-btn" class="w-full btn-orange-primary py-3.5 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2">
+                <button type="submit" id="generate-btn" class="w-full btn-orange-primary py-3.5 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-brand-orange/15">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                     <span>Generate Post Draft</span>
                 </button>
             </form>
 
             <!-- Refinement Canvas Section -->
-            <div id="refinement-panel" class="hidden border-t border-brand-border/40 pt-5 space-y-4">
-                <h4 class="text-xs font-bold text-brand-textMuted uppercase tracking-wider">Refine Active Draft (Canvas Co-Pilot)</h4>
+            <div id="refinement-panel" class="hidden border-t border-brand-border/30 pt-5 space-y-4">
+                <span class="floating-label">Refine Active Draft (Canvas Co-Pilot)</span>
                 
                 <!-- Preset Quick Pills -->
                 <div class="flex flex-wrap gap-1.5">
-                    <button type="button" onclick="quickRefine('Make it punchier')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">🔥 Punchier</button>
-                    <button type="button" onclick="quickRefine('Make it shorter')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">✂ Shorter</button>
-                    <button type="button" onclick="quickRefine('Add a contrarian hook')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">🎯 Contrarian Hook</button>
-                    <button type="button" onclick="quickRefine('Inject storytelling style')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">📖 Storytelling</button>
+                    <button type="button" onclick="quickRefine('Make it punchier')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">🔥 Punchier</button>
+                    <button type="button" onclick="quickRefine('Make it shorter')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">✂️ Shorter</button>
+                    <button type="button" onclick="quickRefine('Add a contrarian hook')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">🎯 Contrarian</button>
+                    <button type="button" onclick="quickRefine('Inject storytelling style')" class="px-3 py-2 rounded-xl border border-brand-border/60 hover:border-brand-orange bg-white/50 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/40 hover:-translate-y-0.5 hover:shadow-sm transition-all backdrop-blur-sm">📖 Story</button>
                 </div>
 
                 <!-- Custom instruction field -->
@@ -85,11 +93,14 @@
         </div>
 
         <!-- Right Panel: Canvas Output Preview (7 Cols) -->
-        <div class="lg:col-span-7 bg-white border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col h-[650px] relative overflow-hidden">
+        <div class="lg:col-span-7 liquid-glass rounded-2xl p-6 shadow-sm flex flex-col h-[650px] relative overflow-hidden card-accent-top">
             
             <!-- Shimmer Loading Overlay -->
-            <div id="loader-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-8 text-center space-y-4 hidden">
-                <div class="w-12 h-12 rounded-full border-4 border-brand-softCream border-t-brand-orange animate-spin"></div>
+            <div id="loader-overlay" class="absolute inset-0 bg-white/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-8 text-center space-y-5 hidden">
+                <div class="relative">
+                    <div class="w-14 h-14 rounded-full border-4 border-brand-softCream border-t-brand-orange animate-spin"></div>
+                    <div class="absolute inset-0 w-14 h-14 rounded-full border-4 border-transparent border-b-[#FF007A]/30 animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+                </div>
                 <div class="space-y-1">
                     <h4 class="font-extrabold text-brand-textDark">Engraving Draft...</h4>
                     <p class="text-xs text-brand-textMuted">Checking Creator Memory similarity and formatting layouts</p>
@@ -97,10 +108,12 @@
             </div>
 
             <!-- Empty State -->
-            <div id="empty-state-canvas" class="flex flex-col items-center justify-center flex-grow text-center p-8 space-y-3">
-                <span class="text-4xl select-none">🎨</span>
+            <div id="empty-state-canvas" class="flex flex-col items-center justify-center flex-grow text-center p-8 space-y-4 empty-state-visual rounded-2xl m-4">
+                <div class="stat-ring" style="width:64px; height:64px;">
+                    <span class="text-3xl select-none">🎨</span>
+                </div>
                 <h4 class="font-extrabold text-sm text-brand-textDark">Workspace Canvas Empty</h4>
-                <p class="text-xs text-brand-textMuted max-w-sm leading-relaxed">Your generated content drafts will paint here. Formulate options on the left and tap generate.</p>
+                <p class="text-xs text-brand-textMuted max-w-sm leading-relaxed">Your generated content drafts will paint here. Configure options on the left and tap generate.</p>
             </div>
 
             <!-- Content Area (Initially Hidden) -->
@@ -134,13 +147,22 @@
                     </div>
                     
                     <!-- Score Mini-widget -->
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-3">
                         <div class="text-right">
                             <div class="text-[10px] text-brand-textMuted font-bold uppercase tracking-wider leading-none">Impression Forecast</div>
                             <div id="score-text" class="text-xs font-black text-brand-orange mt-0.5">Score: --</div>
                         </div>
-                        <div class="w-8 h-8 rounded-full border-2 border-brand-border flex items-center justify-center text-[10px] font-black text-brand-orange" id="score-circle-container">
-                            --
+                        <div class="relative w-12 h-12 flex items-center justify-center" id="score-circle-container-wrapper">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <!-- Background Circle -->
+                                <path class="text-brand-border/40" stroke="currentColor" stroke-width="3" fill="none"
+                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <!-- Progress Circle -->
+                                <path id="score-progress-bar" class="text-brand-orange transition-all duration-500 ease-out" 
+                                      stroke="currentColor" stroke-width="3.5" stroke-dasharray="0, 100" stroke-linecap="round" fill="none"
+                                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span id="score-circle-text" class="absolute text-xs font-black text-brand-orange">--</span>
                         </div>
                     </div>
                 </div>
@@ -757,18 +779,28 @@
         document.getElementById('forecast-checklist-container').classList.remove('hidden');
         document.getElementById('score-text').innerText = `Score: ${analysis.score}/100 (${analysis.readability})`;
         
-        const circle = document.getElementById('score-circle-container');
-        circle.innerText = analysis.score;
+        const progressBar = document.getElementById('score-progress-bar');
+        const scoreText = document.getElementById('score-circle-text');
         
-        circle.className = "w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-black transition-all ";
+        // Update circular progress dasharray
+        progressBar.setAttribute('stroke-dasharray', `${analysis.score}, 100`);
+        scoreText.innerText = analysis.score;
+        
+        // Color coding classes for SVG paths and texts
+        progressBar.classList.remove('text-green-500', 'text-yellow-500', 'text-red-500', 'text-brand-orange');
+        scoreText.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600', 'text-brand-orange');
+        
         if (analysis.score >= 80) {
-            circle.className += "border-green-500 text-green-600 bg-green-50 animate-pulse";
+            progressBar.classList.add('text-green-500');
+            scoreText.classList.add('text-green-600');
             document.getElementById('score-text').className = "text-xs font-black text-green-600 mt-0.5";
         } else if (analysis.score >= 50) {
-            circle.className += "border-yellow-500 text-yellow-600 bg-yellow-50";
+            progressBar.classList.add('text-yellow-500');
+            scoreText.classList.add('text-yellow-600');
             document.getElementById('score-text').className = "text-xs font-black text-yellow-600 mt-0.5";
         } else {
-            circle.className += "border-red-500 text-red-600 bg-red-50";
+            progressBar.classList.add('text-red-500');
+            scoreText.classList.add('text-red-600');
             document.getElementById('score-text').className = "text-xs font-black text-red-600 mt-0.5";
         }
         

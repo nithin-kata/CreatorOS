@@ -5,14 +5,15 @@
 {% block content %}
 <div class="py-6 px-4 space-y-6">
     <!-- Header Title -->
-    <div class="border-b border-brand-border/60 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div class="pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">Content Calendar</h1>
-            <p class="text-sm text-brand-textMuted mt-1">Plan, visualize, and schedule your content consistency across channels.</p>
+            <div class="section-chip mb-3">Content Scheduler</div>
+            <h1 class="text-3xl font-extrabold tracking-tight page-title">Content Calendar</h1>
+            <p class="text-sm text-brand-textMuted mt-2">Plan, visualize, and schedule your content consistency across channels.</p>
         </div>
         
         <!-- Month Navigation -->
-        <div class="flex items-center gap-3 bg-white border border-brand-border rounded-xl p-1.5 shadow-sm">
+        <div class="flex items-center gap-3 bg-white/60 backdrop-blur-sm border border-brand-border/40 rounded-xl p-1.5 shadow-sm">
             <a href="{{ url_for('dashboard.calendar', year=prev_year, month=prev_month) }}" 
                class="p-2 hover:bg-brand-softCream text-brand-textDark rounded-lg transition-all"
                title="Previous Month">
@@ -37,12 +38,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- Left: Unscheduled Drafts Drawer (4 Cols) -->
-        <div class="lg:col-span-4 bg-white border border-brand-border rounded-2xl p-5 shadow-sm flex flex-col h-[650px] relative overflow-hidden">
-            <div class="pb-3 border-b border-brand-border/40 mb-4 flex-shrink-0">
+        <div class="lg:col-span-4 liquid-glass rounded-2xl p-5 shadow-sm flex flex-col h-[650px] relative overflow-hidden card-accent-top">
+            <div class="pb-3 border-b border-brand-border/30 mb-4 flex-shrink-0">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-brand-textDark uppercase tracking-wider flex items-center gap-2">
+                        <div class="icon-box w-8 h-8 rounded-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        </div>
                         <span>Unscheduled Drafts</span>
-                        <span class="px-2 py-0.5 rounded-full bg-brand-softCream border border-brand-border/40 text-brand-orange text-xs font-black">
+                        <span class="px-2 py-0.5 rounded-full bg-brand-orange/10 border border-brand-orange/20 text-brand-orange text-xs font-black">
                             {{ unscheduled_drafts|length }}
                         </span>
                     </h3>
@@ -112,7 +116,7 @@
         </div>
 
         <!-- Right: Monthly Grid (8 Cols) -->
-        <div class="lg:col-span-8 bg-white border border-brand-border rounded-2xl p-5 shadow-sm flex flex-col">
+        <div class="lg:col-span-8 liquid-glass rounded-2xl p-5 shadow-sm flex flex-col card-accent-top">
             <!-- Day of week headers -->
             <div class="grid grid-cols-7 gap-2 text-center font-bold text-xs text-brand-textMuted uppercase tracking-wider pb-3 border-b border-brand-border/40">
                 <div>Sun</div>
@@ -137,7 +141,7 @@
                             {% set cell_date = "%04d-%02d-%02d"|format(year, month, day) %}
                             {% set is_today = (today.year == year and today.month == month and today.day == day) %}
                             
-                            <div class="min-h-[90px] border border-brand-border/60 hover:border-brand-orange/50 {% if is_today %}bg-brand-softCream/10 border-brand-orange/40{% else %}bg-white{% endif %} rounded-xl p-2 flex flex-col justify-between transition-all relative group-cell"
+                            <div class="min-h-[90px] border {% if is_today %}bg-brand-softCream/50 border-brand-orange/50 shadow-[0_0_16px_rgba(255,122,0,0.12)] calendar-today{% else %}bg-white/40 border-brand-border/30{% endif %} rounded-xl p-2 flex flex-col justify-between transition-all duration-300 hover:scale-[1.03] hover:bg-white/70 hover:border-brand-orange/60 hover:shadow-lg relative backdrop-blur-sm"
                                  ondragover="event.preventDefault(); this.classList.add('bg-brand-softCream/30');"
                                  ondragleave="this.classList.remove('bg-brand-softCream/30');"
                                  ondrop="handleCellDrop(event, '{{ cell_date }}'); this.classList.remove('bg-brand-softCream/30');">
@@ -157,21 +161,21 @@
                                             {% set s_plat = s_draft.platform.lower() %}
                                             <!-- Scheduled Tag -->
                                             <div id="scheduled-tag-{{ s_draft.id }}"
-                                                 class="px-1.5 py-0.5 rounded text-[9px] font-bold cursor-grab active:cursor-grabbing truncate transition-all flex items-center justify-between select-none
+                                                 class="px-2.5 py-1 rounded-full text-[9px] font-extrabold cursor-grab active:cursor-grabbing truncate transition-all flex items-center justify-between select-none
                                                  {% if s_plat == 'linkedin' %}
-                                                     bg-sky-500 text-white hover:bg-sky-600
+                                                     bg-sky-100/90 border border-sky-300/60 text-sky-700 hover:bg-sky-200/90 hover:scale-[1.02]
                                                  {% elif s_plat == 'x' %}
-                                                     bg-zinc-800 text-white hover:bg-black
+                                                     bg-zinc-100/95 border border-zinc-400/60 text-zinc-800 hover:bg-zinc-200/95 hover:scale-[1.02]
                                                  {% elif s_plat == 'instagram' %}
-                                                     bg-pink-600 text-white hover:bg-pink-700
+                                                     bg-pink-100/90 border border-pink-300/60 text-pink-700 hover:bg-pink-200/90 hover:scale-[1.02]
                                                  {% else %}
-                                                     bg-brand-orange text-white hover:bg-brand-darkOrange
+                                                     bg-brand-softCream/90 border border-brand-orange/50 text-brand-orange hover:bg-brand-softCream hover:scale-[1.02]
                                                  {% endif %}"
                                                  draggable="true"
                                                  ondragstart="handleDragStart(event, {{ s_draft.id }}, true)"
                                                  onclick="event.stopPropagation(); openDraftModal({{ s_draft|tojson|safe }})">
-                                                <span class="truncate">{{ s_draft.topic }}</span>
-                                                <button class="ml-1 opacity-60 hover:opacity-100 font-extrabold text-[8px]" 
+                                                <span class="truncate mr-1">{{ s_draft.topic }}</span>
+                                                <button class="ml-1 opacity-60 hover:opacity-100 font-extrabold text-[10px] leading-none" 
                                                         onclick="event.stopPropagation(); unscheduleDraft({{ s_draft.id }})">×</button>
                                             </div>
                                         {% endfor %}
@@ -189,8 +193,8 @@
 </div>
 
 <!-- Premium Detail Modal -->
-<div id="draft-modal" class="fixed inset-0 bg-brand-textDark/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-    <div class="bg-white border border-brand-border rounded-2xl max-w-lg w-full p-6 shadow-xl transform scale-95 transition-transform duration-300 relative flex flex-col max-h-[85vh]">
+<div id="draft-modal" class="fixed inset-0 bg-brand-textDark/45 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white/85 border border-brand-border/60 rounded-3xl max-w-lg w-full p-6 shadow-2xl transform scale-95 transition-transform duration-300 relative flex flex-col max-h-[85vh] glass-panel">
         
         <!-- Close button -->
         <button onclick="closeDraftModal()" class="absolute top-4 right-4 p-1.5 border border-brand-border hover:bg-brand-softCream text-brand-textDark rounded-lg transition-all">

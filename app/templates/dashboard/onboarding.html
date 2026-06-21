@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="min-h-[80vh] flex flex-col items-center justify-center p-4">
-    <div class="w-full max-w-xl bg-white border border-brand-border rounded-2xl p-8 shadow-xl relative overflow-hidden">
+    <div class="w-full max-w-xl bg-white border border-brand-border rounded-2xl p-8 shadow-xl relative overflow-hidden glass-panel">
         
         <!-- Onboarding Form -->
         <form id="onboarding-form" action="{{ url_for('dashboard.onboarding') }}" method="POST" class="space-y-8">
@@ -30,7 +30,7 @@
                 <div class="space-y-4">
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">What is your primary brand goal?</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Get a Job" required class="sr-only" checked onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
                                 <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot"></span></span>
@@ -39,7 +39,7 @@
                             <span class="text-xs text-brand-textMuted leading-relaxed">Attract recruiters, highlight skillsets, and build portfolio.</span>
                         </label>
 
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Build Personal Brand" class="sr-only" onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
                                 <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
@@ -48,7 +48,7 @@
                             <span class="text-xs text-brand-textMuted leading-relaxed">Establish niche authority and grow industry connections.</span>
                         </label>
 
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Grow Followers" class="sr-only" onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
                                 <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
@@ -57,7 +57,7 @@
                             <span class="text-xs text-brand-textMuted leading-relaxed">Boost organic engagement and scale public reach.</span>
                         </label>
 
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-md duration-200 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
                             <input type="radio" name="goal" value="Promote Startup" class="sr-only" onclick="selectCardRadio(this)">
                             <div class="flex items-center justify-between">
                                 <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
@@ -72,7 +72,7 @@
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Which category best describes you?</label>
                     <div class="grid grid-cols-2 gap-3">
                         {% for type in ['Student', 'Industry Professional', 'Entrepreneur / Founder', 'Content Creator'] %}
-                        <label class="border border-brand-border hover:border-brand-orange p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="border border-brand-border hover:border-brand-orange p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 group">
                             <input type="radio" name="creator_type" value="{{ type }}" required {% if loop.first %}checked{% endif %} class="sr-only" onclick="selectCreatorTypeRadio(this)">
                             <span class="text-xs font-semibold text-brand-textDark">{{ type }}</span>
                         </label>
@@ -98,7 +98,7 @@
                             ('Prospective Clients/Users', 'Drive customer acquisition.'),
                             ('General Public', 'Broad scale viral reach.')
                         ] %}
-                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col gap-0.5 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col gap-0.5 transition-all bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 group">
                             <input type="radio" name="target_audience" value="{{ aud[0] }}" required {% if loop.first %}checked{% endif %} class="sr-only" onclick="selectAudienceRadio(this)">
                             <span class="text-xs font-bold text-brand-textDark">{{ aud[0] }}</span>
                             <span class="text-[10px] text-brand-textMuted leading-tight">{{ aud[1] }}</span>
@@ -110,17 +110,17 @@
                 <div class="space-y-3">
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">How many times a week do you plan to post?</label>
                     <div class="grid grid-cols-3 gap-3">
-                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 group">
                             <input type="radio" name="weekly_commitment" value="2" required checked class="sr-only" onclick="selectCommitmentRadio(this)">
                             <span class="text-lg font-black text-brand-orange">1-2</span>
                             <span class="text-[9px] font-bold text-brand-textMuted uppercase tracking-wider leading-tight">Casual Start</span>
                         </label>
-                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 group">
                             <input type="radio" name="weekly_commitment" value="4" class="sr-only" onclick="selectCommitmentRadio(this)">
                             <span class="text-lg font-black text-brand-orange">3-4</span>
                             <span class="text-[9px] font-bold text-brand-textMuted uppercase tracking-wider leading-tight">Consistent growth</span>
                         </label>
-                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 group">
                             <input type="radio" name="weekly_commitment" value="6" class="sr-only" onclick="selectCommitmentRadio(this)">
                             <span class="text-lg font-black text-brand-orange">5+</span>
                             <span class="text-[9px] font-bold text-brand-textMuted uppercase tracking-wider leading-tight">Elite creator</span>
@@ -139,8 +139,8 @@
                 <div class="space-y-3">
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Select topics you talk about</label>
                     <div class="grid grid-cols-2 gap-3">
-                        {% for topic in ['AI', 'AWS', 'Programming', 'Startups', 'Productivity'] %}
-                        <label class="border border-brand-border hover:border-brand-orange p-3 rounded-xl cursor-pointer flex items-center gap-3 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                        {% for topic in ['AI', 'Startups', 'Programming', 'Productivity', 'Travel & Outdoors', 'Fitness & Health', 'Fashion & Beauty', 'Photography & Video', 'Food & Lifestyle', 'Finance & Investing'] %}
+                        <label class="border border-brand-border hover:border-brand-orange p-3 rounded-xl cursor-pointer flex items-center gap-3 transition-all bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 group">
                             <input type="checkbox" name="niche" value="{{ topic }}" class="w-4 h-4 rounded text-brand-orange border-brand-border focus:ring-brand-orange">
                             <span class="text-sm font-medium text-brand-textDark">{{ topic }}</span>
                         </label>
@@ -169,22 +169,22 @@
                 <div class="space-y-4">
                     <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Which is your primary platform?</label>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
                             <input type="radio" name="platform" value="LinkedIn" required class="sr-only" checked onclick="selectPlatformRadio(this)">
                             <span class="text-xs font-bold text-brand-textDark">LinkedIn</span>
                         </label>
 
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
                             <input type="radio" name="platform" value="X" class="sr-only" onclick="selectPlatformRadio(this)">
                             <span class="text-xs font-bold text-brand-textDark">X (Twitter)</span>
                         </label>
 
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
                             <input type="radio" name="platform" value="Instagram" class="sr-only" onclick="selectPlatformRadio(this)">
                             <span class="text-xs font-bold text-brand-textDark">Instagram</span>
                         </label>
 
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
                             <input type="radio" name="platform" value="Blog" class="sr-only" onclick="selectPlatformRadio(this)">
                             <span class="text-xs font-bold text-brand-textDark">Blog Outline</span>
                         </label>
@@ -200,7 +200,7 @@
                             ('Educational', 'Highly actionable breakdowns, tutorials.'),
                             ('Casual', 'Friendly, conversation-style notes, relatable.')
                         ] %}
-                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-3.5 rounded-xl cursor-pointer flex flex-col gap-1 transition-all group">
+                        <label class="border border-brand-border hover:border-brand-orange bg-white/40 hover:bg-brand-softCream/60 hover:-translate-y-0.5 hover:shadow-sm duration-200 p-3.5 rounded-xl cursor-pointer flex flex-col gap-1 transition-all group">
                             <input type="radio" name="tone" value="{{ tone[0] }}" required {% if loop.first %}checked{% endif %} class="sr-only" onclick="selectToneRadio(this)">
                             <span class="font-bold text-brand-textDark text-xs">{{ tone[0] }}</span>
                             <span class="text-[10px] text-brand-textMuted leading-snug">{{ tone[1] }}</span>

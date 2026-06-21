@@ -38,12 +38,12 @@
             
             <!-- Action buttons -->
             <div class="flex flex-wrap gap-4 items-center pt-2">
-                <a href="{{ url_for('auth.register') }}" class="btn-orange-primary px-6 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg shadow-brand-orange/20">
-                    Start Building
+                <a href="{{ url_for('auth.login') }}" class="btn-orange-primary px-6 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg shadow-brand-orange/20">
+                    Sign In
                 </a>
-                <button onclick="showToast('Demo video player coming soon! Follow our guide below.', 'info')" class="px-6 py-3.5 rounded-xl border border-brand-border bg-brand-softCream/40 text-brand-textDark hover:bg-brand-softCream/80 hover:border-brand-orange/50 transition-all duration-200 text-sm font-semibold">
-                    Watch Demo
-                </button>
+                <a href="{{ url_for('auth.register') }}" class="px-6 py-3.5 rounded-xl border border-brand-border bg-brand-softCream/40 text-brand-textDark hover:bg-brand-softCream/80 hover:border-brand-orange/50 transition-all duration-200 text-sm font-semibold">
+                    Create Account
+                </a>
             </div>
 
             <!-- Live Platform Statistics Card (Fills spacing and adds visual premium appeal) -->
@@ -63,127 +63,829 @@
             </div>
         </div>
 
-        <!-- Right Side: High Fidelity Dashboard Preview (lg:col-span-5) -->
-        <div class="lg:col-span-5 flex justify-center">
-            <div class="glass-panel w-full rounded-2xl border border-brand-border p-5 shadow-2xl relative overflow-hidden transition-all duration-500 hover:border-brand-orange/40">
-                <!-- Mockup top bar -->
-                <div class="flex items-center justify-between border-b border-brand-border pb-3 mb-4">
-                    <div class="flex items-center gap-1.5">
-                        <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
-                    </div>
-                    <div class="text-[10px] font-medium text-brand-textMuted bg-brand-softCream/80 px-2.5 py-0.5 rounded-md border border-brand-border/40">
-                        creatoros.app/workspace
-                    </div>
-                    <div></div>
-                </div>
+        <!-- Right Side: Interactive 3D Camera Model (lg:col-span-5) -->
+        <div class="lg:col-span-5 flex justify-center" style="overflow-x: clip; overflow-y: visible; padding: 28px 0;">
+            <div class="camera-3d-container w-full rounded-2xl relative" id="camera-3d-wrapper">
+                <!-- Three.js canvas will be injected here -->
+                <canvas id="camera3d-canvas" class="w-full rounded-2xl" style="aspect-ratio: 1 / 1; display: block; cursor: grab;"></canvas>
                 
-                <!-- Mockup main screen -->
-                <div class="relative overflow-hidden rounded-xl border border-brand-border/40 shadow-inner group">
-                    <img src="{{ url_for('static', filename='images/hero_dashboard.png') }}" alt="CreatorOS Workspace Dashboard" class="w-full h-auto object-cover rounded-xl transition-all duration-700 group-hover:scale-[1.03]">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+                <!-- Drag hint overlay -->
+                <div id="camera3d-hint" class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-white/80 text-[10px] font-bold uppercase tracking-widest transition-opacity duration-700 pointer-events-none select-none">
+                    <svg class="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0 0v2.5M7 14h2.5M7 14H4.5m11-5.5V6m0 0V3.5M15.5 6H18m-2.5 0H13M12 21a9 9 0 110-18 9 9 0 010 18z"/></svg>
+                    Drag to rotate 360°
                 </div>
+
+                <!-- Orange glow effect behind the container -->
+                <div class="absolute -inset-4 rounded-3xl pointer-events-none" style="background: radial-gradient(ellipse at center, rgba(255,107,43,0.12) 0%, transparent 70%); z-index: -1;"></div>
+            </div>
+        </div>
+
+        <!-- Three.js CDN -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+        
+        <script>
+        (function() {
+            const canvas = document.getElementById('camera3d-canvas');
+            const hint = document.getElementById('camera3d-hint');
+            if (!canvas) return;
+
+            // ── Scene Setup ──
+            const scene = new THREE.Scene();
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+
+            const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+            camera.position.set(0, 2.2, 6.5);
+            camera.lookAt(0, 0.5, 0);
+
+            // ── Lighting ──
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const keyLight = new THREE.DirectionalLight(0xfff5e6, 1.2);
+            keyLight.position.set(5, 8, 5);
+            keyLight.castShadow = true;
+            keyLight.shadow.mapSize.width = 1024;
+            keyLight.shadow.mapSize.height = 1024;
+            scene.add(keyLight);
+
+            const fillLight = new THREE.DirectionalLight(0xffa54f, 0.5);
+            fillLight.position.set(-4, 3, -2);
+            scene.add(fillLight);
+
+            const rimLight = new THREE.PointLight(0xff6b2b, 1.5, 15);
+            rimLight.position.set(-3, 4, -4);
+            scene.add(rimLight);
+
+            const bottomGlow = new THREE.PointLight(0xff6b2b, 0.8, 10);
+            bottomGlow.position.set(0, -1, 3);
+            scene.add(bottomGlow);
+
+            // ── Materials ──
+            const bodyMat = new THREE.MeshPhysicalMaterial({
+                color: 0x1a1a1a,
+                metalness: 0.6,
+                roughness: 0.35,
+                clearcoat: 0.8,
+                clearcoatRoughness: 0.15,
+            });
+            const gripMat = new THREE.MeshPhysicalMaterial({
+                color: 0x2a2a2a,
+                metalness: 0.2,
+                roughness: 0.85,
+            });
+            const lensMat = new THREE.MeshPhysicalMaterial({
+                color: 0x111111,
+                metalness: 0.9,
+                roughness: 0.1,
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.05,
+            });
+            const lensGlassMat = new THREE.MeshPhysicalMaterial({
+                color: 0x1a0a3e,
+                metalness: 0.1,
+                roughness: 0.05,
+                transmission: 0.6,
+                thickness: 0.5,
+                clearcoat: 1.0,
+                ior: 1.8,
+            });
+            const lensRingMat = new THREE.MeshPhysicalMaterial({
+                color: 0xff6b2b,
+                metalness: 0.8,
+                roughness: 0.2,
+                emissive: 0xff6b2b,
+                emissiveIntensity: 0.3,
+            });
+            const accentMat = new THREE.MeshPhysicalMaterial({
+                color: 0xff6b2b,
+                metalness: 0.7,
+                roughness: 0.3,
+                emissive: 0xff6b2b,
+                emissiveIntensity: 0.2,
+            });
+            const chromeMat = new THREE.MeshPhysicalMaterial({
+                color: 0xcccccc,
+                metalness: 0.95,
+                roughness: 0.1,
+                clearcoat: 1.0,
+            });
+            const screenMat = new THREE.MeshPhysicalMaterial({
+                color: 0x000000,
+                metalness: 0.0,
+                roughness: 0.1,
+                emissive: 0x0a1a3a,
+                emissiveIntensity: 0.3,
+            });
+
+            // ── Camera Model Group ──
+            const cameraGroup = new THREE.Group();
+
+            // Main Body — beveled box shape
+            const bodyGeo = new THREE.BoxGeometry(2.6, 1.6, 1.5, 4, 4, 4);
+            // Soften edges by tweaking vertices slightly
+            const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+            bodyMesh.castShadow = true;
+            bodyMesh.receiveShadow = true;
+            bodyMesh.position.set(0, 0, 0);
+            cameraGroup.add(bodyMesh);
+
+            // Top Prism (Pentaprism hump)
+            const prismGeo = new THREE.BoxGeometry(1.2, 0.55, 1.1, 2, 2, 2);
+            const prismMesh = new THREE.Mesh(prismGeo, bodyMat);
+            prismMesh.position.set(-0.15, 1.05, 0);
+            prismMesh.castShadow = true;
+            cameraGroup.add(prismMesh);
+
+            // Viewfinder eyepiece
+            const vfGeo = new THREE.BoxGeometry(0.5, 0.35, 0.25);
+            const vfMesh = new THREE.Mesh(vfGeo, gripMat);
+            vfMesh.position.set(-0.15, 1.0, -0.65);
+            cameraGroup.add(vfMesh);
+
+            // Grip (right side)
+            const gripGeo = new THREE.BoxGeometry(0.65, 1.7, 1.6, 2, 2, 2);
+            const gripMesh = new THREE.Mesh(gripGeo, gripMat);
+            gripMesh.position.set(1.35, -0.05, 0);
+            gripMesh.castShadow = true;
+            cameraGroup.add(gripMesh);
+
+            // Grip accent stripe
+            const stripeGeo = new THREE.BoxGeometry(0.08, 1.3, 1.4);
+            const stripeMesh = new THREE.Mesh(stripeGeo, accentMat);
+            stripeMesh.position.set(1.0, 0, 0);
+            cameraGroup.add(stripeMesh);
+
+            // ── Lens Barrel ──
+            const lensBarrel1Geo = new THREE.CylinderGeometry(0.72, 0.72, 0.8, 32);
+            const lensBarrel1 = new THREE.Mesh(lensBarrel1Geo, lensMat);
+            lensBarrel1.rotation.x = Math.PI / 2;
+            lensBarrel1.position.set(-0.15, 0, 1.1);
+            lensBarrel1.castShadow = true;
+            cameraGroup.add(lensBarrel1);
+
+            const lensBarrel2Geo = new THREE.CylinderGeometry(0.65, 0.7, 0.7, 32);
+            const lensBarrel2 = new THREE.Mesh(lensBarrel2Geo, lensMat);
+            lensBarrel2.rotation.x = Math.PI / 2;
+            lensBarrel2.position.set(-0.15, 0, 1.8);
+            lensBarrel2.castShadow = true;
+            cameraGroup.add(lensBarrel2);
+
+            const lensBarrel3Geo = new THREE.CylinderGeometry(0.58, 0.65, 0.5, 32);
+            const lensBarrel3 = new THREE.Mesh(lensBarrel3Geo, lensMat);
+            lensBarrel3.rotation.x = Math.PI / 2;
+            lensBarrel3.position.set(-0.15, 0, 2.35);
+            lensBarrel3.castShadow = true;
+            cameraGroup.add(lensBarrel3);
+
+            // Orange accent ring on lens
+            const ringGeo = new THREE.TorusGeometry(0.68, 0.04, 8, 32);
+            const ringMesh = new THREE.Mesh(ringGeo, lensRingMat);
+            ringMesh.position.set(-0.15, 0, 1.52);
+            cameraGroup.add(ringMesh);
+
+            // Lens glass front element
+            const lensGlassGeo = new THREE.CircleGeometry(0.52, 32);
+            const lensGlassMesh = new THREE.Mesh(lensGlassGeo, lensGlassMat);
+            lensGlassMesh.position.set(-0.15, 0, 2.61);
+            cameraGroup.add(lensGlassMesh);
+
+            // Inner lens reflection ring
+            const innerRingGeo = new THREE.RingGeometry(0.25, 0.35, 32);
+            const innerRingMat = new THREE.MeshPhysicalMaterial({
+                color: 0x2a1a4e, metalness: 0.5, roughness: 0.1,
+                emissive: 0x1a0a3e, emissiveIntensity: 0.15, side: THREE.DoubleSide,
+            });
+            const innerRing = new THREE.Mesh(innerRingGeo, innerRingMat);
+            innerRing.position.set(-0.15, 0, 2.62);
+            cameraGroup.add(innerRing);
+
+            // ── Top Controls ──
+            // Shutter button
+            const shutterGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.1, 16);
+            const shutterMesh = new THREE.Mesh(shutterGeo, chromeMat);
+            shutterMesh.position.set(0.9, 1.35, 0.35);
+            cameraGroup.add(shutterMesh);
+
+            // Mode dial
+            const dialGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.2, 24);
+            const dialMesh = new THREE.Mesh(dialGeo, chromeMat);
+            dialMesh.position.set(0.9, 1.35, -0.25);
+            cameraGroup.add(dialMesh);
+
+            // Hot shoe
+            const hotshoeGeo = new THREE.BoxGeometry(0.5, 0.08, 0.35);
+            const hotshoeMesh = new THREE.Mesh(hotshoeGeo, chromeMat);
+            hotshoeMesh.position.set(-0.15, 1.35, 0);
+            cameraGroup.add(hotshoeMesh);
+
+            // ── Rear LCD screen ──
+            const screenGeo = new THREE.BoxGeometry(1.6, 1.05, 0.05);
+            const screenMesh = new THREE.Mesh(screenGeo, screenMat);
+            screenMesh.position.set(-0.05, 0, -0.78);
+            cameraGroup.add(screenMesh);
+
+            // Screen border
+            const screenBorderGeo = new THREE.BoxGeometry(1.7, 1.15, 0.03);
+            const screenBorderMesh = new THREE.Mesh(screenBorderGeo, gripMat);
+            screenBorderMesh.position.set(-0.05, 0, -0.79);
+            cameraGroup.add(screenBorderMesh);
+
+            // Rear control buttons (small dots)
+            for (let i = 0; i < 4; i++) {
+                const btnGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.04, 8);
+                const btnMesh = new THREE.Mesh(btnGeo, chromeMat);
+                btnMesh.rotation.x = Math.PI / 2;
+                btnMesh.position.set(1.05, 0.25 - i * 0.22, -0.78);
+                cameraGroup.add(btnMesh);
+            }
+
+            // ── Position & Add to Scene ──
+            cameraGroup.position.set(0, 0.5, 0);
+            cameraGroup.rotation.y = -0.3;
+            scene.add(cameraGroup);
+
+            // ── Ground Reflective Disc ──
+            const groundGeo = new THREE.CircleGeometry(4, 64);
+            const groundMat = new THREE.MeshPhysicalMaterial({
+                color: 0x111111,
+                metalness: 0.4,
+                roughness: 0.6,
+                transparent: true,
+                opacity: 0.5,
+            });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            ground.position.y = -0.85;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // ── Floating Particles ──
+            const particleCount = 60;
+            const particlesGeo = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 10;
+                positions[i * 3 + 1] = Math.random() * 5 - 1;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+            }
+            particlesGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const particlesMat = new THREE.PointsMaterial({
+                color: 0xff6b2b,
+                size: 0.035,
+                transparent: true,
+                opacity: 0.5,
+            });
+            const particles = new THREE.Points(particlesGeo, particlesMat);
+            scene.add(particles);
+
+            // ── Interaction: Drag to Rotate ──
+            let isDragging = false;
+            let prevX = 0;
+            let prevY = 0;
+            let autoRotate = true;
+            let rotationVelocityY = 0;
+            let rotationVelocityX = 0;
+            let targetRotY = cameraGroup.rotation.y;
+            let targetRotX = cameraGroup.rotation.x;
+            let hintHidden = false;
+
+            canvas.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                autoRotate = false;
+                prevX = e.clientX;
+                prevY = e.clientY;
+                canvas.style.cursor = 'grabbing';
+                if (!hintHidden && hint) {
+                    hint.style.opacity = '0';
+                    hintHidden = true;
+                }
+            });
+            window.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                const dx = e.clientX - prevX;
+                const dy = e.clientY - prevY;
+                rotationVelocityY = dx * 0.008;
+                rotationVelocityX = dy * 0.004;
+                targetRotY += rotationVelocityY;
+                targetRotX += rotationVelocityX;
+                targetRotX = Math.max(-0.5, Math.min(0.5, targetRotX));
+                prevX = e.clientX;
+                prevY = e.clientY;
+            });
+            window.addEventListener('pointerup', () => {
+                isDragging = false;
+                canvas.style.cursor = 'grab';
+                // Resume auto-rotation after 3 seconds
+                setTimeout(() => { if (!isDragging) autoRotate = true; }, 3000);
+            });
+
+            // ── Resize Handler ──
+            function resizeRenderer() {
+                const wrapper = document.getElementById('camera-3d-wrapper');
+                if (!wrapper) return;
+                const w = wrapper.clientWidth;
+                const h = w; // Square aspect ratio
+                renderer.setSize(w, h);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
+            resizeRenderer();
+            window.addEventListener('resize', resizeRenderer);
+
+            // ── Animation Loop ──
+            const clock = new THREE.Clock();
+            function animate() {
+                requestAnimationFrame(animate);
+                const t = clock.getElapsedTime();
+
+                // Auto-rotation
+                if (autoRotate) {
+                    targetRotY += 0.004;
+                }
+
+                // Smooth interpolation
+                cameraGroup.rotation.y += (targetRotY - cameraGroup.rotation.y) * 0.08;
+                cameraGroup.rotation.x += (targetRotX - cameraGroup.rotation.x) * 0.08;
+
+                // Gentle float
+                cameraGroup.position.y = 0.5 + Math.sin(t * 1.2) * 0.08;
+
+                // Particle float
+                const pos = particles.geometry.attributes.position.array;
+                for (let i = 0; i < particleCount; i++) {
+                    pos[i * 3 + 1] += Math.sin(t + i) * 0.002;
+                }
+                particles.geometry.attributes.position.needsUpdate = true;
+
+                // Pulse the orange glow lights
+                rimLight.intensity = 1.5 + Math.sin(t * 2) * 0.3;
+                bottomGlow.intensity = 0.8 + Math.sin(t * 1.5 + 1) * 0.2;
+
+                renderer.render(scene, camera);
+            }
+            animate();
+        })();
+        </script>
+
+        <style>
+        /* ── 3D Camera Container ── */
+        .camera-3d-container {
+            background: radial-gradient(ellipse at 50% 40%, rgba(26,26,26,0.95) 0%, rgba(10,10,10,0.98) 100%);
+            border: 1px solid rgba(255,255,255,0.07);
+            box-shadow:
+                0 24px 80px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(255,107,43,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: box-shadow 0.4s ease, border-color 0.3s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            will-change: transform;
+        }
+        .camera-3d-container:hover {
+            border-color: rgba(255,107,43,0.3);
+            box-shadow:
+                0 32px 100px rgba(0,0,0,0.5),
+                0 0 0 1.5px rgba(255,107,43,0.35),
+                0 0 80px rgba(255,107,43,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+        }
+        #camera3d-canvas {
+            border-radius: 1rem;
+        }
+        </style>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- Cinematic Creator Niche Gallery — Dual-Track Pop-Zoom Slider   -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <div class="w-full py-10 select-none space-y-5 relative" id="creator-gallery" style="overflow: visible;">
+
+        <!-- Section header -->
+        <div class="text-center px-6 space-y-1 mb-2">
+            <p class="text-[9px] font-black uppercase tracking-[0.25em] text-brand-orange">Creator Universe</p>
+            <h2 class="text-xl md:text-2xl font-extrabold text-brand-textDark tracking-tight">Every niche. Every creator. One OS.</h2>
+        </div>
+
+        <!-- Track 1: scrolls LEFT -->
+        <div class="track-clip-x w-full" style="padding: 36px 0;">
+            <div class="flex gap-4 w-max animate-creator-left">
+                {% set track1 = [
+                    ('creator_dev_cinematic.png', 'Tech & Dev', '#FF6B2B'),
+                    ('creator_travel_cinematic.png', 'Travel & Outdoors', '#10B981'),
+                    ('creator_fashion_cinematic.png', 'Fashion & Beauty', '#EC4899'),
+                    ('creator_photography_cinematic.png', 'Photography', '#8B5CF6'),
+                    ('creator_design_cinematic.png', 'Art & Design', '#F59E0B'),
+                    ('creator_dev_cinematic.png', 'Tech & Dev', '#FF6B2B'),
+                    ('creator_travel_cinematic.png', 'Travel & Outdoors', '#10B981'),
+                    ('creator_fashion_cinematic.png', 'Fashion & Beauty', '#EC4899'),
+                    ('creator_photography_cinematic.png', 'Photography', '#8B5CF6'),
+                    ('creator_design_cinematic.png', 'Art & Design', '#F59E0B')
+                ] %}
+                {% for img, label, color in track1 %}
+                <div class="creator-pop-card flex-shrink-0 w-[260px] h-[175px] rounded-2xl relative cursor-pointer shadow-lg" style="isolation: isolate;">
+                    <img src="{{ url_for('static', filename='images/' + img) }}" alt="{{ label }}" class="creator-pop-img w-full h-full object-cover">
+                    <div class="creator-pop-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="creator-pop-label font-black text-[11px] uppercase tracking-widest text-white" style="text-shadow: 0 0 12px {{ color }};">{{ label }}</span>
+                        <span class="creator-pop-dot w-6 h-1 rounded-full mt-1.5 block" style="background: {{ color }};"></span>
+                    </div>
+                    <div class="creator-pop-glow absolute inset-0 rounded-2xl pointer-events-none" style="box-shadow: inset 0 0 0 2px {{ color }}40;"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Track 2: scrolls RIGHT -->
+        <div class="track-clip-x w-full" style="padding: 36px 0;">
+            <div class="flex gap-4 w-max animate-creator-right">
+                {% set track2 = [
+                    ('creator_fitness_cinematic.png', 'Fitness & Health', '#EF4444'),
+                    ('creator_food_cinematic.png', 'Food & Lifestyle', '#F97316'),
+                    ('creator_finance_cinematic.png', 'Finance & Investing', '#3B82F6'),
+                    ('creator_writer_cinematic.png', 'Copywriting', '#A855F7'),
+                    ('creator_fitness_cinematic.png', 'Fitness & Health', '#EF4444'),
+                    ('creator_food_cinematic.png', 'Food & Lifestyle', '#F97316'),
+                    ('creator_finance_cinematic.png', 'Finance & Investing', '#3B82F6'),
+                    ('creator_writer_cinematic.png', 'Copywriting', '#A855F7'),
+                    ('creator_fitness_cinematic.png', 'Fitness & Health', '#EF4444'),
+                    ('creator_food_cinematic.png', 'Food & Lifestyle', '#F97316')
+                ] %}
+                {% for img, label, color in track2 %}
+                <div class="creator-pop-card flex-shrink-0 w-[260px] h-[175px] rounded-2xl relative cursor-pointer shadow-lg" style="isolation: isolate;">
+                    <img src="{{ url_for('static', filename='images/' + img) }}" alt="{{ label }}" class="creator-pop-img w-full h-full object-cover">
+                    <div class="creator-pop-overlay absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-4">
+                        <span class="creator-pop-label font-black text-[11px] uppercase tracking-widest text-white" style="text-shadow: 0 0 12px {{ color }};">{{ label }}</span>
+                        <span class="creator-pop-dot w-6 h-1 rounded-full mt-1.5 block" style="background: {{ color }};"></span>
+                    </div>
+                    <div class="creator-pop-glow absolute inset-0 rounded-2xl pointer-events-none" style="box-shadow: inset 0 0 0 2px {{ color }}40;"></div>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
 
-    <!-- Space-Efficient Bento Grid Features Layout -->
-    <div class="w-full max-w-[1440px] py-12 px-6 md:px-12 space-y-8 reveal-on-scroll">
-        <div class="text-center space-y-2">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-brand-textDark tracking-tight">Features Bento System</h2>
-            <p class="text-sm text-brand-textMuted max-w-md mx-auto">Explore the engine layers driving personal brand growth in a single screen.</p>
+    <style>
+    /* ── Track: clip horizontal scroll, let cards escape vertically ── */
+    .track-clip-x {
+        overflow-x: clip;
+        overflow-y: visible;
+    }
+
+    /* ── Card: image is clipped inside card at rest via clip-path ── */
+    .creator-pop-card {
+        transition:
+            transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+            box-shadow 0.38s ease;
+        z-index: 1;
+        position: relative;
+        will-change: transform;
+    }
+    /* The image fills the card and is clipped to its bounds at rest */
+    .creator-pop-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 1rem; /* 16px = rounded-2xl */
+        transition:
+            transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            border-radius 0.38s ease;
+        transform-origin: center center;
+    }
+    /* ── Hover: card pops OUT of its row, image scales beyond card edges ── */
+    .creator-pop-card:hover {
+        transform: scale(1.22) translateY(-10px);
+        box-shadow:
+            0 32px 72px rgba(0,0,0,0.55),
+            0 0 0 2.5px rgba(255,107,43,0.6),
+            0 0 48px rgba(255,107,43,0.2);
+        z-index: 100;
+    }
+    .creator-pop-card:hover .creator-pop-img {
+        transform: scale(1.18);  /* image zooms further beyond card corners */
+        border-radius: 1.25rem;
+    }
+    .creator-pop-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.25) 55%, transparent 100%);
+        border-radius: inherit;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1rem;
+        opacity: 0.75;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+    .creator-pop-card:hover .creator-pop-overlay {
+        opacity: 1;
+    }
+    .creator-pop-label {
+        font-weight: 900;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: #fff;
+        transform: translateY(5px);
+        opacity: 0.8;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .creator-pop-card:hover .creator-pop-label {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    .creator-pop-dot {
+        width: 1.5rem;
+        height: 3px;
+        border-radius: 9999px;
+        margin-top: 6px;
+        display: block;
+        transform: scaleX(0.4);
+        transform-origin: left;
+        transition: transform 0.35s ease 0.05s;
+    }
+    .creator-pop-card:hover .creator-pop-dot {
+        transform: scaleX(1);
+    }
+    .creator-pop-glow {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
+        transition: box-shadow 0.38s ease;
+    }
+    .creator-pop-card:hover .creator-pop-glow {
+        box-shadow: inset 0 0 0 2px rgba(255,107,43,0.6);
+    }
+
+    /* ── Track Scroll Animations ── */
+    @keyframes creator-scroll-left {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    @keyframes creator-scroll-right {
+        0%   { transform: translateX(-50%); }
+        100% { transform: translateX(0); }
+    }
+    .animate-creator-left  { animation: creator-scroll-left  40s linear infinite; }
+    .animate-creator-right { animation: creator-scroll-right 40s linear infinite; }
+
+    /* Pause entire gallery on hover */
+    #creator-gallery:hover .animate-creator-left,
+    #creator-gallery:hover .animate-creator-right {
+        animation-play-state: paused;
+    }
+    </style>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!--   FEATURE SYSTEM — Dark Cinematic Bento Grid           -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <div class="w-full max-w-[1440px] mx-auto py-20 px-6 md:px-12" id="features-bento">
+
+        <!-- Section Label -->
+        <div class="text-center space-y-3 mb-14">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-orange/30 bg-brand-orange/5 text-brand-orange text-[10px] font-black uppercase tracking-[0.2em]">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse inline-block"></span>
+                Platform Engine
+            </div>
+            <h2 class="text-4xl md:text-5xl font-black text-brand-textDark tracking-tight leading-none">
+                Built for creators who<br>
+                <span class="bg-gradient-to-r from-brand-orange via-[#FF5F7E] to-[#FF007A] bg-clip-text text-transparent">ship every single day.</span>
+            </h2>
+            <p class="text-sm text-brand-textMuted max-w-lg mx-auto leading-relaxed">Five core engine layers — working in sync — so you never run out of ideas, angles, or momentum.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-            
-            <!-- Bento Box 1: How it Works Workflow Timeline (Spans 2 columns on desktop) -->
-            <div class="md:col-span-2 bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm space-y-6 flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
-                <div class="space-y-2">
-                    <span class="text-[9px] text-[#FF007A] uppercase font-bold tracking-widest">Workflow Timeline</span>
-                    <h3 class="text-xl font-bold text-brand-textDark">How CreatorOS Drives Content Delivery</h3>
+        <!-- Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 auto-rows-auto">
+
+            <!-- ── Card 1: Workflow Pipeline (col-span-8) ── -->
+            <div class="md:col-span-8 bento-card bento-dark group relative overflow-hidden rounded-3xl p-8 flex flex-col gap-6 min-h-[280px]">
+                <!-- bg glow blob -->
+                <div class="absolute -top-16 -right-16 w-64 h-64 bg-brand-orange/10 rounded-full blur-3xl pointer-events-none group-hover:bg-brand-orange/20 transition-all duration-700"></div>
+                <div>
+                    <div class="bento-chip text-brand-orange border-brand-orange/30 bg-brand-orange/10">Workflow Pipeline</div>
+                    <h3 class="text-2xl font-black text-white mt-3 leading-tight">From goal to published post<br><span class="text-brand-orange">in 4 steps.</span></h3>
                 </div>
-                
-                <!-- Timeline mockup -->
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
-                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
-                        <span class="text-xs font-black text-brand-orange">01 / Setup</span>
-                        <h4 class="text-xs font-bold text-brand-textDark">Set Workspace Goals</h4>
-                        <p class="text-[10px] text-brand-textMuted leading-tight">State target audience, niche interests, and brand goals.</p>
+                <!-- Steps rail -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 relative">
+                    <!-- Connecting line -->
+                    <div class="absolute top-6 left-0 right-0 h-px bg-gradient-to-r from-brand-orange/0 via-brand-orange/40 to-brand-orange/0 hidden sm:block pointer-events-none"></div>
+                    <!-- Step 1 -->
+                    <div class="bento-step group/step">
+                        <div class="bento-step-num bg-brand-orange/15 text-brand-orange border-brand-orange/30">01</div>
+                        <p class="text-[11px] font-black text-white mt-2">Setup Goals</p>
+                        <p class="text-[10px] text-white/50 mt-1 leading-snug">Define niche, audience & brand voice.</p>
                     </div>
-                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
-                        <span class="text-xs font-black text-brand-orange">02 / Scan</span>
-                        <h4 class="text-xs font-bold text-brand-textDark">Discover Trends</h4>
-                        <p class="text-[10px] text-brand-textMuted leading-tight">AI searches daily signals, metrics and alerts.</p>
+                    <!-- Step 2 -->
+                    <div class="bento-step">
+                        <div class="bento-step-num bg-[#FF5F7E]/15 text-[#FF5F7E] border-[#FF5F7E]/30">02</div>
+                        <p class="text-[11px] font-black text-white mt-2">Scan Trends</p>
+                        <p class="text-[10px] text-white/50 mt-1 leading-snug">AI scans live signals & alerts daily.</p>
                     </div>
-                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
-                        <span class="text-xs font-black text-brand-orange">03 / Build</span>
-                        <h4 class="text-xs font-bold text-brand-textDark">Generate Posts</h4>
-                        <p class="text-[10px] text-brand-textMuted leading-tight">Craft LinkedIn posts, threads, or captions in clicks.</p>
+                    <!-- Step 3 -->
+                    <div class="bento-step">
+                        <div class="bento-step-num bg-[#A855F7]/15 text-[#A855F7] border-[#A855F7]/30">03</div>
+                        <p class="text-[11px] font-black text-white mt-2">Generate Post</p>
+                        <p class="text-[10px] text-white/50 mt-1 leading-snug">One-click LinkedIn, X, or Insta drafts.</p>
                     </div>
-                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
-                        <span class="text-xs font-black text-[#FF007A]">04 / Streak</span>
-                        <h4 class="text-xs font-bold text-brand-textDark">Grow Consistent</h4>
-                        <p class="text-[10px] text-brand-textMuted leading-tight">Save drafts, track streak meters, build authority.</p>
+                    <!-- Step 4 -->
+                    <div class="bento-step">
+                        <div class="bento-step-num bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30">04</div>
+                        <p class="text-[11px] font-black text-white mt-2">Build Streak</p>
+                        <p class="text-[10px] text-white/50 mt-1 leading-snug">Track metrics & grow authority daily.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Bento Box 2: Opportunity Alerts (Standard Col) -->
-            <div class="bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
-                <div class="space-y-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-softCream/60 text-brand-orange border border-brand-border flex items-center justify-center font-bold shadow-inner">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+            <!-- ── Card 2: Opportunity Alerts (col-span-4) ── -->
+            <div class="md:col-span-4 bento-card bento-dark group relative overflow-hidden rounded-3xl p-7 flex flex-col justify-between min-h-[280px]">
+                <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-[#FF5F7E]/15 rounded-full blur-3xl pointer-events-none group-hover:bg-[#FF5F7E]/25 transition-all duration-700"></div>
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-[#FF5F7E]/15 border border-[#FF5F7E]/25 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[#FF5F7E]/25 transition-all duration-300">
+                        <svg class="w-6 h-6 text-[#FF5F7E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
-                    <h3 class="text-base font-bold text-brand-textDark">Opportunity Alerts</h3>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">Instant warnings mapping niche topics displaying rapid growth curves.</p>
+                    <div class="bento-chip text-[#FF5F7E] border-[#FF5F7E]/30 bg-[#FF5F7E]/10 mb-3">Live Alerts</div>
+                    <h3 class="text-xl font-black text-white leading-tight">Opportunity<br>Alerts</h3>
+                    <p class="text-xs text-white/50 mt-3 leading-relaxed">Instant signals mapping niche topics showing rapid growth curves before they peak.</p>
                 </div>
-                <div class="text-[10px] font-semibold text-brand-orange mt-4">Automate Signals &nbsp;→</div>
+                <!-- Live pulse indicator -->
+                <div class="flex items-center gap-2 mt-4">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF5F7E] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#FF5F7E]"></span>
+                    </span>
+                    <span class="text-[10px] font-black text-[#FF5F7E] uppercase tracking-widest">3 signals live now</span>
+                </div>
             </div>
 
-            <!-- Bento Box 3: Creator Memory (Standard Col) -->
-            <div class="bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
-                <div class="space-y-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-softCream/60 text-[#FF007A] border border-brand-border flex items-center justify-center font-bold shadow-inner">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <!-- ── Card 3: Creator Memory (col-span-4) ── -->
+            <div class="md:col-span-4 bento-card bento-dark group relative overflow-hidden rounded-3xl p-7 flex flex-col justify-between min-h-[240px]">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-[#A855F7]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#A855F7]/20 transition-all duration-700"></div>
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-[#A855F7]/15 border border-[#A855F7]/25 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[#A855F7]/25 transition-all duration-300">
+                        <svg class="w-6 h-6 text-[#A855F7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                     </div>
-                    <h3 class="text-base font-bold text-brand-textDark">Creator Memory</h3>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">Checks historical data to guarantee unique insights and block duplicates.</p>
+                    <div class="bento-chip text-[#A855F7] border-[#A855F7]/30 bg-[#A855F7]/10 mb-3">Memory Layer</div>
+                    <h3 class="text-xl font-black text-white leading-tight">Creator<br>Memory</h3>
+                    <p class="text-xs text-white/50 mt-3 leading-relaxed">Recalls everything you've posted. Guarantees uniqueness. Blocks duplicates automatically.</p>
                 </div>
-                <div class="text-[10px] font-semibold text-[#FF007A] mt-4">Prevent Repetitiveness &nbsp;→</div>
+                <div class="text-[10px] font-black text-[#A855F7] uppercase tracking-widest mt-4">Zero repeats ever →</div>
             </div>
 
-            <!-- Bento Box 4: Platform Presets (Standard Col) -->
-            <div class="bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
-                <div class="space-y-3">
-                    <div class="w-10 h-10 rounded-xl bg-brand-softCream/60 text-brand-orange border border-brand-border flex items-center justify-center font-bold shadow-inner">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
-                    <h3 class="text-base font-bold text-brand-textDark">Platform Formats</h3>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">LinkedIn posts, multi-tweet X threads, and captions mapped perfectly.</p>
+            <!-- ── Card 4: Consistency Streak (col-span-4) ── -->
+            <div class="md:col-span-4 bento-card bento-dark group relative overflow-hidden rounded-3xl p-7 flex flex-col justify-between min-h-[240px]">
+                <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-24 bg-brand-orange/15 rounded-full blur-3xl pointer-events-none group-hover:bg-brand-orange/25 transition-all duration-700"></div>
+                <div>
+                    <div class="bento-chip text-brand-orange border-brand-orange/30 bg-brand-orange/10 mb-5">Streak Engine</div>
+                    <h3 class="text-xl font-black text-white leading-tight">Consistency<br>Score</h3>
+                    <p class="text-xs text-white/50 mt-3 leading-relaxed">Streak records, activity checks & monthly quotas so you build compounding authority.</p>
                 </div>
-                <div class="text-[10px] font-semibold text-brand-orange mt-4">Generate Presets &nbsp;→</div>
-            </div>
-
-            <!-- Bento Box 5: Consistency Engine (Spans 2 columns on desktop) -->
-            <div class="md:col-span-2 bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6 hover:border-brand-orange/40 transition-all duration-300">
-                <div class="space-y-3 max-w-sm text-left">
-                    <span class="text-[9px] text-[#FF007A] uppercase font-bold tracking-widest">Consistency Engine</span>
-                    <h3 class="text-lg font-bold text-brand-textDark">Never Lose Streak Progress</h3>
-                    <p class="text-xs text-brand-textMuted leading-relaxed">Maintains streak records, activity checks, and monthly publishing quotas. Building posting behaviors translates into compounding network impressions.</p>
-                </div>
-                
-                <!-- Graphic mini indicator mockup -->
-                <div class="flex-shrink-0 bg-brand-softCream/60 border border-brand-border/60 rounded-xl p-4 flex items-center gap-3 shadow-inner">
-                    <div class="w-10 h-10 rounded-xl bg-white/70 text-brand-orange border border-brand-border flex items-center justify-center text-lg shadow-inner pulse-orange select-none">🔥</div>
+                <!-- Streak pill -->
+                <div class="flex items-center gap-3 mt-4 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 group-hover:border-brand-orange/30 transition-all duration-300">
+                    <span class="text-2xl">🔥</span>
                     <div>
-                        <div class="font-extrabold text-sm text-brand-textDark">14 Day Streak</div>
-                        <div class="text-[9px] text-[#FF007A] uppercase font-black tracking-wider">Level 3 Active</div>
+                        <div class="text-sm font-black text-white">14-Day Streak</div>
+                        <div class="text-[9px] font-black text-brand-orange uppercase tracking-widest">Level 3 Active</div>
+                    </div>
+                    <div class="ml-auto">
+                        <div class="streak-ring"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- ── Card 5: Platform Formats (col-span-4) ── -->
+            <div class="md:col-span-4 bento-card bento-dark group relative overflow-hidden rounded-3xl p-7 flex flex-col justify-between min-h-[240px]">
+                <div class="absolute top-0 right-0 w-44 h-44 bg-[#10B981]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#10B981]/20 transition-all duration-700"></div>
+                <div>
+                    <div class="w-12 h-12 rounded-2xl bg-[#10B981]/15 border border-[#10B981]/25 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-[#10B981]/25 transition-all duration-300">
+                        <svg class="w-6 h-6 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="bento-chip text-[#10B981] border-[#10B981]/30 bg-[#10B981]/10 mb-3">Multi-Platform</div>
+                    <h3 class="text-xl font-black text-white leading-tight">Platform<br>Formats</h3>
+                    <p class="text-xs text-white/50 mt-3 leading-relaxed">LinkedIn posts, X threads, Instagram captions — one input, all formats, perfectly tuned.</p>
+                </div>
+                <!-- Platform pills -->
+                <div class="flex flex-wrap gap-2 mt-4">
+                    <span class="platform-pill bg-[#0A66C2]/20 text-[#0A66C2] border-[#0A66C2]/30">LinkedIn</span>
+                    <span class="platform-pill bg-white/10 text-white/70 border-white/15">X</span>
+                    <span class="platform-pill bg-[#E1306C]/20 text-[#E1306C] border-[#E1306C]/30">Instagram</span>
+                    <span class="platform-pill bg-brand-orange/15 text-brand-orange border-brand-orange/30">Blog</span>
+                </div>
+            </div>
+
+            <!-- ── Card 6: Stats Banner (col-span-12 — full width) ── -->
+            <div class="md:col-span-12 bento-card relative overflow-hidden rounded-3xl p-8 flex flex-col sm:flex-row items-center justify-between gap-8" style="background: linear-gradient(135deg, #FF6B2B 0%, #FF5F7E 50%, #FF007A 100%);">
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px); background-size: 40px 40px;"></div>
+                <div class="relative text-left">
+                    <p class="text-white/80 text-xs font-black uppercase tracking-[0.2em] mb-1">Creator Universe</p>
+                    <h3 class="text-2xl md:text-3xl font-black text-white leading-tight">Real creators. Real results.<br>Real momentum.</h3>
+                </div>
+                <div class="relative flex gap-8 sm:gap-12 text-center flex-shrink-0">
+                    <div>
+                        <div class="text-3xl md:text-4xl font-black text-white">1.2K+</div>
+                        <div class="text-[10px] text-white/70 uppercase font-bold tracking-wider mt-1">Creators</div>
+                    </div>
+                    <div class="w-px bg-white/20"></div>
+                    <div>
+                        <div class="text-3xl md:text-4xl font-black text-white">45K+</div>
+                        <div class="text-[10px] text-white/70 uppercase font-bold tracking-wider mt-1">Posts Generated</div>
+                    </div>
+                    <div class="w-px bg-white/20"></div>
+                    <div>
+                        <div class="text-3xl md:text-4xl font-black text-white">98.7%</div>
+                        <div class="text-[10px] text-white/70 uppercase font-bold tracking-wider mt-1">Precision Rate</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.register') }}" class="relative flex-shrink-0 px-7 py-3.5 bg-white text-brand-orange font-black text-sm rounded-2xl hover:scale-105 hover:shadow-2xl transition-all duration-200 whitespace-nowrap">
+                    Start Free →
+                </a>
+            </div>
+
         </div>
     </div>
+
+    <style>
+    /* ── Bento Cards ── */
+    .bento-dark {
+        background: linear-gradient(145deg, #131313 0%, #1a1a1a 100%);
+        border: 1px solid rgba(255,255,255,0.07);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.34,1.26,0.64,1);
+    }
+    .bento-dark:hover {
+        border-color: rgba(255,107,43,0.25);
+        box-shadow: 0 0 0 1px rgba(255,107,43,0.12), 0 24px 56px rgba(0,0,0,0.5);
+        transform: translateY(-3px);
+    }
+    .bento-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 10px;
+        border-radius: 9999px;
+        border-width: 1px;
+        border-style: solid;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+    }
+    /* ── Workflow Steps ── */
+    .bento-step {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 1rem;
+        padding: 0.875rem;
+        transition: background 0.25s ease, border-color 0.25s ease;
+    }
+    .bento-step:hover {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.12);
+    }
+    .bento-step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.6rem;
+        border-width: 1px;
+        border-style: solid;
+        font-size: 10px;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+    }
+    /* ── Platform Pills ── */
+    .platform-pill {
+        padding: 3px 10px;
+        border-radius: 9999px;
+        border-width: 1px;
+        border-style: solid;
+        font-size: 10px;
+        font-weight: 700;
+    }
+    /* ── Streak Ring ── */
+    .streak-ring {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 3px solid rgba(255,107,43,0.2);
+        border-top-color: #FF6B2B;
+        animation: streak-spin 2s linear infinite;
+    }
+    @keyframes streak-spin {
+        to { transform: rotate(360deg); }
+    }
+    /* ── Features section base ── */
+    #features-bento {
+        position: relative;
+    }
+    </style>
+
+
 </div>
 {% endblock %}
+

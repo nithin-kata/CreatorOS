@@ -6,19 +6,37 @@
 <div class="space-y-8 py-6 px-4">
     
     <!-- Top Header Profile Section -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-border/60 pb-6">
-        <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">Good Morning, {{ current_user.name.split()[0] }} 👋</h1>
-            <p class="text-sm text-brand-textMuted mt-1 flex items-center gap-1.5">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 flex-shrink-0">
+        <div class="space-y-2">
+            <div class="section-chip">Dashboard Overview</div>
+            <h1 id="dynamic-greeting" data-name="{{ current_user.name.split()[0] }}" class="text-3xl md:text-4xl font-extrabold tracking-tight page-title select-none">Good Morning, {{ current_user.name.split()[0] }} 👋</h1>
+            <script>
+                (function() {
+                    try {
+                        const hour = new Date().getHours();
+                        let greeting = "Good Evening";
+                        if (hour >= 5 && hour < 12) {
+                            greeting = "Good Morning";
+                        } else if (hour >= 12 && hour < 17) {
+                            greeting = "Good Afternoon";
+                        }
+                        const name = document.getElementById("dynamic-greeting").getAttribute("data-name");
+                        document.getElementById("dynamic-greeting").textContent = greeting + ", " + name + " 👋";
+                    } catch (e) {
+                        console.error("Error setting greeting:", e);
+                    }
+                })();
+            </script>
+            <p class="text-sm text-brand-textMuted mt-1 flex items-center gap-2">
                 Active Goal: 
-                <span class="px-2.5 py-0.5 rounded-full bg-brand-softCream border border-brand-border/60 text-brand-orange text-xs font-semibold uppercase tracking-wider">
+                <span class="px-3 py-1 rounded-full bg-brand-softCream/80 border border-brand-orange/20 text-brand-orange text-xs font-bold uppercase tracking-wider backdrop-blur-sm">
                     {{ goal.goal }}
                 </span>
             </p>
         </div>
         
         <div class="flex items-center gap-2">
-            <a href="{{ url_for('content.generate') }}" class="btn-orange-primary px-5 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <a href="{{ url_for('content.generate') }}" class="btn-orange-primary px-5 py-3 rounded-xl text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-brand-orange/15">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 Create New Post
             </a>
@@ -26,31 +44,36 @@
     </div>
 
     <!-- Dashboard Content Layout Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger-enter">
         
         <!-- Left 2 Columns (Opportunities & Alerts) -->
         <div class="lg:col-span-2 space-y-6">
             
-            <!-- Card 1: Today's Opportunity -->
-            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6 relative overflow-hidden">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-softCream rounded-bl-full -z-10 opacity-30"></div>
+            <!-- Card 1: Today's Opportunity (Premium Glowing Card) -->
+            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6 relative overflow-hidden card-accent-top">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-brand-orange/8 to-transparent rounded-bl-full pointer-events-none"></div>
                 
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-brand-orange uppercase tracking-widest bg-brand-softCream/80 px-3 py-1 rounded-full border border-brand-border/40">Today's Opportunity</span>
-                        <div class="flex items-center gap-1.5 text-sm font-semibold text-brand-textDark">
+                        <div class="flex items-center gap-3">
+                            <div class="icon-box">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <span class="floating-label">Today's Opportunity</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 text-xs font-semibold text-brand-textDark">
                             <span>Trend strength:</span>
-                            <span class="text-brand-orange font-bold">{{ opportunity.strength }}%</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-brand-softCream/80 border border-brand-orange/20 text-brand-orange font-black leading-none backdrop-blur-sm">{{ opportunity.strength }}%</span>
                         </div>
                     </div>
                     
-                    <h2 class="text-2xl font-extrabold text-brand-textDark leading-tight tracking-tight mt-2">
+                    <h2 class="text-2xl font-black text-brand-textDark leading-tight tracking-tight mt-2">
                         {{ opportunity.topic }}
                     </h2>
                     
-                    <div class="p-4 bg-brand-cream/40 rounded-xl border border-brand-border/40">
-                        <span class="block text-[11px] font-bold text-brand-textMuted uppercase tracking-wider mb-1">Why This Matters</span>
-                        <p class="text-sm text-brand-textDark leading-relaxed">
+                    <div class="p-4 bg-brand-cream/40 rounded-xl border border-brand-border/30 backdrop-blur-sm">
+                        <span class="floating-label mb-2">Why This Matters</span>
+                        <p class="text-xs text-brand-textDark leading-relaxed font-medium mt-1.5">
                             {{ opportunity.reason }}
                         </p>
                     </div>
@@ -58,33 +81,40 @@
                 
                 <div class="flex items-center gap-3 pt-2">
                     <a href="{{ url_for('content.generate', topic=opportunity.topic, platform=goal.platform, tone=goal.tone) }}" 
-                       class="btn-orange-primary px-5 py-3 rounded-xl text-xs font-bold transition-all">
+                       class="btn-orange-primary px-5 py-3 rounded-xl text-xs font-bold transition-all shadow-md shadow-brand-orange/20">
                         Generate Content
                     </a>
                     <button onclick="saveTodayOpportunity('{{ opportunity.topic|escape }}', '{{ goal.platform }}')"
-                            class="px-5 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark hover:bg-brand-softCream transition-all text-xs font-bold">
+                            class="px-5 py-3 rounded-xl border border-brand-border bg-white/60 text-brand-textDark hover:bg-brand-softCream/80 hover:border-brand-orange/40 transition-all text-xs font-bold focus:outline-none backdrop-blur-sm">
                         Save Idea
                     </button>
                 </div>
             </div>
 
             <!-- Card: AI Growth Insights & Reminders -->
-            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="flex items-center justify-between border-b border-brand-border/40 pb-3">
-                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">AI Growth Insights & Reminders</h3>
-                    <span class="px-2.5 py-0.5 rounded bg-brand-softCream border border-brand-border/40 text-brand-orange text-[9px] font-extrabold uppercase">Personalized</span>
+            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-4 card-accent-top">
+                <div class="flex items-center justify-between pb-3 border-b border-brand-border/30">
+                    <div class="flex items-center gap-3">
+                        <div class="icon-box-pink icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        </div>
+                        <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">AI Growth Insights & Reminders</h3>
+                    </div>
+                    <span class="section-chip" style="font-size: 8px;">Personalized</span>
                 </div>
                 
                 <div class="space-y-4">
                     <!-- Reminders Section -->
                     {% if reminders %}
                     <div class="space-y-2">
-                        <span class="block text-[10px] font-bold text-brand-textMuted uppercase tracking-wider">Active Reminders</span>
+                        <span class="floating-label">Active Reminders</span>
                         <div class="space-y-2">
                             {% for reminder in reminders %}
-                            <div class="p-3 bg-brand-softCream/30 border border-brand-border/50 rounded-xl text-xs text-brand-textDark font-semibold flex items-start gap-2.5">
-                                <span class="text-brand-orange text-sm flex-shrink-0">🔔</span>
-                                <span>{{ reminder }}</span>
+                            <div class="p-3.5 bg-brand-softCream/30 border border-brand-border/40 rounded-xl text-xs text-brand-textDark font-semibold flex items-start gap-3 hover:border-brand-orange/30 transition-all backdrop-blur-sm group">
+                                <div class="icon-box w-8 h-8 rounded-lg flex-shrink-0">
+                                    <span class="text-sm">🔔</span>
+                                </div>
+                                <span class="pt-1">{{ reminder }}</span>
                             </div>
                             {% endfor %}
                         </div>
@@ -94,12 +124,14 @@
                     <!-- Insights Section -->
                     {% if insights %}
                     <div class="space-y-2 pt-1">
-                        <span class="block text-[10px] font-bold text-brand-textMuted uppercase tracking-wider">Creator Strategy Insights</span>
+                        <span class="floating-label">Creator Strategy Insights</span>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             {% for insight in insights %}
-                            <div class="p-3.5 bg-brand-cream/35 border border-brand-border/45 rounded-xl text-xs text-brand-textDark leading-relaxed flex gap-2">
-                                <span class="text-[#FF007A] text-sm flex-shrink-0">✦</span>
-                                <span>{{ insight }}</span>
+                            <div class="p-3.5 bg-brand-cream/30 border border-brand-border/35 rounded-xl text-xs text-brand-textDark leading-relaxed flex gap-3 hover:border-brand-orange/20 transition-all backdrop-blur-sm group">
+                                <div class="icon-box-pink icon-box w-8 h-8 rounded-lg flex-shrink-0">
+                                    <span class="text-sm font-bold">✦</span>
+                                </div>
+                                <span class="pt-0.5">{{ insight }}</span>
                             </div>
                             {% endfor %}
                         </div>
@@ -109,28 +141,30 @@
             </div>
 
             <!-- Card 3: Opportunity Alerts -->
-            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="flex items-center justify-between border-b border-brand-border/40 pb-3">
-                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Opportunity Alerts</h3>
-                    <button id="refresh-alerts-btn" onclick="refreshOpportunities()" class="p-1.5 text-brand-orange hover:text-brand-darkOrange rounded-lg hover:bg-brand-softCream/80 transition-all flex items-center gap-1.5 text-[10px] font-bold">
+            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-4 card-accent-top">
+                <div class="flex items-center justify-between pb-3 border-b border-brand-border/30">
+                    <div class="flex items-center gap-3">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                        </div>
+                        <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Opportunity Alerts</h3>
+                    </div>
+                    <button id="refresh-alerts-btn" onclick="refreshOpportunities()" class="p-2 text-brand-orange hover:text-brand-darkOrange rounded-xl hover:bg-brand-softCream/80 transition-all flex items-center gap-1.5 text-[10px] font-bold focus:outline-none border border-transparent hover:border-brand-orange/20">
                         <svg id="refresh-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3 3L22 4"></path></svg>
                         <span>Refresh Alerts</span>
                     </button>
                 </div>
                 
-                <div id="alerts-list-container" class="divide-y divide-brand-border/40">
+                <div id="alerts-list-container" class="space-y-1">
                     {% for alert in alerts %}
-                    <div class="py-4 first:pt-0 last:pb-0 flex items-start justify-between gap-4">
+                    <div class="py-3.5 flex items-start justify-between gap-4 alert-item group/alert">
                         <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
-                                <h4 class="font-bold text-sm text-brand-textDark">{{ alert.topic }}</h4>
-                            </div>
-                            <p class="text-xs text-brand-textMuted leading-relaxed pl-3.5">{{ alert.reason }}</p>
+                            <h4 class="font-bold text-sm text-brand-textDark group-hover/alert:text-brand-orange transition-all">{{ alert.topic }}</h4>
+                            <p class="text-xs text-brand-textMuted leading-relaxed">{{ alert.reason }}</p>
                         </div>
                         <a href="{{ url_for('content.generate', topic=alert.topic, platform=goal.platform, tone=goal.tone) }}" 
-                           class="flex-shrink-0 text-xs font-bold text-brand-orange hover:text-brand-darkOrange hover:underline bg-brand-softCream/50 hover:bg-brand-softCream px-2.5 py-1.5 rounded-lg border border-brand-border/30 transition-all">
-                            Generate
+                           class="flex-shrink-0 text-xs font-bold text-brand-orange hover:text-brand-darkOrange bg-brand-softCream/60 hover:bg-brand-softCream px-3 py-2 rounded-xl border border-brand-orange/15 hover:border-brand-orange/30 transition-all backdrop-blur-sm">
+                            Generate →
                         </a>
                     </div>
                     {% endfor %}
@@ -143,13 +177,20 @@
         <div class="space-y-6">
             
             <!-- Card 2: Consistency -->
-            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-6">
-                <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest border-b border-brand-border/40 pb-3">Consistency Engine</h3>
+            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-6 card-accent-top">
+                <div class="flex items-center gap-3 pb-3 border-b border-brand-border/30">
+                    <div class="icon-box">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+                    </div>
+                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Consistency Engine</h3>
+                </div>
                 
                 <div class="space-y-5">
                     <!-- Streak Tag -->
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-2xl bg-brand-softCream text-brand-orange flex items-center justify-center font-bold text-xl border border-brand-border shadow-inner pulse-orange select-none">🔥</div>
+                    <div class="flex items-center gap-3 streak-glow p-3 rounded-2xl bg-brand-softCream/30 border border-brand-border/30">
+                        <div class="stat-ring">
+                            <span class="text-xl select-none">🔥</span>
+                        </div>
                         <div>
                             <div class="font-extrabold text-lg text-brand-textDark">{{ streak }} Day Streak</div>
                             <div class="text-[11px] text-brand-textMuted font-medium uppercase tracking-wider">Last Activity: {{ last_activity }}</div>
@@ -157,56 +198,68 @@
                     </div>
                     
                     <!-- Weekly Target Progress -->
-                    <div class="space-y-2">
+                    <div class="space-y-2.5">
                         <div class="flex items-center justify-between text-xs font-semibold text-brand-textMuted">
-                            <span>Weekly Commitment Target</span>
+                            <span class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-brand-orange"></span>
+                                Weekly Commitment
+                            </span>
                             <span class="text-brand-textDark font-bold">{{ weekly_posts }}/{{ goal.weekly_commitment or 3 }} Posts</span>
                         </div>
-                        <div class="h-2 w-full bg-brand-softCream rounded-full overflow-hidden">
-                            <!-- Clamp width to 100% max -->
-                            <div class="h-full bg-brand-orange rounded-full transition-all duration-300" 
+                        <div class="h-2.5 w-full bg-brand-softCream/80 rounded-full overflow-hidden border border-brand-border/20">
+                            <div class="h-full bg-gradient-to-r from-brand-orange to-brand-peach rounded-full transition-all duration-500 progress-shimmer shadow-[0_0_10px_rgba(255,122,0,0.4)]" 
                                  style="width: {{ [100, (weekly_posts / (goal.weekly_commitment or 3) * 100)|int]|min }}%;"></div>
                         </div>
                     </div>
 
                     <!-- Monthly Target Progress -->
-                    <div class="space-y-2 border-t border-brand-border/30 pt-3">
+                    <div class="space-y-2.5 border-t border-brand-border/20 pt-4">
                         <div class="flex items-center justify-between text-xs font-semibold text-brand-textMuted">
-                            <span>Monthly Goal Progress</span>
+                            <span class="flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-[#FF007A]"></span>
+                                Monthly Goal
+                            </span>
                             <span class="text-brand-textDark font-bold">{{ monthly_posts }}/30 Posts</span>
                         </div>
-                        <div class="h-2 w-full bg-brand-softCream rounded-full overflow-hidden">
-                            <!-- Clamp width to 100% max -->
-                            <div class="h-full bg-brand-orange rounded-full transition-all duration-300" 
+                        <div class="h-2.5 w-full bg-brand-softCream/80 rounded-full overflow-hidden border border-brand-border/20">
+                            <div class="h-full bg-gradient-to-r from-[#FF007A] to-brand-peach rounded-full transition-all duration-500 progress-shimmer shadow-[0_0_10px_rgba(255,0,122,0.3)]" 
                                  style="width: {{ [100, (monthly_posts/30 * 100)|int]|min }}%;"></div>
                         </div>
                     </div>
                 </div>
             </div>
-
+ 
             <!-- Card 4: Recent Generated Content -->
-            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4 flex flex-col h-[350px]">
-                <div class="flex items-center justify-between border-b border-brand-border/40 pb-3 flex-shrink-0">
-                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Recent Saved Content</h3>
-                    <a href="{{ url_for('content.saved') }}" class="text-xs font-bold text-brand-orange hover:underline">View All</a>
+            <div data-tilt class="liquid-glass rounded-2xl p-6 shadow-sm space-y-4 flex flex-col h-[350px] card-accent-top">
+                <div class="flex items-center justify-between pb-3 border-b border-brand-border/30 flex-shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="icon-box">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Recent Saved Content</h3>
+                    </div>
+                    <a href="{{ url_for('content.saved') }}" class="text-xs font-bold text-brand-orange hover:underline flex items-center gap-1">
+                        View All
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
                 </div>
                 
-                <div class="custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-3">
+                <div class="custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-2.5">
                     {% if drafts %}
                         {% for draft in drafts %}
-                        <div class="p-3 bg-brand-cream/20 hover:bg-brand-softCream/30 border border-brand-border/60 hover:border-brand-warm-peach rounded-xl transition-all">
+                        <div class="p-3 bg-brand-cream/20 hover:bg-brand-softCream/40 border border-brand-border/40 hover:border-brand-orange/25 rounded-xl transition-all draft-item-border {% if draft.platform.lower() == 'linkedin' %}border-linkedin{% elif draft.platform.lower() == 'x' %}border-x{% elif draft.platform.lower() == 'instagram' %}border-instagram{% else %}border-blog{% endif %}">
                             <div class="flex items-center justify-between gap-2">
                                 <h4 class="font-bold text-xs text-brand-textDark truncate">{{ draft.topic }}</h4>
-                                <span class="px-2 py-0.5 rounded bg-brand-softCream border border-brand-border/40 text-brand-orange text-[9px] font-extrabold uppercase">
+                                <span class="px-2 py-0.5 rounded-md bg-brand-softCream/80 border border-brand-border/30 text-brand-orange text-[9px] font-extrabold uppercase backdrop-blur-sm">
                                     {{ draft.platform }}
                                 </span>
                             </div>
-                            <span class="block text-[10px] text-brand-textMuted mt-1">{{ draft.created_at.strftime('%B %d, %I:%M %p') }}</span>
+                            <span class="block text-[10px] text-brand-textMuted mt-1.5 font-medium">{{ draft.created_at.strftime('%B %d, %I:%M %p') }}</span>
                         </div>
                         {% endfor %}
                     {% else %}
-                        <div class="flex flex-col items-center justify-center h-full text-center p-4">
-                            <span class="text-2xl mb-1">📝</span>
+                        <div class="flex flex-col items-center justify-center h-full text-center p-4 empty-state-visual rounded-2xl">
+                            <span class="text-2xl mb-2">📝</span>
                             <h4 class="text-xs font-bold text-brand-textDark">No saved drafts yet</h4>
                             <p class="text-[11px] text-brand-textMuted mt-0.5">Your generated content drafts will appear here.</p>
                         </div>
@@ -304,21 +357,18 @@
                 
                 data.alerts.forEach((alert, index) => {
                     const alertDiv = document.createElement('div');
-                    alertDiv.className = 'py-4 first:pt-0 last:pb-0 flex items-start justify-between gap-4';
+                    alertDiv.className = 'py-3.5 flex items-start justify-between gap-4 alert-item group/alert';
                     
                     const generateUrl = "{{ url_for('content.generate') }}?topic=" + encodeURIComponent(alert.topic) + "&platform={{ goal.platform }}&tone={{ goal.tone }}";
                     
                     alertDiv.innerHTML = `
                         <div class="space-y-1">
-                            <div class="flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
-                                <h4 class="font-bold text-sm text-brand-textDark">${escapeHtml(alert.topic)}</h4>
-                            </div>
-                            <p class="text-xs text-brand-textMuted leading-relaxed pl-3.5">${escapeHtml(alert.reason)}</p>
+                            <h4 class="font-bold text-sm text-brand-textDark group-hover/alert:text-brand-orange transition-all">${escapeHtml(alert.topic)}</h4>
+                            <p class="text-xs text-brand-textMuted leading-relaxed">${escapeHtml(alert.reason)}</p>
                         </div>
                         <a href="${generateUrl}" 
-                           class="flex-shrink-0 text-xs font-bold text-brand-orange hover:text-brand-darkOrange hover:underline bg-brand-softCream/50 hover:bg-brand-softCream px-2.5 py-1.5 rounded-lg border border-brand-border/30 transition-all">
-                            Generate
+                           class="flex-shrink-0 text-xs font-bold text-brand-orange hover:text-brand-darkOrange bg-brand-softCream/60 hover:bg-brand-softCream px-3 py-2 rounded-xl border border-brand-orange/15 hover:border-brand-orange/30 transition-all backdrop-blur-sm">
+                            Generate →
                         </a>
                     `;
                     container.appendChild(alertDiv);
