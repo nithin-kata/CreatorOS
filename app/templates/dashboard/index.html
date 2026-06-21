@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CreatorOS{% endblock %}
+
+{% block content %}
+<div class="space-y-8 py-6 px-4">
+    
+    <!-- Top Header Profile Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-brand-border/60 pb-6">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">Good Morning, {{ current_user.name.split()[0] }} 👋</h1>
+            <p class="text-sm text-brand-textMuted mt-1 flex items-center gap-1.5">
+                Active Goal: 
+                <span class="px-2.5 py-0.5 rounded-full bg-brand-softCream border border-brand-border/60 text-brand-orange text-xs font-semibold uppercase tracking-wider">
+                    {{ goal.goal }}
+                </span>
+            </p>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <a href="{{ url_for('content.generate') }}" class="btn-orange-primary px-5 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Create New Post
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboard Content Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left 2 Columns (Opportunities & Alerts) -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Card 1: Today's Opportunity -->
+            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-softCream rounded-bl-full -z-10 opacity-30"></div>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-brand-orange uppercase tracking-widest bg-brand-softCream/80 px-3 py-1 rounded-full border border-brand-border/40">Today's Opportunity</span>
+                        <div class="flex items-center gap-1.5 text-sm font-semibold text-brand-textDark">
+                            <span>Trend strength:</span>
+                            <span class="text-brand-orange font-bold">{{ opportunity.strength }}%</span>
+                        </div>
+                    </div>
+                    
+                    <h2 class="text-2xl font-extrabold text-brand-textDark leading-tight tracking-tight mt-2">
+                        {{ opportunity.topic }}
+                    </h2>
+                    
+                    <div class="p-4 bg-brand-cream/40 rounded-xl border border-brand-border/40">
+                        <span class="block text-[11px] font-bold text-brand-textMuted uppercase tracking-wider mb-1">Why This Matters</span>
+                        <p class="text-sm text-brand-textDark leading-relaxed">
+                            {{ opportunity.reason }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 pt-2">
+                    <a href="{{ url_for('content.generate', topic=opportunity.topic, platform=goal.platform, tone=goal.tone) }}" 
+                       class="btn-orange-primary px-5 py-3 rounded-xl text-xs font-bold transition-all">
+                        Generate Content
+                    </a>
+                    <button onclick="saveTodayOpportunity('{{ opportunity.topic|escape }}', '{{ goal.platform }}')"
+                            class="px-5 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark hover:bg-brand-softCream transition-all text-xs font-bold">
+                        Save Idea
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card: AI Growth Insights & Reminders -->
+            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-brand-border/40 pb-3">
+                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">AI Growth Insights & Reminders</h3>
+                    <span class="px-2.5 py-0.5 rounded bg-brand-softCream border border-brand-border/40 text-brand-orange text-[9px] font-extrabold uppercase">Personalized</span>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- Reminders Section -->
+                    {% if reminders %}
+                    <div class="space-y-2">
+                        <span class="block text-[10px] font-bold text-brand-textMuted uppercase tracking-wider">Active Reminders</span>
+                        <div class="space-y-2">
+                            {% for reminder in reminders %}
+                            <div class="p-3 bg-brand-softCream/30 border border-brand-border/50 rounded-xl text-xs text-brand-textDark font-semibold flex items-start gap-2.5">
+                                <span class="text-brand-orange text-sm flex-shrink-0">🔔</span>
+                                <span>{{ reminder }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Insights Section -->
+                    {% if insights %}
+                    <div class="space-y-2 pt-1">
+                        <span class="block text-[10px] font-bold text-brand-textMuted uppercase tracking-wider">Creator Strategy Insights</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            {% for insight in insights %}
+                            <div class="p-3.5 bg-brand-cream/35 border border-brand-border/45 rounded-xl text-xs text-brand-textDark leading-relaxed flex gap-2">
+                                <span class="text-[#FF007A] text-sm flex-shrink-0">✦</span>
+                                <span>{{ insight }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Card 3: Opportunity Alerts -->
+            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-brand-border/40 pb-3">
+                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Opportunity Alerts</h3>
+                    <button id="refresh-alerts-btn" onclick="refreshOpportunities()" class="p-1.5 text-brand-orange hover:text-brand-darkOrange rounded-lg hover:bg-brand-softCream/80 transition-all flex items-center gap-1.5 text-[10px] font-bold">
+                        <svg id="refresh-icon" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3 3L22 4"></path></svg>
+                        <span>Refresh Alerts</span>
+                    </button>
+                </div>
+                
+                <div id="alerts-list-container" class="divide-y divide-brand-border/40">
+                    {% for alert in alerts %}
+                    <div class="py-4 first:pt-0 last:pb-0 flex items-start justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
+                                <h4 class="font-bold text-sm text-brand-textDark">{{ alert.topic }}</h4>
+                            </div>
+                            <p class="text-xs text-brand-textMuted leading-relaxed pl-3.5">{{ alert.reason }}</p>
+                        </div>
+                        <a href="{{ url_for('content.generate', topic=alert.topic, platform=goal.platform, tone=goal.tone) }}" 
+                           class="flex-shrink-0 text-xs font-bold text-brand-orange hover:text-brand-darkOrange hover:underline bg-brand-softCream/50 hover:bg-brand-softCream px-2.5 py-1.5 rounded-lg border border-brand-border/30 transition-all">
+                            Generate
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right 1 Column (Streak & Recent Content) -->
+        <div class="space-y-6">
+            
+            <!-- Card 2: Consistency -->
+            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-6">
+                <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest border-b border-brand-border/40 pb-3">Consistency Engine</h3>
+                
+                <div class="space-y-5">
+                    <!-- Streak Tag -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-brand-softCream text-brand-orange flex items-center justify-center font-bold text-xl border border-brand-border shadow-inner pulse-orange select-none">🔥</div>
+                        <div>
+                            <div class="font-extrabold text-lg text-brand-textDark">{{ streak }} Day Streak</div>
+                            <div class="text-[11px] text-brand-textMuted font-medium uppercase tracking-wider">Last Activity: {{ last_activity }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Weekly Target Progress -->
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-xs font-semibold text-brand-textMuted">
+                            <span>Weekly Commitment Target</span>
+                            <span class="text-brand-textDark font-bold">{{ weekly_posts }}/{{ goal.weekly_commitment or 3 }} Posts</span>
+                        </div>
+                        <div class="h-2 w-full bg-brand-softCream rounded-full overflow-hidden">
+                            <!-- Clamp width to 100% max -->
+                            <div class="h-full bg-brand-orange rounded-full transition-all duration-300" 
+                                 style="width: {{ [100, (weekly_posts / (goal.weekly_commitment or 3) * 100)|int]|min }}%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Target Progress -->
+                    <div class="space-y-2 border-t border-brand-border/30 pt-3">
+                        <div class="flex items-center justify-between text-xs font-semibold text-brand-textMuted">
+                            <span>Monthly Goal Progress</span>
+                            <span class="text-brand-textDark font-bold">{{ monthly_posts }}/30 Posts</span>
+                        </div>
+                        <div class="h-2 w-full bg-brand-softCream rounded-full overflow-hidden">
+                            <!-- Clamp width to 100% max -->
+                            <div class="h-full bg-brand-orange rounded-full transition-all duration-300" 
+                                 style="width: {{ [100, (monthly_posts/30 * 100)|int]|min }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Recent Generated Content -->
+            <div data-tilt class="bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-4 flex flex-col h-[350px]">
+                <div class="flex items-center justify-between border-b border-brand-border/40 pb-3 flex-shrink-0">
+                    <h3 class="text-xs font-bold text-brand-textMuted uppercase tracking-widest">Recent Saved Content</h3>
+                    <a href="{{ url_for('content.saved') }}" class="text-xs font-bold text-brand-orange hover:underline">View All</a>
+                </div>
+                
+                <div class="custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-3">
+                    {% if drafts %}
+                        {% for draft in drafts %}
+                        <div class="p-3 bg-brand-cream/20 hover:bg-brand-softCream/30 border border-brand-border/60 hover:border-brand-warm-peach rounded-xl transition-all">
+                            <div class="flex items-center justify-between gap-2">
+                                <h4 class="font-bold text-xs text-brand-textDark truncate">{{ draft.topic }}</h4>
+                                <span class="px-2 py-0.5 rounded bg-brand-softCream border border-brand-border/40 text-brand-orange text-[9px] font-extrabold uppercase">
+                                    {{ draft.platform }}
+                                </span>
+                            </div>
+                            <span class="block text-[10px] text-brand-textMuted mt-1">{{ draft.created_at.strftime('%B %d, %I:%M %p') }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="flex flex-col items-center justify-center h-full text-center p-4">
+                            <span class="text-2xl mb-1">📝</span>
+                            <h4 class="text-xs font-bold text-brand-textDark">No saved drafts yet</h4>
+                            <p class="text-[11px] text-brand-textMuted mt-0.5">Your generated content drafts will appear here.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function saveTodayOpportunity(topic, platform) {
+        let contentObj = {};
+        if (platform.toLowerCase() === 'blog') {
+            contentObj = {
+                blog_title: "Mastering " + topic,
+                blog_introduction: "I've been thinking about " + topic + " a lot recently. In this guide, we break down key concepts, strategies, and systems you need to build.",
+                blog_sections: [
+                    { heading: "1. Understanding the landscape of " + topic, outline: "• Why practitioners hold all the leverage in this area.\n• Identifying the shift from hype to systems." },
+                    { heading: "2. Setting up execution parameters", outline: "• How to build sustainable consistency.\n• Best tools to automate workflow distribution." }
+                ],
+                blog_conclusion: "Consistency beats intensity. Start drafting your framework today.",
+                blog_keywords: topic.replace(/\s+/g, '') + ", CreatorOS, PersonalBrand"
+            };
+        } else {
+            const bodyContent = "I've been thinking about " + topic + " a lot recently.\n\nHere are 3 quick takeaways:\n1. It's growing faster than ever.\n2. Practitioners hold all the leverage.\n3. The systems you build around it matter most.";
+            contentObj = {
+                hook: "Let's talk about " + topic + ".",
+                body: bodyContent,
+                cta: "What is your perspective on this? Leave a reply below.",
+                hashtags: "#" + platform + " #" + topic.replace(/\s+/g, '') + " #CreatorOS",
+                caption: "💡 " + topic + "\n\nSave this post for later!",
+                thread: [
+                    "🧵 Let's talk about " + topic + ". 👇",
+                    "1/ Actionable systems beat theoretical knowledge every single time.",
+                    "2/ Focus on building, not just talking. Reach out with questions!"
+                ]
+            };
+        }
+        
+        const payload = {
+            topic: topic,
+            platform: platform,
+            content: JSON.stringify(contentObj)
+        };
+
+        const formData = new FormData();
+        for (const key in payload) {
+            formData.append(key, payload[key]);
+        }
+
+        fetch("{{ url_for('content.save_draft') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showToast("Opportunity idea saved! View it in Saved Drafts.", "success");
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                showToast(data.error || "Failed to save idea.", "danger");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Failed to connect to workspace database.", "danger");
+        });
+    }
+
+    function refreshOpportunities() {
+        const refreshBtn = document.getElementById('refresh-alerts-btn');
+        const icon = document.getElementById('refresh-icon');
+        const container = document.getElementById('alerts-list-container');
+        
+        // Add loading state
+        refreshBtn.disabled = true;
+        icon.classList.add('animate-spin');
+        refreshBtn.querySelector('span').innerText = 'Refreshing...';
+        
+        fetch("{{ url_for('dashboard.refresh_opportunities') }}", {
+            method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => {
+            // Remove loading state
+            refreshBtn.disabled = false;
+            icon.classList.remove('animate-spin');
+            refreshBtn.querySelector('span').innerText = 'Refresh Alerts';
+            
+            if (data.success && data.alerts) {
+                container.innerHTML = '';
+                
+                data.alerts.forEach((alert, index) => {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'py-4 first:pt-0 last:pb-0 flex items-start justify-between gap-4';
+                    
+                    const generateUrl = "{{ url_for('content.generate') }}?topic=" + encodeURIComponent(alert.topic) + "&platform={{ goal.platform }}&tone={{ goal.tone }}";
+                    
+                    alertDiv.innerHTML = `
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-brand-orange"></span>
+                                <h4 class="font-bold text-sm text-brand-textDark">${escapeHtml(alert.topic)}</h4>
+                            </div>
+                            <p class="text-xs text-brand-textMuted leading-relaxed pl-3.5">${escapeHtml(alert.reason)}</p>
+                        </div>
+                        <a href="${generateUrl}" 
+                           class="flex-shrink-0 text-xs font-bold text-brand-orange hover:text-brand-darkOrange hover:underline bg-brand-softCream/50 hover:bg-brand-softCream px-2.5 py-1.5 rounded-lg border border-brand-border/30 transition-all">
+                            Generate
+                        </a>
+                    `;
+                    container.appendChild(alertDiv);
+                });
+                showToast("Niche opportunities refreshed!", "success");
+            } else {
+                showToast(data.error || "Failed to refresh opportunities.", "danger");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            refreshBtn.disabled = false;
+            icon.classList.remove('animate-spin');
+            refreshBtn.querySelector('span').innerText = 'Refresh Alerts';
+            showToast("Server error during refresh.", "danger");
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, "&amp;")
+                  .replace(/</g, "&lt;")
+                  .replace(/>/g, "&gt;")
+                  .replace(/"/g, "&quot;")
+                  .replace(/'/g, "&#039;");
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,469 @@
+{% extends "base.html" %}
+
+{% block title %}Content Calendar - CreatorOS{% endblock %}
+
+{% block content %}
+<div class="py-6 px-4 space-y-6">
+    <!-- Header Title -->
+    <div class="border-b border-brand-border/60 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">Content Calendar</h1>
+            <p class="text-sm text-brand-textMuted mt-1">Plan, visualize, and schedule your content consistency across channels.</p>
+        </div>
+        
+        <!-- Month Navigation -->
+        <div class="flex items-center gap-3 bg-white border border-brand-border rounded-xl p-1.5 shadow-sm">
+            <a href="{{ url_for('dashboard.calendar', year=prev_year, month=prev_month) }}" 
+               class="p-2 hover:bg-brand-softCream text-brand-textDark rounded-lg transition-all"
+               title="Previous Month">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <span class="text-sm font-extrabold text-brand-textDark px-3 min-w-[120px] text-center">
+                {{ month_name }} {{ year }}
+            </span>
+            <a href="{{ url_for('dashboard.calendar', year=next_year, month=next_month) }}" 
+               class="p-2 hover:bg-brand-softCream text-brand-textDark rounded-lg transition-all"
+               title="Next Month">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Workspace Calendar Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Unscheduled Drafts Drawer (4 Cols) -->
+        <div class="lg:col-span-4 bg-white border border-brand-border rounded-2xl p-5 shadow-sm flex flex-col h-[650px] relative overflow-hidden">
+            <div class="pb-3 border-b border-brand-border/40 mb-4 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-brand-textDark uppercase tracking-wider flex items-center gap-2">
+                        <span>Unscheduled Drafts</span>
+                        <span class="px-2 py-0.5 rounded-full bg-brand-softCream border border-brand-border/40 text-brand-orange text-xs font-black">
+                            {{ unscheduled_drafts|length }}
+                        </span>
+                    </h3>
+                </div>
+                <p class="text-xs text-brand-textMuted mt-1">Drag these onto the calendar cells to schedule them.</p>
+            </div>
+
+            <!-- Unscheduled Drop Area / Drawer List -->
+            <div id="unscheduled-drawer" 
+                 class="custom-scrollbar overflow-y-auto flex-grow space-y-3 pr-1 pb-4"
+                 ondragover="event.preventDefault()" 
+                 ondrop="handleUnscheduleDrop(event)">
+                
+                {% if unscheduled_drafts %}
+                    {% for draft in unscheduled_drafts %}
+                    <div id="draft-item-{{ draft.id }}" 
+                         class="p-4 border border-brand-border bg-brand-cream/10 hover:bg-brand-softCream/20 rounded-xl cursor-grab active:cursor-grabbing transition-all hover:shadow-sm space-y-2 relative group"
+                         draggable="true" 
+                         ondragstart="handleDragStart(event, {{ draft.id }}, false)"
+                         onclick="openDraftModal({{ draft|tojson|safe }})">
+                        
+                        <div class="flex items-center justify-between">
+                            <!-- Platform Tag -->
+                            {% set plat = draft.platform.lower() %}
+                            {% if plat == 'linkedin' %}
+                                <span class="px-2 py-0.5 rounded bg-sky-50 border border-sky-200 text-sky-700 text-[9px] font-extrabold uppercase">LinkedIn</span>
+                            {% elif plat == 'x' %}
+                                <span class="px-2 py-0.5 rounded bg-zinc-100 border border-zinc-300 text-zinc-800 text-[9px] font-extrabold uppercase">X (Twitter)</span>
+                            {% elif plat == 'instagram' %}
+                                <span class="px-2 py-0.5 rounded bg-pink-50 border border-pink-200 text-pink-700 text-[9px] font-extrabold uppercase">Instagram</span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded bg-orange-50 border border-brand-border text-brand-orange text-[9px] font-extrabold uppercase">Blog</span>
+                            {% endif %}
+                            
+                            <!-- Platform Icon indicator -->
+                            <span class="text-brand-textMuted group-hover:text-brand-orange transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path></svg>
+                            </span>
+                        </div>
+                        <h4 class="font-extrabold text-brand-textDark text-xs truncate">{{ draft.topic }}</h4>
+                        <p class="text-[11px] text-brand-textMuted line-clamp-2 leading-relaxed">
+                            {% if plat == 'linkedin' %}
+                                {{ draft.parsed_content.hook or draft.parsed_content.body }}
+                            {% elif plat == 'instagram' %}
+                                {{ draft.parsed_content.caption }}
+                            {% elif plat == 'x' %}
+                                {{ draft.parsed_content.thread[0] if draft.parsed_content.thread else '' }}
+                            {% elif plat == 'blog' %}
+                                {{ draft.parsed_content.blog_introduction }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="flex flex-col items-center justify-center h-full text-center p-6 space-y-3">
+                        <span class="text-3xl">🗄</span>
+                        <h4 class="font-extrabold text-xs text-brand-textDark">No unscheduled drafts</h4>
+                        <p class="text-[11px] text-brand-textMuted max-w-[200px] leading-relaxed">Go to the Content Generator to create new drafts, then schedule them here.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Quick instructions box -->
+            <div id="unschedule-drop-zone" class="absolute bottom-4 left-4 right-4 h-16 border-2 border-dashed border-brand-border bg-brand-cream/30 rounded-xl flex items-center justify-center text-xs text-brand-textMuted hover:border-brand-orange hover:bg-brand-softCream/30 transition-all pointer-events-none">
+                <span class="font-semibold text-center px-4">Drag scheduled tag here to unschedule</span>
+            </div>
+        </div>
+
+        <!-- Right: Monthly Grid (8 Cols) -->
+        <div class="lg:col-span-8 bg-white border border-brand-border rounded-2xl p-5 shadow-sm flex flex-col">
+            <!-- Day of week headers -->
+            <div class="grid grid-cols-7 gap-2 text-center font-bold text-xs text-brand-textMuted uppercase tracking-wider pb-3 border-b border-brand-border/40">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+
+            <!-- Grid Calendar Rows -->
+            <div class="grid grid-rows-5 gap-2 mt-3 select-none">
+                {% for week in month_days %}
+                <div class="grid grid-cols-7 gap-2">
+                    {% for day in week %}
+                        {% if day == 0 %}
+                            <!-- Empty Cell -->
+                            <div class="min-h-[90px] bg-brand-cream/10 border border-brand-border/10 rounded-xl opacity-40"></div>
+                        {% else %}
+                            <!-- Calendar Day Cell -->
+                            {% set cell_date = "%04d-%02d-%02d"|format(year, month, day) %}
+                            {% set is_today = (today.year == year and today.month == month and today.day == day) %}
+                            
+                            <div class="min-h-[90px] border border-brand-border/60 hover:border-brand-orange/50 {% if is_today %}bg-brand-softCream/10 border-brand-orange/40{% else %}bg-white{% endif %} rounded-xl p-2 flex flex-col justify-between transition-all relative group-cell"
+                                 ondragover="event.preventDefault(); this.classList.add('bg-brand-softCream/30');"
+                                 ondragleave="this.classList.remove('bg-brand-softCream/30');"
+                                 ondrop="handleCellDrop(event, '{{ cell_date }}'); this.classList.remove('bg-brand-softCream/30');">
+                                
+                                <!-- Day number and Today highlight -->
+                                <div class="flex items-center justify-between">
+                                    <span class="text-[10px] font-bold text-brand-textMuted">{{ day }}</span>
+                                    {% if is_today %}
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-orange" title="Today"></span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Day scheduled posts list -->
+                                <div class="flex-grow flex flex-col justify-end space-y-1 mt-1 overflow-y-auto max-h-[60px] custom-scrollbar">
+                                    {% if day in scheduled_by_day %}
+                                        {% for s_draft in scheduled_by_day[day] %}
+                                            {% set s_plat = s_draft.platform.lower() %}
+                                            <!-- Scheduled Tag -->
+                                            <div id="scheduled-tag-{{ s_draft.id }}"
+                                                 class="px-1.5 py-0.5 rounded text-[9px] font-bold cursor-grab active:cursor-grabbing truncate transition-all flex items-center justify-between select-none
+                                                 {% if s_plat == 'linkedin' %}
+                                                     bg-sky-500 text-white hover:bg-sky-600
+                                                 {% elif s_plat == 'x' %}
+                                                     bg-zinc-800 text-white hover:bg-black
+                                                 {% elif s_plat == 'instagram' %}
+                                                     bg-pink-600 text-white hover:bg-pink-700
+                                                 {% else %}
+                                                     bg-brand-orange text-white hover:bg-brand-darkOrange
+                                                 {% endif %}"
+                                                 draggable="true"
+                                                 ondragstart="handleDragStart(event, {{ s_draft.id }}, true)"
+                                                 onclick="event.stopPropagation(); openDraftModal({{ s_draft|tojson|safe }})">
+                                                <span class="truncate">{{ s_draft.topic }}</span>
+                                                <button class="ml-1 opacity-60 hover:opacity-100 font-extrabold text-[8px]" 
+                                                        onclick="event.stopPropagation(); unscheduleDraft({{ s_draft.id }})">×</button>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Premium Detail Modal -->
+<div id="draft-modal" class="fixed inset-0 bg-brand-textDark/40 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white border border-brand-border rounded-2xl max-w-lg w-full p-6 shadow-xl transform scale-95 transition-transform duration-300 relative flex flex-col max-h-[85vh]">
+        
+        <!-- Close button -->
+        <button onclick="closeDraftModal()" class="absolute top-4 right-4 p-1.5 border border-brand-border hover:bg-brand-softCream text-brand-textDark rounded-lg transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+
+        <!-- Modal Header -->
+        <div class="border-b border-brand-border/40 pb-4 mb-4 pr-8">
+            <span id="modal-platform-badge" class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase">Platform</span>
+            <h3 id="modal-topic" class="text-lg font-extrabold text-brand-textDark mt-1 truncate">Draft Topic</h3>
+        </div>
+
+        <!-- Scrollable content -->
+        <div id="modal-body-content" class="custom-scrollbar overflow-y-auto flex-grow text-xs leading-relaxed text-brand-textDark space-y-4 pr-1">
+            <!-- Platform content rendered here dynamically -->
+        </div>
+
+        <!-- Modal Actions Footer -->
+        <div class="border-t border-brand-border/40 pt-4 mt-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <button id="modal-copy-btn" onclick="copyModalContent()" class="px-4 py-2 border border-brand-border hover:bg-brand-softCream rounded-xl text-xs font-bold text-brand-textDark transition-all">
+                    Copy Draft
+                </button>
+                <button id="modal-unschedule-btn" onclick="unscheduleFromModal()" class="px-4 py-2 bg-brand-softCream text-brand-orange hover:bg-brand-border/40 rounded-xl text-xs font-bold transition-all hidden">
+                    Unschedule
+                </button>
+            </div>
+            <button onclick="closeDraftModal()" class="px-4 py-2 bg-brand-orange text-white hover:bg-brand-darkOrange rounded-xl text-xs font-bold transition-all">
+                Close View
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let draggedDraftId = null;
+    let draggedFromScheduled = false;
+    let activeModalDraft = null;
+
+    // Show/Hide trash/unschedule zone depending on drag state
+    function setUnscheduleDropZoneActive(active) {
+        const zone = document.getElementById('unschedule-drop-zone');
+        if (active) {
+            zone.classList.remove('pointer-events-none');
+            zone.classList.add('border-brand-orange', 'bg-brand-softCream/30', 'scale-102');
+            zone.querySelector('span').innerText = "Drop here to unschedule draft";
+            zone.querySelector('span').classList.add('text-brand-orange');
+        } else {
+            zone.classList.add('pointer-events-none');
+            zone.classList.remove('border-brand-orange', 'bg-brand-softCream/30', 'scale-102');
+            zone.querySelector('span').innerText = "Drag scheduled tag here to unschedule";
+            zone.querySelector('span').classList.remove('text-brand-orange');
+        }
+    }
+
+    // HTML5 Drag Event Handlers
+    function handleDragStart(event, id, isScheduled) {
+        draggedDraftId = id;
+        draggedFromScheduled = isScheduled;
+        event.dataTransfer.setData("text/plain", id.toString());
+        event.dataTransfer.effectAllowed = "move";
+        
+        // If it was scheduled, allow dropping on the sidebar/trash area to unschedule
+        if (isScheduled) {
+            setUnscheduleDropZoneActive(true);
+        }
+    }
+
+    // Drop handler for calendar cell
+    function handleCellDrop(event, targetDate) {
+        event.preventDefault();
+        setUnscheduleDropZoneActive(false);
+        
+        if (!draggedDraftId) return;
+
+        const formData = new FormData();
+        formData.append('post_id', draggedDraftId);
+        formData.append('date', targetDate);
+
+        fetch("{{ url_for('dashboard.schedule_post') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showToast("Post scheduled for " + targetDate, "success");
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                showToast(data.error || "Failed to schedule post.", "danger");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Server error scheduling draft.", "danger");
+        });
+
+        draggedDraftId = null;
+        draggedFromScheduled = false;
+    }
+
+    // Drop handler for unschedule area
+    function handleUnscheduleDrop(event) {
+        event.preventDefault();
+        setUnscheduleDropZoneActive(false);
+        
+        if (!draggedDraftId || !draggedFromScheduled) return;
+
+        unscheduleDraft(draggedDraftId);
+        
+        draggedDraftId = null;
+        draggedFromScheduled = false;
+    }
+
+    // Cleanup drag indicators if drag is cancelled
+    document.addEventListener('dragend', () => {
+        setUnscheduleDropZoneActive(false);
+    });
+
+    // Unschedule draft API helper
+    function unscheduleDraft(draftId) {
+        const formData = new FormData();
+        formData.append('post_id', draftId);
+
+        fetch("{{ url_for('dashboard.unschedule_post') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showToast("Draft returned to unscheduled stack.", "info");
+                setTimeout(() => window.location.reload(), 300);
+            } else {
+                showToast(data.error || "Failed to unschedule.", "danger");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast("Server error unscheduling draft.", "danger");
+        });
+    }
+
+    // Modal Operations
+    function openDraftModal(draft) {
+        activeModalDraft = draft;
+        const modal = document.getElementById('draft-modal');
+        
+        // Topic and platform styling
+        document.getElementById('modal-topic').innerText = draft.topic;
+        const plat = draft.platform.lower ? draft.platform.lower() : draft.platform.toLowerCase();
+        
+        const badge = document.getElementById('modal-platform-badge');
+        badge.innerText = draft.platform;
+        badge.className = "px-2 py-0.5 rounded text-[9px] font-extrabold uppercase ";
+        if (plat === 'linkedin') {
+            badge.className += "bg-sky-50 border border-sky-200 text-sky-700";
+        } else if (plat === 'x') {
+            badge.className += "bg-zinc-100 border border-zinc-300 text-zinc-800";
+        } else if (plat === 'instagram') {
+            badge.className += "bg-pink-50 border border-pink-200 text-pink-700";
+        } else {
+            badge.className += "bg-orange-50 border border-brand-border text-brand-orange";
+        }
+
+        // Show/Hide Unschedule Action
+        const unschedBtn = document.getElementById('modal-unschedule-btn');
+        if (draft.scheduled_date || draggedFromScheduled) {
+            unschedBtn.classList.remove('hidden');
+        } else {
+            unschedBtn.classList.add('hidden');
+        }
+
+        // Content Rendering
+        const contentBox = document.getElementById('modal-body-content');
+        contentBox.innerHTML = '';
+
+        const pc = draft.parsed_content || {};
+        
+        if (plat === 'linkedin') {
+            contentBox.innerHTML = `
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Hook</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl whitespace-pre-wrap select-all font-medium">${pc.hook || ''}</p></div>
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Body Insight</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl whitespace-pre-wrap select-all">${pc.body || ''}</p></div>
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">CTA</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl whitespace-pre-wrap select-all">${pc.cta || ''}</p></div>
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Hashtags</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl select-all text-brand-textMuted">${pc.hashtags || ''}</p></div>
+            `;
+        } else if (plat === 'instagram') {
+            contentBox.innerHTML = `
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Caption Visual</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl whitespace-pre-wrap select-all font-medium">${pc.caption || ''}</p></div>
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Hashtags</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl select-all text-brand-textMuted">${pc.hashtags || ''}</p></div>
+            `;
+        } else if (plat === 'x') {
+            let threadHTML = `<span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Thread Flow</span><div class="space-y-3">`;
+            const tweets = pc.thread || [];
+            tweets.forEach((tweet, index) => {
+                threadHTML += `
+                    <div class="p-3.5 bg-brand-cream/20 border border-brand-border/40 rounded-xl relative">
+                        <span class="absolute top-2.5 right-4 text-[9px] font-bold text-brand-textMuted">${index+1}/${tweets.length}</span>
+                        <p class="whitespace-pre-wrap select-all font-medium pr-8">${tweet}</p>
+                    </div>
+                `;
+            });
+            threadHTML += `</div>`;
+            contentBox.innerHTML = threadHTML;
+        } else if (plat === 'blog') {
+            let sectionHTML = `<div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Sections Outline</span><div class="space-y-2">`;
+            const sections = pc.blog_sections || [];
+            sections.forEach(s => {
+                sectionHTML += `
+                    <div class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl">
+                        <h5 class="font-bold text-xs text-brand-textDark">${s.heading || ''}</h5>
+                        <p class="text-brand-textMuted mt-1">${s.outline || ''}</p>
+                    </div>
+                `;
+            });
+            sectionHTML += `</div></div>`;
+
+            contentBox.innerHTML = `
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Blog Title</span><h4 class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl font-extrabold select-all">${pc.blog_title || ''}</h4></div>
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Introduction</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl whitespace-pre-wrap select-all">${pc.blog_introduction || ''}</p></div>
+                ${sectionHTML}
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">Conclusion</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl whitespace-pre-wrap select-all">${pc.blog_conclusion || ''}</p></div>
+                <div><span class="block text-[9px] font-extrabold text-brand-orange uppercase mb-1">SEO Keywords</span><p class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl select-all text-brand-textMuted">${pc.blog_keywords || ''}</p></div>
+            `;
+        }
+
+        // Open animation
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.querySelector('div').classList.remove('scale-95');
+        }, 50);
+    }
+
+    function closeDraftModal() {
+        const modal = document.getElementById('draft-modal');
+        modal.classList.add('opacity-0');
+        modal.querySelector('div').classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            activeModalDraft = null;
+        }, 300);
+    }
+
+    function copyModalContent() {
+        if (!activeModalDraft) return;
+        const pc = activeModalDraft.parsed_content || {};
+        const plat = activeModalDraft.platform.toLowerCase();
+        let copyText = "";
+
+        if (plat === 'linkedin') {
+            copyText = `${pc.hook}\n\n${pc.body}\n\n${pc.cta}\n\n${pc.hashtags}`;
+        } else if (plat === 'instagram') {
+            copyText = `${pc.caption}\n\n${pc.hashtags}`;
+        } else if (plat === 'x') {
+            copyText = (pc.thread || []).join('\n\n---\n\n');
+        } else if (plat === 'blog') {
+            let outline = (pc.blog_sections || []).map(s => `${s.heading}\n${s.outline}`).join('\n\n');
+            copyText = `# ${pc.blog_title}\n\n${pc.blog_introduction}\n\n${outline}\n\n${pc.blog_conclusion}\n\nKeywords: ${pc.blog_keywords}`;
+        }
+
+        navigator.clipboard.writeText(copyText).then(() => {
+            showToast("Draft copied from view modal!", "success");
+        }).catch(err => {
+            console.error(err);
+            showToast("Failed to copy content.", "danger");
+        });
+    }
+
+    function unscheduleFromModal() {
+        if (!activeModalDraft) return;
+        unscheduleDraft(activeModalDraft.id);
+        closeDraftModal();
+    }
+</script>
+{% endblock %}

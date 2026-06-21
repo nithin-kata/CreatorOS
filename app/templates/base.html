@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CreatorOS - Personal Brand OS{% endblock %}</title>
+    
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            cream: '#FFF8F0',
+                            softCream: '#FFF3E6',
+                            orange: '#FF7A00',
+                            darkOrange: '#E86600',
+                            peach: '#FFB680',
+                            border: '#F3D7BF',
+                            textDark: '#1F2937',
+                            textMuted: '#6B7280'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.1">
+</head>
+<body class="bg-brand-cream text-brand-textDark antialiased flex flex-col md:flex-row min-h-screen">
+
+    <!-- Liquid Glassmorphism Decorative Blobs -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <!-- Liquid Blob 1 -->
+        <div class="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-brand-orange/20 to-brand-peach/10 blur-[80px] animate-blob-1 -top-12 -left-12"></div>
+        <!-- Liquid Blob 2 -->
+        <div class="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-bl from-brand-peach/20 to-brand-softCream/10 blur-[100px] animate-blob-2 -bottom-24 -right-24"></div>
+        <!-- Liquid Blob 3 -->
+        <div class="absolute w-[400px] h-[400px] rounded-full bg-gradient-to-br from-brand-orange/15 to-transparent blur-[60px] animate-blob-3 top-1/3 left-1/2 -translate-x-1/2"></div>
+    </div>
+
+    {% if current_user.is_authenticated and request.endpoint != 'dashboard.onboarding' %}
+    <!-- Mobile Header/Navigation -->
+    <div class="md:hidden flex items-center justify-between p-4 border-b border-brand-border bg-white/80 backdrop-blur-md sticky top-0 z-30">
+        <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+            <span class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white text-lg font-black">C</span>
+            <span>Creator<span class="text-brand-orange">OS</span></span>
+        </a>
+        <button id="mobile-sidebar-toggle" class="p-2 border border-brand-border rounded-lg hover:bg-brand-softCream">
+            <svg class="w-6 h-6 text-brand-textDark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Responsive Sidebar Menu -->
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 w-64 bg-white border-r border-brand-border flex flex-col justify-between h-screen overflow-y-auto p-6 md:sticky md:top-0">
+        <div class="space-y-8">
+            <!-- App Logo -->
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-brand-orange flex items-center justify-center text-white text-xl font-black shadow-md shadow-brand-orange/20">C</div>
+                <div class="flex flex-col">
+                    <span class="font-extrabold text-lg leading-tight tracking-tight">Creator<span class="text-brand-orange">OS</span></span>
+                    <span class="text-[10px] text-brand-textMuted font-medium uppercase tracking-widest">Brand engine</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1">
+                <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'dashboard.index' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('content.generate') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'content.generate' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    <span>Content Generator</span>
+                </a>
+                <a href="{{ url_for('dashboard.calendar') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'dashboard.calendar' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Content Calendar</span>
+                </a>
+                <a href="{{ url_for('content.saved') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'content.saved' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    <span>Saved Drafts</span>
+                </a>
+                <a href="{{ url_for('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'settings.index' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- User profile section at bottom -->
+        <div class="border-t border-brand-border pt-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-10 h-10 rounded-xl bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase flex-shrink-0">
+                        {{ current_user.name[:2] }}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <span class="text-sm font-semibold truncate">{{ current_user.name }}</span>
+                        <span class="text-[11px] text-brand-textMuted truncate">{{ current_user.email }}</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="p-2 text-brand-textMuted hover:text-red-500 rounded-lg hover:bg-brand-softCream transition-all duration-200" title="Logout">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </a>
+            </div>
+        </div>
+    </aside>
+    {% endif %}
+
+    <!-- Main Workspace Area -->
+    <main class="relative z-10 flex-grow p-4 md:p-8 flex flex-col justify-center min-h-[calc(100vh-69px)] md:min-h-screen">
+        <div class="max-w-[1440px] w-full mx-auto px-4 md:px-8 flex-grow flex flex-col justify-center">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Global Toasters -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Global Chatbot Co-Pilot Widget -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        
+        <!-- Chat Bubble Panel -->
+        <div id="copilot-chat-window" class="w-96 max-w-[calc(100vw-2rem)] h-[480px] bg-white/95 backdrop-blur-md border border-brand-border rounded-2xl shadow-2xl flex flex-col mb-4 overflow-hidden transform scale-95 translate-y-8 opacity-0 pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hidden">
+            
+            <!-- Chat Header -->
+            <div class="bg-gradient-to-r from-brand-orange to-brand-peach/80 p-4 text-white flex items-center justify-between shadow-sm flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center font-black text-xs select-none">🤖</div>
+                    <div>
+                        <h4 class="font-extrabold text-sm tracking-tight leading-none">CreatorOS Co-Pilot</h4>
+                        <div class="flex items-center gap-1 mt-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse"></span>
+                            <span class="text-[9px] font-bold text-white/90 uppercase tracking-widest leading-none">Always online</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex items-center gap-1">
+                    <button onclick="clearChatHistory()" class="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition-all focus:outline-none" title="Reset Conversation">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                    <button onclick="toggleCopilotChat()" class="p-1.5 hover:bg-white/10 rounded-lg text-white/80 hover:text-white transition-all focus:outline-none" title="Minimize">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Message Box -->
+            <div id="copilot-message-box" class="flex-grow p-4 overflow-y-auto space-y-3.5 custom-scrollbar text-xs bg-brand-cream/10 flex flex-col">
+                <!-- Welcome Message -->
+                <div class="flex gap-2.5 items-start max-w-[85%] self-start" id="welcome-message-node">
+                    <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                    <div class="p-3 bg-white border border-brand-border/60 rounded-2xl rounded-tl-none shadow-xs leading-relaxed text-brand-textDark font-medium">
+                        Hello! I am your <strong>CreatorOS Co-Pilot</strong> assistant. Ask me anything about creating content, scheduling drafts on the Content Calendar, tracking streaks, or settings updates! 🚀
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Typing Indicator (Hidden by default) -->
+            <div id="copilot-typing-indicator" class="px-4 py-2.5 flex gap-2.5 items-center text-brand-textMuted bg-brand-softCream/10 border-t border-brand-border/10 hidden flex-shrink-0">
+                <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                <div class="flex items-center gap-1.5 bg-white border border-brand-border/40 rounded-2xl py-1.5 px-3 shadow-xs text-[10px]">
+                    <span class="font-bold text-brand-orange leading-none">Co-Pilot is drafting</span>
+                    <div class="flex gap-0.5 mt-0.5">
+                        <span class="w-1 h-1 rounded-full bg-brand-orange animate-bounce" style="animation-delay: 0ms"></span>
+                        <span class="w-1 h-1 rounded-full bg-brand-orange animate-bounce" style="animation-delay: 150ms"></span>
+                        <span class="w-1 h-1 rounded-full bg-brand-orange animate-bounce" style="animation-delay: 300ms"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Bar -->
+            <div class="p-3 bg-white border-t border-brand-border/30 flex items-center gap-2 flex-shrink-0">
+                <input type="text" id="copilot-chat-input" placeholder="Ask Co-Pilot about CreatorOS..." 
+                       class="flex-grow px-3.5 py-2.5 text-xs rounded-xl border border-brand-border bg-brand-cream/10 text-brand-textDark focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange/10 transition-all font-medium"
+                       onkeydown="if(event.key === 'Enter') sendCopilotMessage()">
+                <button onclick="sendCopilotMessage()" class="p-2.5 bg-brand-orange hover:bg-brand-darkOrange text-white rounded-xl shadow-xs hover:shadow-md transition-all flex items-center justify-center focus:outline-none">
+                    <svg class="w-4 h-4 transform rotate-90" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </div>
+            
+        </div>
+
+        <!-- Chat Trigger Floating Bubble Button -->
+        <button id="copilot-chat-bubble" onclick="toggleCopilotChat()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-brand-orange to-brand-peach/90 text-white flex items-center justify-center shadow-xl hover:shadow-2xl active:scale-95 transition-all duration-300 relative hover:-translate-y-1 focus:outline-none border-2 border-white/60">
+            <!-- Unread badge/dot -->
+            <span id="copilot-chat-badge" class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-brand-glow-pink border-2 border-white animate-pulse"></span>
+            
+            <!-- Chat bubble svg icon -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+        </button>
+        
+    </div>
+
+    <!-- Co-Pilot Chat JavaScript -->
+    <script>
+        let copilotChatOpen = false;
+        
+        function toggleCopilotChat() {
+            const windowEl = document.getElementById('copilot-chat-window');
+            const badge = document.getElementById('copilot-chat-badge');
+            
+            if (badge) {
+                badge.remove();
+            }
+            
+            copilotChatOpen = !copilotChatOpen;
+            sessionStorage.setItem('copilot_chat_open', copilotChatOpen ? 'true' : 'false');
+            
+            if (copilotChatOpen) {
+                windowEl.classList.remove('hidden');
+                setTimeout(() => {
+                    windowEl.classList.remove('opacity-0', 'scale-95', 'translate-y-8', 'pointer-events-none');
+                }, 50);
+                scrollChatToBottom();
+            } else {
+                windowEl.classList.add('opacity-0', 'scale-95', 'translate-y-8', 'pointer-events-none');
+                setTimeout(() => {
+                    if (!copilotChatOpen) {
+                        windowEl.classList.add('hidden');
+                    }
+                }, 300);
+            }
+        }
+        
+        function scrollChatToBottom() {
+            const box = document.getElementById('copilot-message-box');
+            if (box) {
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+        
+        function renderChatMessage(role, text) {
+            const box = document.getElementById('copilot-message-box');
+            const node = document.createElement('div');
+            
+            if (role === 'assistant') {
+                node.className = "flex gap-2.5 items-start max-w-[85%] self-start animate-[slide-in_0.2s_ease-out] mb-1.5";
+                node.innerHTML = `
+                    <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                    <div class="p-3 bg-white border border-brand-border/60 rounded-2xl rounded-tl-none shadow-xs leading-relaxed text-brand-textDark font-medium text-[11px] whitespace-pre-wrap">${text}</div>
+                `;
+            } else {
+                node.className = "p-3 bg-brand-orange text-white rounded-2xl rounded-tr-none shadow-xs leading-relaxed text-[11px] font-semibold max-w-[85%] self-end animate-[slide-in_0.2s_ease-out] mb-1.5 whitespace-pre-wrap";
+                node.innerText = text;
+            }
+            
+            box.appendChild(node);
+            scrollChatToBottom();
+        }
+        
+        function sendCopilotMessage() {
+            const inputEl = document.getElementById('copilot-chat-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+            
+            inputEl.value = '';
+            renderChatMessage('user', text);
+            saveChatHistory(window.chatHistory.concat({role: 'user', text: text}));
+            
+            const indicator = document.getElementById('copilot-typing-indicator');
+            indicator.classList.remove('hidden');
+            scrollChatToBottom();
+            
+            const formData = new FormData();
+            formData.append('message', text);
+            
+            fetch("{{ url_for('dashboard.chat') }}", {
+                method: "POST",
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                indicator.classList.add('hidden');
+                if (data.success && data.reply) {
+                    renderChatMessage('assistant', data.reply);
+                    saveChatHistory(window.chatHistory.concat({role: 'assistant', text: data.reply}));
+                } else {
+                    renderChatMessage('assistant', "Oops, I encountered a connection issue. Let's try again in a second!");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                indicator.classList.add('hidden');
+                renderChatMessage('assistant', "Oops, my servers didn't reply. Is the API connection live?");
+            });
+        }
+        
+        function saveChatHistory(history) {
+            window.chatHistory = history;
+            sessionStorage.setItem('copilot_chat_history', JSON.stringify(history));
+        }
+        
+        function clearChatHistory() {
+            if (confirm("Reset conversation with Co-Pilot?")) {
+                saveChatHistory([]);
+                const box = document.getElementById('copilot-message-box');
+                box.innerHTML = `
+                    <div class="flex gap-2.5 items-start max-w-[85%] self-start" id="welcome-message-node">
+                        <div class="w-6.5 h-6.5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-[10px] text-brand-orange flex-shrink-0 select-none">🤖</div>
+                        <div class="p-3 bg-white border border-brand-border/60 rounded-2xl rounded-tl-none shadow-xs leading-relaxed text-brand-textDark font-medium">
+                            Hello! I am your <strong>CreatorOS Co-Pilot</strong> assistant. Ask me anything about creating content, scheduling drafts on the Content Calendar, tracking streaks, or settings updates! 🚀
+                        </div>
+                    </div>
+                `;
+                showToast("Conversation history cleared.", "info");
+            }
+        }
+        
+        // Initialize Chat state from sessionStorage
+        document.addEventListener('DOMContentLoaded', () => {
+            window.chatHistory = [];
+            const savedHistory = sessionStorage.getItem('copilot_chat_history');
+            if (savedHistory) {
+                try {
+                    window.chatHistory = JSON.parse(savedHistory);
+                    window.chatHistory.forEach(msg => {
+                        renderChatMessage(msg.role, msg.text);
+                    });
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            
+            const openState = sessionStorage.getItem('copilot_chat_open');
+            if (openState === 'true') {
+                toggleCopilotChat();
+                const badge = document.getElementById('copilot-chat-badge');
+                if (badge) badge.remove();
+            }
+        });
+    </script>
+
+
+    <!-- Script assets -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Trigger flashed messages on load
+        document.addEventListener('DOMContentLoaded', () => {
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                        // Category mapping for toast types
+                        let type = "{{ category }}";
+                        if (type === 'message' || type === 'error') type = 'danger';
+                        showToast("{{ msg }}", type);
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            // (3D Card Tilt Effect removed in favor of high-performance CSS hover lifts and glows)
+
+            // Scroll-Reveal Intersection Observer
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

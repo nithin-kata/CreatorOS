@@ -1,0 +1,870 @@
+{% extends "base.html" %}
+
+{% block title %}AI Content Generator - CreatorOS{% endblock %}
+
+{% block content %}
+<div class="py-6 px-4 space-y-6">
+    
+    <!-- Title Header -->
+    <div class="border-b border-brand-border/60 pb-6">
+        <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">AI Content Generator</h1>
+        <p class="text-sm text-brand-textMuted mt-1">Transform topics and trends into premium platform-optimized drafts instantly.</p>
+    </div>
+
+    <!-- Generator Workspace Split Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Panel: Input Configuration (5 Cols) -->
+        <div class="lg:col-span-5 bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-6">
+            <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest border-b border-brand-border/40 pb-3">Configure Draft</h3>
+            
+            <form id="generator-form" class="space-y-5">
+                <!-- Topic Prompt -->
+                <div>
+                    <label for="prompt" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Topic or Opportunity</label>
+                    <textarea id="prompt" name="prompt" rows="3" required placeholder="What is your post about? (e.g. AI Agents for students, Solopreneur tools...)"
+                              class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/15 transition-all text-sm custom-scrollbar resize-none">{{ prefill_topic }}</textarea>
+                </div>
+
+                <!-- Platform -->
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Target Network</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        {% for plat in ['LinkedIn', 'X', 'Instagram', 'Blog'] %}
+                        <label class="border border-brand-border p-2.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="platform" value="{{ plat }}" required class="sr-only" 
+                                   {% if prefill_platform == plat %}checked{% endif %} onclick="updatePlatformUI(this)">
+                            <span class="text-[11px] font-bold text-brand-textDark">{{ plat if plat != 'Blog' else 'Blog Outline' }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Content Style (Tone) -->
+                <div>
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Writing Tone</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        {% for tone_name in ['Professional', 'Storytelling', 'Educational', 'Casual'] %}
+                        <label class="border border-brand-border p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="tone" value="{{ tone_name }}" required class="sr-only"
+                                   {% if prefill_tone == tone_name %}checked{% endif %} onclick="updateToneUI(this)">
+                            <span class="text-xs font-semibold text-brand-textDark">{{ tone_name }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button type="submit" id="generate-btn" class="w-full btn-orange-primary py-3.5 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    <span>Generate Post Draft</span>
+                </button>
+            </form>
+
+            <!-- Refinement Canvas Section -->
+            <div id="refinement-panel" class="hidden border-t border-brand-border/40 pt-5 space-y-4">
+                <h4 class="text-xs font-bold text-brand-textMuted uppercase tracking-wider">Refine Active Draft (Canvas Co-Pilot)</h4>
+                
+                <!-- Preset Quick Pills -->
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" onclick="quickRefine('Make it punchier')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">🔥 Punchier</button>
+                    <button type="button" onclick="quickRefine('Make it shorter')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">✂ Shorter</button>
+                    <button type="button" onclick="quickRefine('Add a contrarian hook')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">🎯 Contrarian Hook</button>
+                    <button type="button" onclick="quickRefine('Inject storytelling style')" class="px-2.5 py-1.5 rounded-lg border border-brand-border hover:border-brand-orange bg-brand-cream/10 text-[11px] font-semibold text-brand-textDark hover:bg-brand-softCream/20 transition-all">📖 Storytelling</button>
+                </div>
+
+                <!-- Custom instruction field -->
+                <div class="flex gap-2">
+                    <input type="text" id="refinement-prompt" placeholder="Ask AI Co-Pilot to rewrite (e.g. Add emojis...)" 
+                           class="flex-grow px-3 py-2 text-xs rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all">
+                    <button type="button" onclick="submitRefinement()" class="px-3.5 py-2 bg-brand-textDark text-white hover:bg-black rounded-xl text-xs font-bold transition-all flex items-center justify-center">
+                        Refine
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Canvas Output Preview (7 Cols) -->
+        <div class="lg:col-span-7 bg-white border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col h-[650px] relative overflow-hidden">
+            
+            <!-- Shimmer Loading Overlay -->
+            <div id="loader-overlay" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-8 text-center space-y-4 hidden">
+                <div class="w-12 h-12 rounded-full border-4 border-brand-softCream border-t-brand-orange animate-spin"></div>
+                <div class="space-y-1">
+                    <h4 class="font-extrabold text-brand-textDark">Engraving Draft...</h4>
+                    <p class="text-xs text-brand-textMuted">Checking Creator Memory similarity and formatting layouts</p>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state-canvas" class="flex flex-col items-center justify-center flex-grow text-center p-8 space-y-3">
+                <span class="text-4xl select-none">🎨</span>
+                <h4 class="font-extrabold text-sm text-brand-textDark">Workspace Canvas Empty</h4>
+                <p class="text-xs text-brand-textMuted max-w-sm leading-relaxed">Your generated content drafts will paint here. Formulate options on the left and tap generate.</p>
+            </div>
+
+            <!-- Content Area (Initially Hidden) -->
+            <div id="content-canvas" class="hidden flex flex-col h-full space-y-3">
+                
+                <!-- Header Actions & Memory Tags -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-border/40 pb-3 flex-shrink-0">
+                    <div id="memory-badge-container" class="flex items-center gap-1.5">
+                        <!-- Similarity badges dynamically populate here -->
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="copyCurrentCanvas()" class="p-2 border border-brand-border rounded-xl bg-white hover:bg-brand-softCream text-xs font-bold text-brand-textDark flex items-center gap-1.5 transition-all">
+                            <span>Copy Draft</span>
+                        </button>
+                        <button id="save-draft-btn" class="p-2 bg-brand-orange text-white hover:bg-brand-darkOrange rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
+                            <span>Save to Memory</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabs and Score Widget -->
+                <div class="flex items-center justify-between border-b border-brand-border/20 pb-2.5 flex-shrink-0">
+                    <!-- Toggle Tabs -->
+                    <div class="flex bg-brand-softCream/30 border border-brand-border/60 rounded-lg p-0.5">
+                        <button type="button" id="tab-raw" onclick="switchCanvasTab('raw')" class="px-3 py-1.5 text-xs font-bold text-brand-orange bg-white rounded-md shadow-sm transition-all focus:outline-none">
+                            Raw Editor
+                        </button>
+                        <button type="button" id="tab-preview" onclick="switchCanvasTab('preview')" class="px-3 py-1.5 text-xs font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none">
+                            Feed Preview
+                        </button>
+                    </div>
+                    
+                    <!-- Score Mini-widget -->
+                    <div class="flex items-center gap-2">
+                        <div class="text-right">
+                            <div class="text-[10px] text-brand-textMuted font-bold uppercase tracking-wider leading-none">Impression Forecast</div>
+                            <div id="score-text" class="text-xs font-black text-brand-orange mt-0.5">Score: --</div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full border-2 border-brand-border flex items-center justify-center text-[10px] font-black text-brand-orange" id="score-circle-container">
+                            --
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scrollable Output Draft Canvas (Raw Editor) -->
+                <div class="custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-4 text-sm" id="rendered-output-box">
+                    
+                    <!-- LinkedIn Format -->
+                    <div id="linkedin-output" class="hidden space-y-4">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Hook</span>
+                            <div id="li-hook" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl font-medium text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Body Insight</span>
+                            <div id="li-body" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Call to Action</span>
+                            <div id="li-cta" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Hashtags</span>
+                            <div id="li-hashtags" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none"></div>
+                        </div>
+                    </div>
+
+                    <!-- Instagram Format -->
+                    <div id="instagram-output" class="hidden space-y-4">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Caption visual text</span>
+                            <div id="ig-caption" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Hashtags</span>
+                            <div id="ig-hashtags" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none"></div>
+                        </div>
+                    </div>
+
+                    <!-- X Thread Format -->
+                    <div id="x-output" class="hidden space-y-3">
+                        <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider block mb-1">Thread Posts</span>
+                        <div id="x-thread-container" class="space-y-3">
+                            <!-- Tweets loop dynamically injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Blog Format -->
+                    <div id="blog-output" class="hidden space-y-4">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Blog Title</span>
+                            <div id="blog-title" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl font-bold text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Introduction & Hook</span>
+                            <div id="blog-intro" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Structured Outline Sections</span>
+                            <div id="blog-sections-container" class="space-y-3">
+                                <!-- Sections loop dynamically injected here -->
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">Conclusion</span>
+                            <div id="blog-conclusion" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textDark whitespace-pre-wrap select-all focus:outline-none"></div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-brand-orange uppercase tracking-wider">SEO Keywords</span>
+                            <div id="blog-keywords" class="p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl text-brand-textMuted select-all focus:outline-none"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Feed Preview Container (Simulated Layouts) -->
+                <div id="feed-preview-output" class="hidden custom-scrollbar overflow-y-auto flex-grow pr-1 space-y-4 text-sm">
+                    <!-- LinkedIn Simulated Card -->
+                    <div id="preview-linkedin" class="hidden border border-gray-200 bg-white rounded-xl shadow-xs p-4 text-left font-sans text-sm text-gray-900 max-w-lg mx-auto">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="w-10 h-10 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-xs">
+                                {{ current_user.name[:2] }}
+                            </div>
+                            <div>
+                                <div class="font-bold text-xs text-gray-900 flex items-center gap-1">
+                                    <span>{{ current_user.name }}</span>
+                                    <span class="text-[10px] text-gray-500 font-normal">• 1st</span>
+                                </div>
+                                <div class="text-[10px] text-gray-500">AI Creator & Personal Branding Specialist</div>
+                                <div class="text-[9px] text-gray-400 flex items-center gap-1 mt-0.5">
+                                    <span>1h</span>
+                                    <span>•</span>
+                                    <svg class="w-2.5 h-2.5 fill-current text-gray-400" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 5.52 4.477 10 10 10s10-4.48 10-10c0-5.523-4.477-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Expandable LinkedIn Text -->
+                        <div class="space-y-2 mb-3 text-gray-800 leading-relaxed break-words text-xs" id="li-preview-text-box">
+                            <div id="li-preview-hook" class="inline"></div>
+                            <span id="li-preview-dots" class="font-semibold text-gray-500 hover:text-brand-orange cursor-pointer" onclick="expandLinkedInPreview()">...see more</span>
+                            <div id="li-preview-body-cta-hashtags" class="hidden">
+                                <div id="li-preview-body" class="mt-2 whitespace-pre-wrap"></div>
+                                <div id="li-preview-cta" class="mt-2 whitespace-pre-wrap font-semibold"></div>
+                                <div id="li-preview-hashtags" class="mt-2 text-sky-700 font-medium"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-gray-100 pt-2 flex items-center justify-between text-[11px] text-gray-500 font-semibold px-2">
+                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">👍 Like</span>
+                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">💬 Comment</span>
+                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">🔄 Repost</span>
+                            <span class="flex items-center gap-1 hover:bg-gray-50 p-1.5 rounded cursor-pointer">📤 Send</span>
+                        </div>
+                    </div>
+
+                    <!-- X Thread Simulated Card -->
+                    <div id="preview-x" class="hidden space-y-4 max-w-lg mx-auto font-sans text-left">
+                        <div id="x-preview-tweets-container" class="space-y-4">
+                            <!-- Tweets loop dynamically here -->
+                        </div>
+                    </div>
+
+                    <!-- Instagram Simulated Card -->
+                    <div id="preview-instagram" class="hidden border border-gray-200 bg-white rounded-xl shadow-xs max-w-sm mx-auto font-sans text-left overflow-hidden">
+                        <!-- Instagram Header -->
+                        <div class="flex items-center justify-between p-3 border-b border-gray-100">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-xs">
+                                    {{ current_user.name[:2] }}
+                                </div>
+                                <span class="font-bold text-xs text-gray-900">{{ current_user.name.lower().replace(" ", "") }}</span>
+                            </div>
+                            <span class="text-gray-500 font-bold tracking-widest text-xs cursor-pointer">•••</span>
+                        </div>
+                        <!-- Instagram Post Media Placeholder -->
+                        <div class="w-full aspect-square bg-gradient-to-tr from-brand-peach/20 via-brand-softCream/40 to-brand-orange/10 flex flex-col items-center justify-center text-center p-6 border-b border-gray-100 relative group">
+                            <span class="text-3xl animate-bounce">📸</span>
+                            <span class="text-[10px] font-black text-brand-orange uppercase tracking-widest mt-2">Visual Draft Asset</span>
+                            <span class="text-[9px] text-brand-textMuted mt-1 px-4">Generate branding graphics using canvas templates</span>
+                        </div>
+                        <!-- Actions Bar -->
+                        <div class="p-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="cursor-pointer text-base">❤️</span>
+                                <span class="cursor-pointer text-base">💬</span>
+                                <span class="cursor-pointer text-base">✈️</span>
+                            </div>
+                            <span class="cursor-pointer text-base">🔖</span>
+                        </div>
+                        <!-- Caption Box -->
+                        <div class="px-3 pb-3 text-xs leading-relaxed text-gray-800">
+                            <span class="font-bold text-gray-900 mr-1.5">{{ current_user.name.lower().replace(" ", "") }}</span>
+                            <span id="ig-preview-caption" class="whitespace-pre-wrap"></span>
+                            <div id="ig-preview-hashtags" class="text-sky-800 font-semibold mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Blog Document Simulated Card -->
+                    <div id="preview-blog" class="hidden border border-brand-border bg-white rounded-xl shadow-xs p-6 max-w-xl mx-auto font-serif text-left prose prose-sm text-gray-800 leading-relaxed">
+                        <h1 id="blog-preview-title" class="text-lg font-sans font-black text-gray-900 border-b border-gray-100 pb-3"></h1>
+                        <div class="flex items-center gap-2 my-3 text-[10px] font-sans text-brand-textMuted">
+                            <div class="w-5 h-5 rounded-full bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange text-[9px] uppercase">
+                                {{ current_user.name[:2] }}
+                            </div>
+                            <span>Written by <span class="font-bold text-brand-textDark">{{ current_user.name }}</span></span>
+                            <span>•</span>
+                            <span>3 min read</span>
+                        </div>
+                        <p id="blog-preview-intro" class="italic text-xs text-gray-700 mb-3 bg-gray-50/50 p-2.5 rounded-lg border-l-4 border-brand-orange"></p>
+                        
+                        <div id="blog-preview-sections" class="space-y-3 mt-3">
+                            <!-- Sections injected dynamically -->
+                        </div>
+                        
+                        <div id="blog-preview-conclusion" class="mt-4 pt-3 border-t border-gray-100 whitespace-pre-wrap text-[11px] text-gray-600 bg-gray-50 p-3 rounded-xl font-sans font-medium"></div>
+                        <div class="mt-3 text-[11px] font-sans text-brand-textMuted flex items-center gap-1">
+                            <span class="font-bold text-gray-900">Keywords:</span>
+                            <span id="blog-preview-keywords"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Recommendations (Forecast Checklist) -->
+                <div id="forecast-checklist-container" class="p-3 bg-brand-softCream/20 border border-brand-border/40 rounded-xl flex-shrink-0 space-y-1.5 hidden border-t">
+                    <button type="button" onclick="toggleForecastChecklist()" class="w-full flex items-center justify-between text-xs font-bold text-brand-textDark focus:outline-none">
+                        <span class="flex items-center gap-1.5">
+                            📊 AI Engagement Insights & Optimization
+                        </span>
+                        <svg id="checklist-arrow" class="w-4 h-4 text-brand-textMuted transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="forecast-checklist-content" class="hidden pt-1 space-y-1 text-[11px] text-brand-textMuted custom-scrollbar overflow-y-auto max-h-[80px]">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let activePlatform = "{{ prefill_platform }}";
+    let activeTone = "{{ prefill_tone }}";
+    let lastGeneratedData = null; // Store last generated response for saving drafts
+
+    // Interactive styling functions for radio selections
+    function updatePlatformUI(inputElement) {
+        inputElement.form.querySelectorAll('input[name="platform"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        inputElement.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        activePlatform = inputElement.value;
+    }
+
+    function updateToneUI(inputElement) {
+        inputElement.form.querySelectorAll('input[name="tone"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        inputElement.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+        activeTone = inputElement.value;
+    }
+
+    // Handle initial state setup
+    document.addEventListener('DOMContentLoaded', () => {
+        const platInputs = document.querySelectorAll('input[name="platform"]');
+        platInputs.forEach(input => {
+            if (input.checked) updatePlatformUI(input);
+        });
+
+        const toneInputs = document.querySelectorAll('input[name="tone"]');
+        toneInputs.forEach(input => {
+            if (input.checked) updateToneUI(input);
+        });
+    });
+
+    // Form submit listener (AJAX call to /generate)
+    document.getElementById('generator-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const loader = document.getElementById('loader-overlay');
+        const emptyCanvas = document.getElementById('empty-state-canvas');
+        const contentCanvas = document.getElementById('content-canvas');
+        
+        loader.classList.remove('hidden');
+        
+        const formData = new FormData(e.target);
+        
+        fetch("{{ url_for('content.generate') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(response => {
+            loader.classList.add('hidden');
+            if (response.error) {
+                showToast(response.error, 'danger');
+                return;
+            }
+            
+            // Pop Content Canvas, Hide Empty state, Show Refinement panel
+            emptyCanvas.classList.add('hidden');
+            contentCanvas.classList.remove('hidden');
+            document.getElementById('refinement-panel').classList.remove('hidden');
+            
+            lastGeneratedData = response.data;
+            
+            // Render forecast score & checklists
+            updateScoreAndChecklist(response.analysis);
+            
+            // Reset to raw view tab
+            switchCanvasTab('raw');
+            
+            // 1. Render Source and Memory badges
+            const badgeContainer = document.getElementById('memory-badge-container');
+            badgeContainer.innerHTML = '';
+            
+            // Source badge
+            const isApi = response.data._source === 'api';
+            const sourceBadge = document.createElement('span');
+            sourceBadge.className = isApi 
+                ? "inline-flex items-center gap-1 px-2 py-1 rounded-lg border border-green-200 bg-green-50 text-[10px] font-bold text-green-700"
+                : "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-orange-200 bg-orange-50 text-[10px] font-bold text-orange-700";
+            sourceBadge.innerText = isApi ? "✓ Engine: Groq API Active" : "⚠ Engine: Inbuilt Copy Simulator";
+            badgeContainer.appendChild(sourceBadge);
+            
+            // Similarity badge
+            const sim = response.similarity;
+            const simBadge = document.createElement('span');
+            if (sim.is_similar) {
+                simBadge.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-yellow-300 bg-yellow-50 text-[10px] font-bold text-yellow-700";
+                simBadge.innerText = `⚠ ${sim.message}`;
+                badgeContainer.appendChild(simBadge);
+                showToast("Overlap alert! Check similarities in top badge.", "warning");
+            } else {
+                simBadge.className = "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-green-200 bg-green-50 text-[10px] font-bold text-green-700";
+                simBadge.innerText = "✓ Not similar to your last 10 posts.";
+                badgeContainer.appendChild(simBadge);
+                
+                if (isApi) {
+                    showToast("Post drafted successfully via Groq API!", "success");
+                } else {
+                    showToast("Post drafted via Inbuilt Copy Engine (API offline).", "info");
+                }
+            }
+            
+            // 2. Hide all formats, display active platform format
+            document.getElementById('linkedin-output').classList.add('hidden');
+            document.getElementById('instagram-output').classList.add('hidden');
+            document.getElementById('x-output').classList.add('hidden');
+            document.getElementById('blog-output').classList.add('hidden');
+            
+            const plat = activePlatform.toLowerCase();
+            if (plat === 'linkedin') {
+                document.getElementById('linkedin-output').classList.remove('hidden');
+                document.getElementById('li-hook').innerText = response.data.hook || '';
+                document.getElementById('li-body').innerText = response.data.body || '';
+                document.getElementById('li-cta').innerText = response.data.cta || '';
+                document.getElementById('li-hashtags').innerText = response.data.hashtags || '';
+            } else if (plat === 'instagram') {
+                document.getElementById('instagram-output').classList.remove('hidden');
+                document.getElementById('ig-caption').innerText = response.data.caption || '';
+                document.getElementById('ig-hashtags').innerText = response.data.hashtags || '';
+            } else if (plat === 'x') {
+                document.getElementById('x-output').classList.remove('hidden');
+                const threadBox = document.getElementById('x-thread-container');
+                threadBox.innerHTML = '';
+                const tweets = response.data.thread || [];
+                tweets.forEach((tweet, index) => {
+                    const tweetDiv = document.createElement('div');
+                    tweetDiv.className = 'p-4 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1 relative';
+                    tweetDiv.innerHTML = `
+                        <span class="absolute top-2.5 right-4 text-[10px] font-bold text-brand-textMuted">${index+1}/${tweets.length}</span>
+                        <p class="text-brand-textDark whitespace-pre-wrap select-all font-medium pr-8">${tweet}</p>
+                    `;
+                    threadBox.appendChild(tweetDiv);
+                });
+            } else if (plat === 'blog') {
+                document.getElementById('blog-output').classList.remove('hidden');
+                document.getElementById('blog-title').innerText = response.data.blog_title || '';
+                document.getElementById('blog-intro').innerText = response.data.blog_introduction || '';
+                document.getElementById('blog-conclusion').innerText = response.data.blog_conclusion || '';
+                document.getElementById('blog-keywords').innerText = response.data.blog_keywords || '';
+                
+                const sectionsBox = document.getElementById('blog-sections-container');
+                sectionsBox.innerHTML = '';
+                const sections = response.data.blog_sections || [];
+                sections.forEach((sec) => {
+                    const secDiv = document.createElement('div');
+                    secDiv.className = 'p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1';
+                    secDiv.innerHTML = `
+                        <h5 class="font-bold text-xs text-brand-textDark">${sec.heading || ''}</h5>
+                        <p class="text-xs text-brand-textMuted whitespace-pre-wrap select-all">${sec.outline || ''}</p>
+                    `;
+                    sectionsBox.appendChild(secDiv);
+                });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            loader.classList.add('hidden');
+            showToast("Server error during AI generation.", "danger");
+        });
+    });
+
+    // -------------------------------------------------------------
+    // Tab switching and feed preview simulator logic
+    // -------------------------------------------------------------
+    let currentCanvasTab = 'raw';
+    
+    function switchCanvasTab(tab) {
+        if (!lastGeneratedData) return;
+        currentCanvasTab = tab;
+        
+        const rawBtn = document.getElementById('tab-raw');
+        const prevBtn = document.getElementById('tab-preview');
+        
+        const rawOutput = document.getElementById('rendered-output-box');
+        const prevOutput = document.getElementById('feed-preview-output');
+        
+        if (tab === 'raw') {
+            rawBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-orange bg-white rounded-md shadow-sm transition-all focus:outline-none";
+            prevBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none";
+            rawOutput.classList.remove('hidden');
+            prevOutput.classList.add('hidden');
+        } else {
+            prevBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-orange bg-white rounded-md shadow-sm transition-all focus:outline-none";
+            rawBtn.className = "px-3 py-1.5 text-xs font-bold text-brand-textMuted hover:text-brand-textDark rounded-md transition-all focus:outline-none";
+            rawOutput.classList.add('hidden');
+            prevOutput.classList.remove('hidden');
+            renderFeedPreview();
+        }
+    }
+    
+    function renderFeedPreview() {
+        if (!lastGeneratedData) return;
+        
+        document.getElementById('preview-linkedin').classList.add('hidden');
+        document.getElementById('preview-x').classList.add('hidden');
+        document.getElementById('preview-instagram').classList.add('hidden');
+        document.getElementById('preview-blog').classList.add('hidden');
+        
+        const plat = activePlatform.toLowerCase();
+        
+        if (plat === 'linkedin') {
+            document.getElementById('preview-linkedin').classList.remove('hidden');
+            document.getElementById('li-preview-hook').innerText = lastGeneratedData.hook || '';
+            document.getElementById('li-preview-body').innerText = lastGeneratedData.body || '';
+            document.getElementById('li-preview-cta').innerText = lastGeneratedData.cta || '';
+            document.getElementById('li-preview-hashtags').innerText = lastGeneratedData.hashtags || '';
+            
+            // Collapse body/cta by default
+            document.getElementById('li-preview-dots').classList.remove('hidden');
+            document.getElementById('li-preview-body-cta-hashtags').classList.add('hidden');
+            
+        } else if (plat === 'instagram') {
+            document.getElementById('preview-instagram').classList.remove('hidden');
+            document.getElementById('ig-preview-caption').innerText = lastGeneratedData.caption || '';
+            document.getElementById('ig-preview-hashtags').innerText = lastGeneratedData.hashtags || '';
+            
+        } else if (plat === 'x') {
+            document.getElementById('preview-x').classList.remove('hidden');
+            const container = document.getElementById('x-preview-tweets-container');
+            container.innerHTML = '';
+            
+            const tweets = lastGeneratedData.thread || [];
+            tweets.forEach((tweet, index) => {
+                const tweetNode = document.createElement('div');
+                tweetNode.className = "flex gap-3 relative";
+                
+                const showLine = index < tweets.length - 1;
+                const timelineLine = showLine 
+                    ? `<div class="absolute left-5 top-10 bottom-0 w-0.5 bg-gray-200"></div>`
+                    : '';
+                
+                tweetNode.innerHTML = `
+                    ${timelineLine}
+                    <div class="relative z-10 flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-brand-peach/40 border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase text-xs">
+                            {{ current_user.name[:2] }}
+                        </div>
+                    </div>
+                    <div class="flex-grow pb-4">
+                        <div class="flex items-center gap-1.5 text-[11px]">
+                            <span class="font-bold text-gray-900 hover:underline cursor-pointer">{{ current_user.name }}</span>
+                            <span class="text-gray-500 font-normal">@{{ current_user.name.lower().replace(" ", "") }}</span>
+                            <span class="text-gray-400 font-normal">· 1h</span>
+                        </div>
+                        <p class="text-xs text-gray-900 mt-1 whitespace-pre-wrap leading-relaxed">${tweet}</p>
+                        <div class="flex items-center gap-10 mt-3 text-gray-400 text-[10px] font-semibold">
+                            <span class="hover:text-sky-500 cursor-pointer flex items-center gap-1">💬 <span class="font-normal">2</span></span>
+                            <span class="hover:text-green-500 cursor-pointer flex items-center gap-1">🔄 <span class="font-normal">4</span></span>
+                            <span class="hover:text-pink-500 cursor-pointer flex items-center gap-1">❤️ <span class="font-normal">18</span></span>
+                            <span class="hover:text-sky-500 cursor-pointer flex items-center gap-1">📊 <span class="font-normal">450</span></span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(tweetNode);
+            });
+            
+        } else if (plat === 'blog') {
+            document.getElementById('preview-blog').classList.remove('hidden');
+            document.getElementById('blog-preview-title').innerText = lastGeneratedData.blog_title || '';
+            document.getElementById('blog-preview-intro').innerText = lastGeneratedData.blog_introduction || '';
+            document.getElementById('blog-preview-conclusion').innerText = lastGeneratedData.blog_conclusion || '';
+            document.getElementById('blog-preview-keywords').innerText = lastGeneratedData.blog_keywords || '';
+            
+            const secContainer = document.getElementById('blog-preview-sections');
+            secContainer.innerHTML = '';
+            const sections = lastGeneratedData.blog_sections || [];
+            sections.forEach((s) => {
+                const sNode = document.createElement('div');
+                sNode.className = "space-y-1";
+                sNode.innerHTML = `
+                    <h2 class="text-xs font-sans font-bold text-gray-900 mt-3">${s.heading || ''}</h2>
+                    <p class="text-[11px] text-gray-700 whitespace-pre-wrap leading-relaxed">${s.outline || ''}</p>
+                `;
+                secContainer.appendChild(sNode);
+            });
+        }
+    }
+    
+    function expandLinkedInPreview() {
+        document.getElementById('li-preview-dots').classList.add('hidden');
+        document.getElementById('li-preview-body-cta-hashtags').classList.remove('hidden');
+    }
+
+    // -------------------------------------------------------------
+    // AI Canvas Co-Pilot (Refiner) Logic
+    // -------------------------------------------------------------
+    function quickRefine(instruction) {
+        document.getElementById('refinement-prompt').value = instruction;
+        submitRefinement();
+    }
+
+    function submitRefinement() {
+        if (!lastGeneratedData) return;
+        
+        const promptInput = document.getElementById('refinement-prompt');
+        const refinementPrompt = promptInput.value.trim();
+        if (!refinementPrompt) {
+            showToast("Please enter or select a refinement instruction.", "warning");
+            return;
+        }
+        
+        const loader = document.getElementById('loader-overlay');
+        const loaderTitle = loader.querySelector('h4');
+        const loaderSub = loader.querySelector('p');
+        
+        const originalTitle = loaderTitle.innerText;
+        const originalSub = loaderSub.innerText;
+        
+        loaderTitle.innerText = "Refining Canvas...";
+        loaderSub.innerText = "Applying copywriting refinement prompts with AI Co-Pilot";
+        loader.classList.remove('hidden');
+        
+        const topic = document.getElementById('prompt').value.trim();
+        
+        const formData = new FormData();
+        formData.append('current_draft', JSON.stringify(lastGeneratedData));
+        formData.append('refinement_prompt', refinementPrompt);
+        formData.append('platform', activePlatform);
+        formData.append('tone', activeTone);
+        formData.append('topic', topic);
+        
+        fetch("{{ url_for('content.refine') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(response => {
+            loaderTitle.innerText = originalTitle;
+            loaderSub.innerText = originalSub;
+            loader.classList.add('hidden');
+            
+            if (response.error || !response.success) {
+                showToast(response.error || "Refinement failed.", "danger");
+                return;
+            }
+            
+            promptInput.value = '';
+            lastGeneratedData = response.data;
+            
+            // Re-render UI
+            updateScoreAndChecklist(response.analysis);
+            
+            // Rerender Raw view contents
+            const plat = activePlatform.toLowerCase();
+            if (plat === 'linkedin') {
+                document.getElementById('li-hook').innerText = response.data.hook || '';
+                document.getElementById('li-body').innerText = response.data.body || '';
+                document.getElementById('li-cta').innerText = response.data.cta || '';
+                document.getElementById('li-hashtags').innerText = response.data.hashtags || '';
+            } else if (plat === 'instagram') {
+                document.getElementById('ig-caption').innerText = response.data.caption || '';
+                document.getElementById('ig-hashtags').innerText = response.data.hashtags || '';
+            } else if (plat === 'x') {
+                const threadBox = document.getElementById('x-thread-container');
+                threadBox.innerHTML = '';
+                const tweets = response.data.thread || [];
+                tweets.forEach((tweet, index) => {
+                    const tweetDiv = document.createElement('div');
+                    tweetDiv.className = 'p-4 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1 relative';
+                    tweetDiv.innerHTML = `
+                        <span class="absolute top-2.5 right-4 text-[10px] font-bold text-brand-textMuted">${index+1}/${tweets.length}</span>
+                        <p class="text-brand-textDark whitespace-pre-wrap select-all font-medium pr-8">${tweet}</p>
+                    `;
+                    threadBox.appendChild(tweetDiv);
+                });
+            } else if (plat === 'blog') {
+                document.getElementById('blog-title').innerText = response.data.blog_title || '';
+                document.getElementById('blog-intro').innerText = response.data.blog_introduction || '';
+                document.getElementById('blog-conclusion').innerText = response.data.blog_conclusion || '';
+                document.getElementById('blog-keywords').innerText = response.data.blog_keywords || '';
+                
+                const sectionsBox = document.getElementById('blog-sections-container');
+                sectionsBox.innerHTML = '';
+                const sections = response.data.blog_sections || [];
+                sections.forEach((sec) => {
+                    const secDiv = document.createElement('div');
+                    secDiv.className = 'p-3 bg-brand-cream/20 border border-brand-border/40 rounded-xl space-y-1';
+                    secDiv.innerHTML = `
+                        <h5 class="font-bold text-xs text-brand-textDark">${sec.heading || ''}</h5>
+                        <p class="text-xs text-brand-textMuted whitespace-pre-wrap select-all">${sec.outline || ''}</p>
+                    `;
+                    sectionsBox.appendChild(secDiv);
+                });
+            }
+            
+            // Update feed preview in case user is on Feed Preview tab
+            if (currentCanvasTab === 'preview') {
+                renderFeedPreview();
+            }
+            
+            showToast("Draft refined by Canvas Co-Pilot!", "success");
+        })
+        .catch(err => {
+            console.error(err);
+            loaderTitle.innerText = originalTitle;
+            loaderSub.innerText = originalSub;
+            loader.classList.add('hidden');
+            showToast("Server error during refinement.", "danger");
+        });
+    }
+
+    // -------------------------------------------------------------
+    // AI Impression Forecast Metrics checklist logic
+    // -------------------------------------------------------------
+    function updateScoreAndChecklist(analysis) {
+        if (!analysis) return;
+        
+        document.getElementById('forecast-checklist-container').classList.remove('hidden');
+        document.getElementById('score-text').innerText = `Score: ${analysis.score}/100 (${analysis.readability})`;
+        
+        const circle = document.getElementById('score-circle-container');
+        circle.innerText = analysis.score;
+        
+        circle.className = "w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-black transition-all ";
+        if (analysis.score >= 80) {
+            circle.className += "border-green-500 text-green-600 bg-green-50 animate-pulse";
+            document.getElementById('score-text').className = "text-xs font-black text-green-600 mt-0.5";
+        } else if (analysis.score >= 50) {
+            circle.className += "border-yellow-500 text-yellow-600 bg-yellow-50";
+            document.getElementById('score-text').className = "text-xs font-black text-yellow-600 mt-0.5";
+        } else {
+            circle.className += "border-red-500 text-red-600 bg-red-50";
+            document.getElementById('score-text').className = "text-xs font-black text-red-600 mt-0.5";
+        }
+        
+        const listContent = document.getElementById('forecast-checklist-content');
+        listContent.innerHTML = '';
+        analysis.feedback.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = "flex items-start gap-1 py-0.5 leading-relaxed";
+            itemDiv.innerText = item;
+            listContent.appendChild(itemDiv);
+        });
+        
+        // Open the suggestions checklist automatically when score changes
+        const arrow = document.getElementById('checklist-arrow');
+        const content = document.getElementById('forecast-checklist-content');
+        isChecklistOpen = true;
+        arrow.classList.add('rotate-180');
+        content.classList.remove('hidden');
+    }
+    
+    let isChecklistOpen = false;
+    function toggleForecastChecklist() {
+        const arrow = document.getElementById('checklist-arrow');
+        const content = document.getElementById('forecast-checklist-content');
+        isChecklistOpen = !isChecklistOpen;
+        if (isChecklistOpen) {
+            arrow.classList.add('rotate-180');
+            content.classList.remove('hidden');
+        } else {
+            arrow.classList.remove('rotate-180');
+            content.classList.add('hidden');
+        }
+    }
+
+
+    // Copy Current Draft Content to clipboard
+    function copyCurrentCanvas() {
+        if (!lastGeneratedData) return;
+        
+        let textToCopy = "";
+        const plat = activePlatform.toLowerCase();
+        
+        if (plat === 'linkedin') {
+            textToCopy = `${lastGeneratedData.hook}\n\n${lastGeneratedData.body}\n\n${lastGeneratedData.cta}\n\n${lastGeneratedData.hashtags}`;
+        } else if (plat === 'instagram') {
+            textToCopy = `${lastGeneratedData.caption}\n\n${lastGeneratedData.hashtags}`;
+        } else if (plat === 'x') {
+            textToCopy = (lastGeneratedData.thread || []).join('\n\n---\n\n');
+        } else if (plat === 'blog') {
+            let sectionsText = (lastGeneratedData.blog_sections || []).map(s => `${s.heading}\n${s.outline}`).join('\n\n');
+            textToCopy = `# ${lastGeneratedData.blog_title}\n\n${lastGeneratedData.blog_introduction}\n\n${sectionsText}\n\n${lastGeneratedData.blog_conclusion}\n\nKeywords: ${lastGeneratedData.blog_keywords}`;
+        }
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast(`${activePlatform} post copied to clipboard!`, 'success');
+        }).catch(err => {
+            console.error(err);
+            showToast('Failed to copy text.', 'danger');
+        });
+    }
+
+    // Save current generated draft to DB (Creator Memory)
+    document.getElementById('save-draft-btn').addEventListener('click', () => {
+        if (!lastGeneratedData) return;
+        
+        const topic = document.getElementById('prompt').value.trim();
+        const saveBtn = document.getElementById('save-draft-btn');
+        
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Saving...";
+        
+        const formData = new FormData();
+        formData.append('topic', topic);
+        formData.append('platform', activePlatform);
+        formData.append('content', JSON.stringify(lastGeneratedData));
+        
+        fetch("{{ url_for('content.save_draft') }}", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `<span>Save to Memory</span>`;
+            if (data.success) {
+                showToast("Post draft cataloged in Creator Memory!", "success");
+            } else {
+                showToast(data.error || "Failed to save draft.", "danger");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = `<span>Save to Memory</span>`;
+            showToast("Server error saving draft.", "danger");
+        });
+    });
+</script>
+{% endblock %}

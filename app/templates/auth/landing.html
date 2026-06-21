@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}CreatorOS - Turn Goals Into Daily Posts{% endblock %}
+
+{% block content %}
+<div class="py-12 flex flex-col items-center space-y-16">
+    
+    <!-- Infinite Scrolling Marquee Ticker -->
+    <div class="w-screen overflow-hidden bg-brand-orange text-brand-cream py-3.5 font-black uppercase tracking-widest text-[10px] md:text-xs border-y border-brand-orange/30 shadow-md select-none transform rotate-1 scale-[1.02] absolute top-2 left-0 right-0 z-20">
+        <div class="flex whitespace-nowrap animate-marquee">
+            <span>⚡️ BUILD YOUR BRAND • CRUSH YOUR GOALS • POST DAILY • AUTOMATE OPPORTUNITIES • MEMORY RECALL • GROW AUDIENCE • DEFINE YOUR NICHE &nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span>⚡️ BUILD YOUR BRAND • CRUSH YOUR GOALS • POST DAILY • AUTOMATE OPPORTUNITIES • MEMORY RECALL • GROW AUDIENCE • DEFINE YOUR NICHE &nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+    </div>
+
+    <!-- Space-Filling Split Hero Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-[1440px] w-full mx-auto px-6 md:px-12 mt-8 text-left reveal-on-scroll">
+        
+        <!-- Left Side: Copy, CTAs, and Live Stats (lg:col-span-7) -->
+        <div class="lg:col-span-7 space-y-6 flex flex-col justify-center">
+            <div class="inline-flex self-start items-center gap-2 px-3 py-1.5 rounded-full border border-brand-border bg-brand-softCream/80 text-xs font-semibold text-brand-orange shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-brand-orange pulse-orange inline-block"></span>
+                AI-Powered Personal Brand Engine
+            </div>
+            
+            <!-- Bouncing 3D Title -->
+            <h1 class="text-6xl sm:text-7xl md:text-[6rem] lg:text-[7.2rem] xl:text-[7.8rem] font-black tracking-tight text-brand-textDark leading-none bounce-text-hover select-none whitespace-nowrap">
+                <span class="text-3d-retro bounce-letter">C</span><span class="text-3d-retro bounce-letter">r</span><span class="text-3d-retro bounce-letter">e</span><span class="text-3d-retro bounce-letter">a</span><span class="text-3d-retro bounce-letter">t</span><span class="text-3d-retro bounce-letter">o</span><span class="text-3d-retro bounce-letter">r</span><span class="text-3d-brand bounce-letter">O</span><span class="text-3d-brand bounce-letter">S</span>
+            </h1>
+            
+            <p class="text-lg md:text-xl font-bold text-brand-textDark leading-snug">
+                Turn your goals into <span class="bg-gradient-to-r from-brand-orange to-[#FF007A] bg-clip-text text-transparent font-extrabold">daily content opportunities</span>.
+            </p>
+            
+            <p class="text-sm md:text-base text-brand-textMuted leading-relaxed">
+                Tell us your goal and topics. We'll tell you what to post today. Discover trends, generate platform-specific presets, and track streak metrics.
+            </p>
+            
+            <!-- Action buttons -->
+            <div class="flex flex-wrap gap-4 items-center pt-2">
+                <a href="{{ url_for('auth.register') }}" class="btn-orange-primary px-6 py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg shadow-brand-orange/20">
+                    Start Building
+                </a>
+                <button onclick="showToast('Demo video player coming soon! Follow our guide below.', 'info')" class="px-6 py-3.5 rounded-xl border border-brand-border bg-brand-softCream/40 text-brand-textDark hover:bg-brand-softCream/80 hover:border-brand-orange/50 transition-all duration-200 text-sm font-semibold">
+                    Watch Demo
+                </button>
+            </div>
+
+            <!-- Live Platform Statistics Card (Fills spacing and adds visual premium appeal) -->
+            <div class="bg-brand-softCream/50 border border-brand-border rounded-2xl p-4 shadow-md mt-4 grid grid-cols-3 gap-2 text-center">
+                <div>
+                    <span class="block text-lg font-black text-brand-orange">1,200+</span>
+                    <span class="text-[9px] text-brand-textMuted uppercase font-bold tracking-wider">Creators</span>
+                </div>
+                <div class="border-x border-brand-border/40">
+                    <span class="block text-lg font-black text-brand-orange">45K+</span>
+                    <span class="text-[9px] text-brand-textMuted uppercase font-bold tracking-wider">Generated</span>
+                </div>
+                <div>
+                    <span class="block text-lg font-black text-[#FF007A]">98.7%</span>
+                    <span class="text-[9px] text-brand-textMuted uppercase font-bold tracking-wider">Precision</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: High Fidelity Dashboard Preview (lg:col-span-5) -->
+        <div class="lg:col-span-5 flex justify-center">
+            <div class="glass-panel w-full rounded-2xl border border-brand-border p-5 shadow-2xl relative overflow-hidden transition-all duration-500 hover:border-brand-orange/40">
+                <!-- Mockup top bar -->
+                <div class="flex items-center justify-between border-b border-brand-border pb-3 mb-4">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
+                    </div>
+                    <div class="text-[10px] font-medium text-brand-textMuted bg-brand-softCream/80 px-2.5 py-0.5 rounded-md border border-brand-border/40">
+                        creatoros.app/workspace
+                    </div>
+                    <div></div>
+                </div>
+                
+                <!-- Mockup main screen -->
+                <div class="relative overflow-hidden rounded-xl border border-brand-border/40 shadow-inner group">
+                    <img src="{{ url_for('static', filename='images/hero_dashboard.png') }}" alt="CreatorOS Workspace Dashboard" class="w-full h-auto object-cover rounded-xl transition-all duration-700 group-hover:scale-[1.03]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Space-Efficient Bento Grid Features Layout -->
+    <div class="w-full max-w-[1440px] py-12 px-6 md:px-12 space-y-8 reveal-on-scroll">
+        <div class="text-center space-y-2">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-brand-textDark tracking-tight">Features Bento System</h2>
+            <p class="text-sm text-brand-textMuted max-w-md mx-auto">Explore the engine layers driving personal brand growth in a single screen.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            
+            <!-- Bento Box 1: How it Works Workflow Timeline (Spans 2 columns on desktop) -->
+            <div class="md:col-span-2 bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm space-y-6 flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
+                <div class="space-y-2">
+                    <span class="text-[9px] text-[#FF007A] uppercase font-bold tracking-widest">Workflow Timeline</span>
+                    <h3 class="text-xl font-bold text-brand-textDark">How CreatorOS Drives Content Delivery</h3>
+                </div>
+                
+                <!-- Timeline mockup -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 relative">
+                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
+                        <span class="text-xs font-black text-brand-orange">01 / Setup</span>
+                        <h4 class="text-xs font-bold text-brand-textDark">Set Workspace Goals</h4>
+                        <p class="text-[10px] text-brand-textMuted leading-tight">State target audience, niche interests, and brand goals.</p>
+                    </div>
+                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
+                        <span class="text-xs font-black text-brand-orange">02 / Scan</span>
+                        <h4 class="text-xs font-bold text-brand-textDark">Discover Trends</h4>
+                        <p class="text-[10px] text-brand-textMuted leading-tight">AI searches daily signals, metrics and alerts.</p>
+                    </div>
+                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
+                        <span class="text-xs font-black text-brand-orange">03 / Build</span>
+                        <h4 class="text-xs font-bold text-brand-textDark">Generate Posts</h4>
+                        <p class="text-[10px] text-brand-textMuted leading-tight">Craft LinkedIn posts, threads, or captions in clicks.</p>
+                    </div>
+                    <div class="space-y-2 p-3 bg-brand-softCream/50 rounded-xl border border-brand-border/40">
+                        <span class="text-xs font-black text-[#FF007A]">04 / Streak</span>
+                        <h4 class="text-xs font-bold text-brand-textDark">Grow Consistent</h4>
+                        <p class="text-[10px] text-brand-textMuted leading-tight">Save drafts, track streak meters, build authority.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 2: Opportunity Alerts (Standard Col) -->
+            <div class="bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
+                <div class="space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-softCream/60 text-brand-orange border border-brand-border flex items-center justify-center font-bold shadow-inner">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-brand-textDark">Opportunity Alerts</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">Instant warnings mapping niche topics displaying rapid growth curves.</p>
+                </div>
+                <div class="text-[10px] font-semibold text-brand-orange mt-4">Automate Signals &nbsp;→</div>
+            </div>
+
+            <!-- Bento Box 3: Creator Memory (Standard Col) -->
+            <div class="bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
+                <div class="space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-softCream/60 text-[#FF007A] border border-brand-border flex items-center justify-center font-bold shadow-inner">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-brand-textDark">Creator Memory</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">Checks historical data to guarantee unique insights and block duplicates.</p>
+                </div>
+                <div class="text-[10px] font-semibold text-[#FF007A] mt-4">Prevent Repetitiveness &nbsp;→</div>
+            </div>
+
+            <!-- Bento Box 4: Platform Presets (Standard Col) -->
+            <div class="bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col justify-between hover:border-brand-orange/40 transition-all duration-300">
+                <div class="space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-softCream/60 text-brand-orange border border-brand-border flex items-center justify-center font-bold shadow-inner">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold text-brand-textDark">Platform Formats</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">LinkedIn posts, multi-tweet X threads, and captions mapped perfectly.</p>
+                </div>
+                <div class="text-[10px] font-semibold text-brand-orange mt-4">Generate Presets &nbsp;→</div>
+            </div>
+
+            <!-- Bento Box 5: Consistency Engine (Spans 2 columns on desktop) -->
+            <div class="md:col-span-2 bg-white/40 border border-brand-border rounded-2xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-6 hover:border-brand-orange/40 transition-all duration-300">
+                <div class="space-y-3 max-w-sm text-left">
+                    <span class="text-[9px] text-[#FF007A] uppercase font-bold tracking-widest">Consistency Engine</span>
+                    <h3 class="text-lg font-bold text-brand-textDark">Never Lose Streak Progress</h3>
+                    <p class="text-xs text-brand-textMuted leading-relaxed">Maintains streak records, activity checks, and monthly publishing quotas. Building posting behaviors translates into compounding network impressions.</p>
+                </div>
+                
+                <!-- Graphic mini indicator mockup -->
+                <div class="flex-shrink-0 bg-brand-softCream/60 border border-brand-border/60 rounded-xl p-4 flex items-center gap-3 shadow-inner">
+                    <div class="w-10 h-10 rounded-xl bg-white/70 text-brand-orange border border-brand-border flex items-center justify-center text-lg shadow-inner pulse-orange select-none">🔥</div>
+                    <div>
+                        <div class="font-extrabold text-sm text-brand-textDark">14 Day Streak</div>
+                        <div class="text-[9px] text-[#FF007A] uppercase font-black tracking-wider">Level 3 Active</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

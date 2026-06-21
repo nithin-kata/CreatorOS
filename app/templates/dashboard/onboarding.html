@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Onboarding - CreatorOS{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-white border border-brand-border rounded-2xl p-8 shadow-xl relative overflow-hidden">
+        
+        <!-- Onboarding Form -->
+        <form id="onboarding-form" action="{{ url_for('dashboard.onboarding') }}" method="POST" class="space-y-8">
+            
+            <!-- Progress Bar -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs font-semibold text-brand-textMuted uppercase tracking-wider">
+                    <span>Setup Workspace</span>
+                    <span id="step-indicator">Step 1 of 4</span>
+                </div>
+                <div class="h-1.5 w-full bg-brand-softCream rounded-full overflow-hidden">
+                    <div id="step-progress-bar" class="h-full bg-brand-orange rounded-full transition-all duration-300 w-1/4"></div>
+                </div>
+            </div>
+
+            <!-- Slide 1: Goal & Creator Profile -->
+            <div id="step-1" class="step-slide space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-bold tracking-tight text-brand-textDark">Brand Goal & Profile</h2>
+                    <p class="text-sm text-brand-textMuted">Let's start by defining who you are and what you want to achieve.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">What is your primary brand goal?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                            <input type="radio" name="goal" value="Get a Job" required class="sr-only" checked onclick="selectCardRadio(this)">
+                            <div class="flex items-center justify-between">
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot"></span></span>
+                            </div>
+                            <span class="font-bold text-brand-textDark mt-1">Get a Job</span>
+                            <span class="text-xs text-brand-textMuted leading-relaxed">Attract recruiters, highlight skillsets, and build portfolio.</span>
+                        </label>
+
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                            <input type="radio" name="goal" value="Build Personal Brand" class="sr-only" onclick="selectCardRadio(this)">
+                            <div class="flex items-center justify-between">
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
+                            </div>
+                            <span class="font-bold text-brand-textDark mt-1">Build Personal Brand</span>
+                            <span class="text-xs text-brand-textMuted leading-relaxed">Establish niche authority and grow industry connections.</span>
+                        </label>
+
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                            <input type="radio" name="goal" value="Grow Followers" class="sr-only" onclick="selectCardRadio(this)">
+                            <div class="flex items-center justify-between">
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
+                            </div>
+                            <span class="font-bold text-brand-textDark mt-1">Grow Followers</span>
+                            <span class="text-xs text-brand-textMuted leading-relaxed">Boost organic engagement and scale public reach.</span>
+                        </label>
+
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-5 rounded-2xl cursor-pointer flex flex-col gap-2 transition-all group relative">
+                            <input type="radio" name="goal" value="Promote Startup" class="sr-only" onclick="selectCardRadio(this)">
+                            <div class="flex items-center justify-between">
+                                <span class="w-5 h-5 rounded-full border border-brand-border flex items-center justify-center bg-white group-hover:border-brand-orange"><span class="w-2.5 h-2.5 rounded-full bg-brand-orange radio-dot hidden"></span></span>
+                            </div>
+                            <span class="font-bold text-brand-textDark mt-1">Promote Startup</span>
+                            <span class="text-xs text-brand-textMuted leading-relaxed">Acquire early customers and drive traffic to SaaS/business.</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Which category best describes you?</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        {% for type in ['Student', 'Industry Professional', 'Entrepreneur / Founder', 'Content Creator'] %}
+                        <label class="border border-brand-border hover:border-brand-orange p-3 rounded-xl cursor-pointer flex items-center justify-between transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="creator_type" value="{{ type }}" required {% if loop.first %}checked{% endif %} class="sr-only" onclick="selectCreatorTypeRadio(this)">
+                            <span class="text-xs font-semibold text-brand-textDark">{{ type }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Target Audience & Commitment -->
+            <div id="step-2" class="step-slide hidden space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-bold tracking-tight text-brand-textDark">Audience & Commitment</h2>
+                    <p class="text-sm text-brand-textMuted">Align your brand with the right eyes and outline your scheduling speed.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Who is your target audience?</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {% for aud in [
+                            ('Recruiters & Hiring Managers', 'Attract career scouts.'),
+                            ('Tech Founders & Executives', 'Network with decision-makers.'),
+                            ('Developers & Engineers', 'Share technical insight.'),
+                            ('Prospective Clients/Users', 'Drive customer acquisition.'),
+                            ('General Public', 'Broad scale viral reach.')
+                        ] %}
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col gap-0.5 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="target_audience" value="{{ aud[0] }}" required {% if loop.first %}checked{% endif %} class="sr-only" onclick="selectAudienceRadio(this)">
+                            <span class="text-xs font-bold text-brand-textDark">{{ aud[0] }}</span>
+                            <span class="text-[10px] text-brand-textMuted leading-tight">{{ aud[1] }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">How many times a week do you plan to post?</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="weekly_commitment" value="2" required checked class="sr-only" onclick="selectCommitmentRadio(this)">
+                            <span class="text-lg font-black text-brand-orange">1-2</span>
+                            <span class="text-[9px] font-bold text-brand-textMuted uppercase tracking-wider leading-tight">Casual Start</span>
+                        </label>
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="weekly_commitment" value="4" class="sr-only" onclick="selectCommitmentRadio(this)">
+                            <span class="text-lg font-black text-brand-orange">3-4</span>
+                            <span class="text-[9px] font-bold text-brand-textMuted uppercase tracking-wider leading-tight">Consistent growth</span>
+                        </label>
+                        <label class="border border-brand-border hover:border-brand-orange p-3.5 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="radio" name="weekly_commitment" value="6" class="sr-only" onclick="selectCommitmentRadio(this)">
+                            <span class="text-lg font-black text-brand-orange">5+</span>
+                            <span class="text-[9px] font-bold text-brand-textMuted uppercase tracking-wider leading-tight">Elite creator</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Niches & Expertise Details -->
+            <div id="step-3" class="step-slide hidden space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-bold tracking-tight text-brand-textDark">Niches & Expertise</h2>
+                    <p class="text-sm text-brand-textMuted">Identify topics you write about, and tell us your unique background angle.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Select topics you talk about</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        {% for topic in ['AI', 'AWS', 'Programming', 'Startups', 'Productivity'] %}
+                        <label class="border border-brand-border hover:border-brand-orange p-3 rounded-xl cursor-pointer flex items-center gap-3 transition-all bg-brand-cream/10 hover:bg-brand-softCream/30 group">
+                            <input type="checkbox" name="niche" value="{{ topic }}" class="w-4 h-4 rounded text-brand-orange border-brand-border focus:ring-brand-orange">
+                            <span class="text-sm font-medium text-brand-textDark">{{ topic }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <div class="pt-1">
+                        <input type="text" id="custom_niche" name="custom_niche" placeholder="Or add custom topics (comma separated, e.g. Web3, Figma)"
+                               class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label for="niche_details" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Tell us about your specific sub-niche or unique angle</label>
+                    <textarea id="niche_details" name="niche_details" rows="3" placeholder="e.g. Python backend engineer sharing architectural blueprints, Figma designer building micro-SaaS interfaces, etc."
+                              class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs resize-none"></textarea>
+                </div>
+            </div>
+
+            <!-- Slide 4: Primary Platform & Tone -->
+            <div id="step-4" class="step-slide hidden space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-2xl font-bold tracking-tight text-brand-textDark">Network & Delivery Tone</h2>
+                    <p class="text-sm text-brand-textMuted">Finalize your default posting target and brand voice configuration.</p>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Which is your primary platform?</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                            <input type="radio" name="platform" value="LinkedIn" required class="sr-only" checked onclick="selectPlatformRadio(this)">
+                            <span class="text-xs font-bold text-brand-textDark">LinkedIn</span>
+                        </label>
+
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                            <input type="radio" name="platform" value="X" class="sr-only" onclick="selectPlatformRadio(this)">
+                            <span class="text-xs font-bold text-brand-textDark">X (Twitter)</span>
+                        </label>
+
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                            <input type="radio" name="platform" value="Instagram" class="sr-only" onclick="selectPlatformRadio(this)">
+                            <span class="text-xs font-bold text-brand-textDark">Instagram</span>
+                        </label>
+
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-4 rounded-xl cursor-pointer flex flex-col items-center justify-center text-center gap-1.5 transition-all group">
+                            <input type="radio" name="platform" value="Blog" class="sr-only" onclick="selectPlatformRadio(this)">
+                            <span class="text-xs font-bold text-brand-textDark">Blog Outline</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider">Preferred content style</label>
+                    <div class="grid grid-cols-2 gap-3.5">
+                        {% for tone in [
+                            ('Professional', 'Polished, authoritative, data-driven insights.'),
+                            ('Storytelling', 'Vulnerable anecdotes, key life lessons.'),
+                            ('Educational', 'Highly actionable breakdowns, tutorials.'),
+                            ('Casual', 'Friendly, conversation-style notes, relatable.')
+                        ] %}
+                        <label class="border border-brand-border hover:border-brand-orange bg-brand-cream/10 hover:bg-brand-softCream/30 p-3.5 rounded-xl cursor-pointer flex flex-col gap-1 transition-all group">
+                            <input type="radio" name="tone" value="{{ tone[0] }}" required {% if loop.first %}checked{% endif %} class="sr-only" onclick="selectToneRadio(this)">
+                            <span class="font-bold text-brand-textDark text-xs">{{ tone[0] }}</span>
+                            <span class="text-[10px] text-brand-textMuted leading-snug">{{ tone[1] }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="flex items-center justify-between pt-6 border-t border-brand-border/40">
+                <button type="button" id="prev-btn" class="px-5 py-3 rounded-xl border border-brand-border bg-white text-brand-textMuted hover:bg-brand-softCream hover:text-brand-textDark transition-all text-sm font-semibold invisible">
+                    Previous Step
+                </button>
+                <button type="button" id="next-btn" class="btn-orange-primary px-6 py-3 rounded-xl text-sm font-semibold transition-all">
+                    Next Step
+                </button>
+                <button type="submit" id="submit-btn" class="btn-orange-primary px-6 py-3 rounded-xl text-sm font-semibold transition-all hidden">
+                    Complete Setup
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const stepIndicator = document.getElementById('step-indicator');
+    const stepProgressBar = document.getElementById('step-progress-bar');
+
+    function updateStep() {
+        // Hide all slides
+        document.querySelectorAll('.step-slide').forEach(slide => slide.classList.add('hidden'));
+        
+        // Show current slide
+        document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+
+        // Update indicators
+        stepIndicator.innerText = `Step ${currentStep} of ${totalSteps}`;
+        stepProgressBar.style.width = `${(currentStep / totalSteps) * 100}%`;
+
+        // Update buttons visibility
+        if (currentStep === 1) {
+            prevBtn.classList.add('invisible');
+        } else {
+            prevBtn.classList.remove('invisible');
+        }
+
+        if (currentStep === totalSteps) {
+            nextBtn.classList.add('hidden');
+            submitBtn.classList.remove('hidden');
+        } else {
+            nextBtn.classList.remove('hidden');
+            submitBtn.classList.add('hidden');
+        }
+    }
+
+    nextBtn.addEventListener('click', () => {
+        // Validation checks per step
+        if (currentStep === 1) {
+            const checkedGoal = document.querySelector('input[name="goal"]:checked');
+            const checkedType = document.querySelector('input[name="creator_type"]:checked');
+            if (!checkedGoal) {
+                showToast('Please select a brand goal.', 'warning');
+                return;
+            }
+            if (!checkedType) {
+                showToast('Please select a profile category.', 'warning');
+                return;
+            }
+        } else if (currentStep === 2) {
+            const checkedAud = document.querySelector('input[name="target_audience"]:checked');
+            const checkedCommit = document.querySelector('input[name="weekly_commitment"]:checked');
+            if (!checkedAud) {
+                showToast('Please select a target audience.', 'warning');
+                return;
+            }
+            if (!checkedCommit) {
+                showToast('Please select a weekly posting commitment.', 'warning');
+                return;
+            }
+        } else if (currentStep === 3) {
+            const checkedNiches = document.querySelectorAll('input[name="niche"]:checked');
+            const customNiche = document.getElementById('custom_niche').value.trim();
+            const nicheDetails = document.getElementById('niche_details').value.trim();
+            if (checkedNiches.length === 0 && !customNiche && !nicheDetails) {
+                showToast('Please select at least one topic or enter expertise details.', 'warning');
+                return;
+            }
+        }
+        
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStep();
+        }
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStep();
+        }
+    });
+
+    // Handle interactive styling updates on clicks
+    function selectCardRadio(radioInput) {
+        radioInput.form.querySelectorAll('input[name="goal"]').forEach(input => {
+            const dot = input.closest('label').querySelector('.radio-dot');
+            dot.classList.add('hidden');
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        
+        const dot = radioInput.closest('label').querySelector('.radio-dot');
+        dot.classList.remove('hidden');
+        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+    }
+
+    function selectCreatorTypeRadio(radioInput) {
+        radioInput.form.querySelectorAll('input[name="creator_type"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+    }
+
+    function selectAudienceRadio(radioInput) {
+        radioInput.form.querySelectorAll('input[name="target_audience"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+    }
+
+    function selectCommitmentRadio(radioInput) {
+        radioInput.form.querySelectorAll('input[name="weekly_commitment"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+    }
+
+    function selectPlatformRadio(radioInput) {
+        radioInput.form.querySelectorAll('input[name="platform"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+    }
+
+    function selectToneRadio(radioInput) {
+        radioInput.form.querySelectorAll('input[name="tone"]').forEach(input => {
+            input.closest('label').classList.remove('border-brand-orange', 'bg-brand-softCream/20');
+        });
+        radioInput.closest('label').classList.add('border-brand-orange', 'bg-brand-softCream/20');
+    }
+
+    // Trigger visual styling for checked items on load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Goal radio setup
+        const checkedGoal = document.querySelector('input[name="goal"]:checked');
+        if (checkedGoal) selectCardRadio(checkedGoal);
+
+        // Creator type setup
+        const checkedType = document.querySelector('input[name="creator_type"]:checked');
+        if (checkedType) selectCreatorTypeRadio(checkedType);
+
+        // Target audience setup
+        const checkedAud = document.querySelector('input[name="target_audience"]:checked');
+        if (checkedAud) selectAudienceRadio(checkedAud);
+
+        // Weekly commitment setup
+        const checkedCommit = document.querySelector('input[name="weekly_commitment"]:checked');
+        if (checkedCommit) selectCommitmentRadio(checkedCommit);
+
+        // Platform radio setup
+        const checkedPlatform = document.querySelector('input[name="platform"]:checked');
+        if (checkedPlatform) selectPlatformRadio(checkedPlatform);
+
+        // Tone radio setup
+        const checkedTone = document.querySelector('input[name="tone"]:checked');
+        if (checkedTone) selectToneRadio(checkedTone);
+    });
+</script>
+{% endblock %}

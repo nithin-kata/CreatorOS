@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - CreatorOS{% endblock %}
+
+{% block content %}
+<div class="py-6 px-4 max-w-3xl space-y-6">
+    
+    <!-- Title Header -->
+    <div class="border-b border-brand-border/60 pb-6">
+        <h1 class="text-3xl font-extrabold tracking-tight text-brand-textDark">Workspace Settings</h1>
+        <p class="text-sm text-brand-textMuted mt-1">Configure your personal brand goal, niche targets, and AI engine preferences.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        
+        <!-- Left Section: Profile Info (1 Col) -->
+        <div data-tilt class="reveal-on-scroll bg-white border border-brand-border rounded-2xl p-5 shadow-sm space-y-4 text-center sm:text-left">
+            <div class="w-16 h-16 rounded-2xl bg-brand-softCream border border-brand-border mx-auto sm:mx-0 flex items-center justify-center font-extrabold text-2xl text-brand-orange uppercase">
+                {{ current_user.name[:2] }}
+            </div>
+            <div class="space-y-1">
+                <h3 class="font-extrabold text-brand-textDark text-lg">{{ current_user.name }}</h3>
+                <p class="text-xs text-brand-textMuted leading-relaxed">{{ current_user.email }}</p>
+            </div>
+            <div class="pt-4 border-t border-brand-border/40">
+                <span class="block text-[10px] text-brand-textMuted font-bold uppercase tracking-wider">Member Since</span>
+                <span class="text-xs font-semibold text-brand-textDark block mt-0.5">{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="w-full text-center block px-4 py-2.5 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 font-bold text-xs transition-all">
+                Sign Out
+            </a>
+        </div>
+
+        <!-- Right Section: Preferences Form (2 Cols) -->
+        <div data-tilt class="reveal-on-scroll md:col-span-2 bg-white border border-brand-border rounded-2xl p-6 shadow-sm space-y-6">
+            <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest border-b border-brand-border/40 pb-3">AI Engine Target</h3>
+            
+            <form action="{{ url_for('settings.index') }}" method="POST" class="space-y-4">
+                
+                <!-- Goal selection -->
+                <div>
+                    <label for="goal" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Workspace Goal</label>
+                    <select id="goal" name="goal" required
+                            class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                        <option value="Get a Job" {% if goal.goal == 'Get a Job' %}selected{% endif %}>Get a Job (Attract Recruiters)</option>
+                        <option value="Build Personal Brand" {% if goal.goal == 'Build Personal Brand' %}selected{% endif %}>Build Personal Brand (Niche Authority)</option>
+                        <option value="Grow Followers" {% if goal.goal == 'Grow Followers' %}selected{% endif %}>Grow Followers (Scale Reach)</option>
+                        <option value="Promote Startup" {% if goal.goal == 'Promote Startup' %}selected{% endif %}>Promote Startup (Acquire Users)</option>
+                    </select>
+                </div>
+
+                <!-- Creator Profile Type -->
+                <div>
+                    <label for="creator_type" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Profile Type</label>
+                    <select id="creator_type" name="creator_type" required
+                            class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                        <option value="Student" {% if goal.creator_type == 'Student' %}selected{% endif %}>Student</option>
+                        <option value="Industry Professional" {% if goal.creator_type == 'Industry Professional' %}selected{% endif %}>Industry Professional</option>
+                        <option value="Entrepreneur / Founder" {% if goal.creator_type == 'Entrepreneur / Founder' %}selected{% endif %}>Entrepreneur / Founder</option>
+                        <option value="Content Creator" {% if goal.creator_type == 'Content Creator' %}selected{% endif %}>Content Creator</option>
+                    </select>
+                </div>
+
+                <!-- Target Audience -->
+                <div>
+                    <label for="target_audience" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Target Audience</label>
+                    <select id="target_audience" name="target_audience" required
+                            class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                        <option value="Recruiters & Hiring Managers" {% if goal.target_audience == 'Recruiters & Hiring Managers' %}selected{% endif %}>Recruiters & Hiring Managers</option>
+                        <option value="Tech Founders & Executives" {% if goal.target_audience == 'Tech Founders & Executives' %}selected{% endif %}>Tech Founders & Executives</option>
+                        <option value="Developers & Engineers" {% if goal.target_audience == 'Developers & Engineers' %}selected{% endif %}>Developers & Engineers</option>
+                        <option value="Prospective Clients/Users" {% if goal.target_audience == 'Prospective Clients/Users' %}selected{% endif %}>Prospective Clients/Users</option>
+                        <option value="General Public" {% if goal.target_audience == 'General Public' %}selected{% endif %}>General Public</option>
+                    </select>
+                </div>
+
+                <!-- Weekly Commitment -->
+                <div>
+                    <label for="weekly_commitment" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Weekly Posting Commitment</label>
+                    <select id="weekly_commitment" name="weekly_commitment" required
+                            class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                        <option value="2" {% if goal.weekly_commitment == 2 %}selected{% endif %}>1-2 posts/week (Casual)</option>
+                        <option value="4" {% if goal.weekly_commitment == 4 %}selected{% endif %}>3-4 posts/week (Consistent)</option>
+                        <option value="6" {% if goal.weekly_commitment == 6 %}selected{% endif %}>5+ posts/week (Elite)</option>
+                    </select>
+                </div>
+
+                <!-- Niche Text Input -->
+                <div>
+                    <label for="niche" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">My Niches / Topics</label>
+                    <input type="text" id="niche" name="niche" value="{{ goal.niche }}" required placeholder="e.g. AI, AWS, Startups"
+                           class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                    <span class="text-[10px] text-brand-textMuted mt-1.5 block leading-normal">Enter topics separated by commas. Daily opportunities are personalized against this list.</span>
+                </div>
+
+                <!-- Niche Details -->
+                <div>
+                    <label for="niche_details" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Sub-Niche / Expertise Details</label>
+                    <textarea id="niche_details" name="niche_details" rows="3" placeholder="e.g. Python backend engineer sharing architectural blueprints, Figma designer building micro-SaaS interfaces..."
+                              class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs resize-none">{{ goal.niche_details or '' }}</textarea>
+                </div>
+
+                <!-- Platform selection -->
+                <div>
+                    <label for="platform" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Primary Network</label>
+                    <select id="platform" name="platform" required
+                            class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                        <option value="LinkedIn" {% if goal.platform == 'LinkedIn' %}selected{% endif %}>LinkedIn</option>
+                        <option value="X" {% if goal.platform == 'X' %}selected{% endif %}>X (Twitter)</option>
+                        <option value="Instagram" {% if goal.platform == 'Instagram' %}selected{% endif %}>Instagram</option>
+                        <option value="Blog" {% if goal.platform == 'Blog' %}selected{% endif %}>Blog Outline</option>
+                    </select>
+                </div>
+
+                <!-- Tone selection -->
+                <div>
+                    <label for="tone" class="block text-xs font-semibold text-brand-textMuted uppercase tracking-wider mb-2">Default Writing Tone</label>
+                    <select id="tone" name="tone" required
+                            class="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-brand-textDark focus:outline-none focus:border-brand-orange transition-all text-xs">
+                        <option value="Professional" {% if goal.tone == 'Professional' %}selected{% endif %}>Professional (Authoritative & Polished)</option>
+                        <option value="Storytelling" {% if goal.tone == 'Storytelling' %}selected{% endif %}>Storytelling (Vulnerable & Human)</option>
+                        <option value="Educational" {% if goal.tone == 'Educational' %}selected{% endif %}>Educational (Actionable breakdowns)</option>
+                        <option value="Casual" {% if goal.tone == 'Casual' %}selected{% endif %}>Casual (Relatable & Friendly)</option>
+                    </select>
+                </div>
+
+                <!-- Save button -->
+                <button type="submit" class="w-full btn-orange-primary py-3.5 rounded-xl font-bold text-sm tracking-wide mt-2">
+                    Save Changes
+                </button>
+
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
