@@ -64,8 +64,8 @@
         </div>
 
         <!-- Right Side: Interactive 3D Camera Model (lg:col-span-5) -->
-        <div class="lg:col-span-5 flex justify-center" style="overflow-x: clip; overflow-y: visible; padding: 28px 0;">
-            <div class="camera-3d-container w-full rounded-2xl relative" id="camera-3d-wrapper">
+        <div class="lg:col-span-5 flex justify-end lg:pl-12" style="overflow-x: clip; overflow-y: visible; padding: 28px 0;">
+            <div class="camera-3d-container w-full max-w-xl rounded-2xl relative" id="camera-3d-wrapper">
                 <!-- Three.js canvas will be injected here -->
                 <canvas id="camera3d-canvas" class="w-full rounded-2xl" style="aspect-ratio: 1 / 1; display: block; cursor: grab;"></canvas>
                 
@@ -76,7 +76,7 @@
                 </div>
 
                 <!-- Orange glow effect behind the container -->
-                <div class="absolute -inset-4 rounded-3xl pointer-events-none" style="background: radial-gradient(ellipse at center, rgba(255,107,43,0.12) 0%, transparent 70%); z-index: -1;"></div>
+                <!-- <div class="absolute -inset-4 rounded-3xl pointer-events-none" style="background: radial-gradient(ellipse at center, rgba(255,107,43,0.12) 0%, transparent 70%); z-index: -1;"></div> -->
             </div>
         </div>
 
@@ -182,127 +182,297 @@
                 emissiveIntensity: 0.3,
             });
 
-            // ── Camera Model Group ──
+            // ── Creator's Desk Diorama ──
             const cameraGroup = new THREE.Group();
 
-            // Main Body — beveled box shape
-            const bodyGeo = new THREE.BoxGeometry(2.6, 1.6, 1.5, 4, 4, 4);
-            // Soften edges by tweaking vertices slightly
-            const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-            bodyMesh.castShadow = true;
-            bodyMesh.receiveShadow = true;
-            bodyMesh.position.set(0, 0, 0);
-            cameraGroup.add(bodyMesh);
-
-            // Top Prism (Pentaprism hump)
-            const prismGeo = new THREE.BoxGeometry(1.2, 0.55, 1.1, 2, 2, 2);
-            const prismMesh = new THREE.Mesh(prismGeo, bodyMat);
-            prismMesh.position.set(-0.15, 1.05, 0);
-            prismMesh.castShadow = true;
-            cameraGroup.add(prismMesh);
-
-            // Viewfinder eyepiece
-            const vfGeo = new THREE.BoxGeometry(0.5, 0.35, 0.25);
-            const vfMesh = new THREE.Mesh(vfGeo, gripMat);
-            vfMesh.position.set(-0.15, 1.0, -0.65);
-            cameraGroup.add(vfMesh);
-
-            // Grip (right side)
-            const gripGeo = new THREE.BoxGeometry(0.65, 1.7, 1.6, 2, 2, 2);
-            const gripMesh = new THREE.Mesh(gripGeo, gripMat);
-            gripMesh.position.set(1.35, -0.05, 0);
-            gripMesh.castShadow = true;
-            cameraGroup.add(gripMesh);
-
-            // Grip accent stripe
-            const stripeGeo = new THREE.BoxGeometry(0.08, 1.3, 1.4);
-            const stripeMesh = new THREE.Mesh(stripeGeo, accentMat);
-            stripeMesh.position.set(1.0, 0, 0);
-            cameraGroup.add(stripeMesh);
-
-            // ── Lens Barrel ──
-            const lensBarrel1Geo = new THREE.CylinderGeometry(0.72, 0.72, 0.8, 32);
-            const lensBarrel1 = new THREE.Mesh(lensBarrel1Geo, lensMat);
-            lensBarrel1.rotation.x = Math.PI / 2;
-            lensBarrel1.position.set(-0.15, 0, 1.1);
-            lensBarrel1.castShadow = true;
-            cameraGroup.add(lensBarrel1);
-
-            const lensBarrel2Geo = new THREE.CylinderGeometry(0.65, 0.7, 0.7, 32);
-            const lensBarrel2 = new THREE.Mesh(lensBarrel2Geo, lensMat);
-            lensBarrel2.rotation.x = Math.PI / 2;
-            lensBarrel2.position.set(-0.15, 0, 1.8);
-            lensBarrel2.castShadow = true;
-            cameraGroup.add(lensBarrel2);
-
-            const lensBarrel3Geo = new THREE.CylinderGeometry(0.58, 0.65, 0.5, 32);
-            const lensBarrel3 = new THREE.Mesh(lensBarrel3Geo, lensMat);
-            lensBarrel3.rotation.x = Math.PI / 2;
-            lensBarrel3.position.set(-0.15, 0, 2.35);
-            lensBarrel3.castShadow = true;
-            cameraGroup.add(lensBarrel3);
-
-            // Orange accent ring on lens
-            const ringGeo = new THREE.TorusGeometry(0.68, 0.04, 8, 32);
-            const ringMesh = new THREE.Mesh(ringGeo, lensRingMat);
-            ringMesh.position.set(-0.15, 0, 1.52);
-            cameraGroup.add(ringMesh);
-
-            // Lens glass front element
-            const lensGlassGeo = new THREE.CircleGeometry(0.52, 32);
-            const lensGlassMesh = new THREE.Mesh(lensGlassGeo, lensGlassMat);
-            lensGlassMesh.position.set(-0.15, 0, 2.61);
-            cameraGroup.add(lensGlassMesh);
-
-            // Inner lens reflection ring
-            const innerRingGeo = new THREE.RingGeometry(0.25, 0.35, 32);
-            const innerRingMat = new THREE.MeshPhysicalMaterial({
-                color: 0x2a1a4e, metalness: 0.5, roughness: 0.1,
-                emissive: 0x1a0a3e, emissiveIntensity: 0.15, side: THREE.DoubleSide,
+            // Desk Surface (Frosted Glass / Dark base)
+            const deskGeo = new THREE.BoxGeometry(3.5, 0.15, 2.5);
+            const deskMat = new THREE.MeshPhysicalMaterial({
+                color: 0x1f1f1f, metalness: 0.3, roughness: 0.8, clearcoat: 0.2
             });
-            const innerRing = new THREE.Mesh(innerRingGeo, innerRingMat);
-            innerRing.position.set(-0.15, 0, 2.62);
-            cameraGroup.add(innerRing);
+            const desk = new THREE.Mesh(deskGeo, deskMat);
+            desk.position.set(0, -0.075, 0);
+            desk.receiveShadow = true;
+            cameraGroup.add(desk);
 
-            // ── Top Controls ──
-            // Shutter button
-            const shutterGeo = new THREE.CylinderGeometry(0.14, 0.14, 0.1, 16);
-            const shutterMesh = new THREE.Mesh(shutterGeo, chromeMat);
-            shutterMesh.position.set(0.9, 1.35, 0.35);
-            cameraGroup.add(shutterMesh);
+            // Desk Mat / Mousepad
+            const padGeo = new THREE.BoxGeometry(2.8, 0.02, 1.8);
+            const padMat = new THREE.MeshPhysicalMaterial({
+                color: 0x111111, metalness: 0.1, roughness: 0.9
+            });
+            const pad = new THREE.Mesh(padGeo, padMat);
+            pad.position.set(-0.1, 0.01, 0);
+            pad.receiveShadow = true;
+            cameraGroup.add(pad);
 
-            // Mode dial
-            const dialGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.2, 24);
-            const dialMesh = new THREE.Mesh(dialGeo, chromeMat);
-            dialMesh.position.set(0.9, 1.35, -0.25);
-            cameraGroup.add(dialMesh);
+            // Laptop Base (HP Omen Style)
+            const laptopBaseGeo = new THREE.BoxGeometry(1.6, 0.06, 1.1);
+            const laptopMat = new THREE.MeshPhysicalMaterial({
+                color: 0x1a1a1a, metalness: 0.6, roughness: 0.5, clearcoat: 0.2
+            });
+            const laptopBase = new THREE.Mesh(laptopBaseGeo, laptopMat);
+            laptopBase.position.set(-0.4, 0.05, 0);
+            laptopBase.castShadow = true;
+            cameraGroup.add(laptopBase);
 
-            // Hot shoe
-            const hotshoeGeo = new THREE.BoxGeometry(0.5, 0.08, 0.35);
-            const hotshoeMesh = new THREE.Mesh(hotshoeGeo, chromeMat);
-            hotshoeMesh.position.set(-0.15, 1.35, 0);
-            cameraGroup.add(hotshoeMesh);
+            // Keyboard area indentation
+            const kbGeo = new THREE.BoxGeometry(1.4, 0.02, 0.5);
+            const kbMat = new THREE.MeshPhysicalMaterial({ color: 0x0f0f0f, roughness: 0.9 });
+            const kb = new THREE.Mesh(kbGeo, kbMat);
+            kb.position.set(-0.4, 0.08, -0.15);
+            cameraGroup.add(kb);
 
-            // ── Rear LCD screen ──
-            const screenGeo = new THREE.BoxGeometry(1.6, 1.05, 0.05);
-            const screenMesh = new THREE.Mesh(screenGeo, screenMat);
-            screenMesh.position.set(-0.05, 0, -0.78);
-            cameraGroup.add(screenMesh);
+            // Trackpad
+            const tpGeo = new THREE.BoxGeometry(0.5, 0.02, 0.3);
+            const tpMat = new THREE.MeshPhysicalMaterial({ color: 0x1a1a1a, roughness: 0.6 });
+            const tp = new THREE.Mesh(tpGeo, tpMat);
+            tp.position.set(-0.4, 0.08, 0.35);
+            cameraGroup.add(tp);
 
-            // Screen border
-            const screenBorderGeo = new THREE.BoxGeometry(1.7, 1.15, 0.03);
-            const screenBorderMesh = new THREE.Mesh(screenBorderGeo, gripMat);
-            screenBorderMesh.position.set(-0.05, 0, -0.79);
-            cameraGroup.add(screenBorderMesh);
+            // Laptop Screen
+            const screenParent = new THREE.Group();
+            screenParent.position.set(-0.4, 0.08, -0.55);
+            screenParent.rotation.x = -0.25; // Tilt back slightly
+            cameraGroup.add(screenParent);
 
-            // Rear control buttons (small dots)
-            for (let i = 0; i < 4; i++) {
-                const btnGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.04, 8);
-                const btnMesh = new THREE.Mesh(btnGeo, chromeMat);
-                btnMesh.rotation.x = Math.PI / 2;
-                btnMesh.position.set(1.05, 0.25 - i * 0.22, -0.78);
-                cameraGroup.add(btnMesh);
-            }
+            const laptopScreenGeo = new THREE.BoxGeometry(1.6, 1.1, 0.05);
+            const laptopScreen = new THREE.Mesh(laptopScreenGeo, laptopMat);
+            laptopScreen.position.set(0, 0.55, 0);
+            laptopScreen.castShadow = true;
+            screenParent.add(laptopScreen);
+
+            // OMEN Logo on the back of the screen
+            const logoGeo = new THREE.PlaneGeometry(0.12, 0.12);
+            const logoMat = new THREE.MeshPhysicalMaterial({
+                color: 0x00e6b8, emissive: 0x0077ff, emissiveIntensity: 0.8, side: THREE.DoubleSide
+            });
+            const logo = new THREE.Mesh(logoGeo, logoMat);
+            logo.rotation.z = Math.PI / 4; // Diamond shape
+            logo.position.set(0, 0.55, -0.026);
+            screenParent.add(logo);
+
+            // OMEN Text
+            const textCanvas = document.createElement('canvas');
+            textCanvas.width = 256;
+            textCanvas.height = 64;
+            const ctx = textCanvas.getContext('2d');
+            ctx.fillStyle = '#888888';
+            ctx.font = 'bold 45px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('O  M  E  N', 128, 32);
+
+            const textTexture = new THREE.CanvasTexture(textCanvas);
+            const textGeo = new THREE.PlaneGeometry(0.3, 0.075);
+            const textMat = new THREE.MeshBasicMaterial({
+                map: textTexture, transparent: true, opacity: 0.9, side: THREE.DoubleSide
+            });
+            const textMesh = new THREE.Mesh(textGeo, textMat);
+            textMesh.position.set(0, 0.38, -0.026); // Below the diamond
+            textMesh.rotation.y = Math.PI; // Face outward from the back of the screen
+            screenParent.add(textMesh);
+
+            // Load Texture for Laptop Screen
+            const textureLoader = new THREE.TextureLoader();
+            const heroTexture = textureLoader.load('{{ url_for("static", filename="images/hero_dashboard.png") }}');
+
+            // Glowing Display with Website Screen
+            const displayGeo = new THREE.PlaneGeometry(1.5, 1.0);
+            const displayMat = new THREE.MeshPhysicalMaterial({
+                map: heroTexture,
+                emissiveMap: heroTexture,
+                emissive: 0xffffff,
+                emissiveIntensity: 0.8,
+                roughness: 0.2,
+                clearcoat: 0.5
+            });
+            const display = new THREE.Mesh(displayGeo, displayMat);
+            display.position.set(0, 0.55, 0.03);
+            screenParent.add(display);
+
+            // Coffee Cup Base
+            const cupGeo = new THREE.CylinderGeometry(0.22, 0.18, 0.45, 32);
+            const cupMat = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff, roughness: 0.1, metalness: 0.1, clearcoat: 1.0
+            });
+            const cup = new THREE.Mesh(cupGeo, cupMat);
+            cup.position.set(0.9, 0.24, -0.4);
+            cup.castShadow = true;
+            cameraGroup.add(cup);
+
+            // Coffee Liquid
+            const coffeeGeo = new THREE.CylinderGeometry(0.19, 0.19, 0.4, 32);
+            const coffeeMat = new THREE.MeshPhysicalMaterial({
+                color: 0x3d2314, roughness: 0.1, clearcoat: 1.0
+            });
+            const coffee = new THREE.Mesh(coffeeGeo, coffeeMat);
+            coffee.position.set(0.9, 0.26, -0.4);
+            cameraGroup.add(coffee);
+
+            // Coffee Mug Handle
+            const handleGeo = new THREE.TorusGeometry(0.12, 0.04, 16, 32, Math.PI);
+            const handle = new THREE.Mesh(handleGeo, cupMat);
+            handle.position.set(1.12, 0.24, -0.4);
+            handle.rotation.z = -Math.PI / 2;
+            cameraGroup.add(handle);
+
+            // Notebook
+            const bookGeo = new THREE.BoxGeometry(0.8, 0.1, 1.1);
+            const bookMat = new THREE.MeshPhysicalMaterial({
+                color: 0x111111, roughness: 0.9, metalness: 0.1
+            });
+            const book = new THREE.Mesh(bookGeo, bookMat);
+            book.position.set(0.9, 0.07, 0.4);
+            book.rotation.y = -0.15;
+            book.castShadow = true;
+            cameraGroup.add(book);
+
+            // Notebook Pages (white side)
+            const pagesGeo = new THREE.BoxGeometry(0.76, 0.08, 1.06);
+            const pagesMat = new THREE.MeshBasicMaterial({ color: 0xeeeeee });
+            const pages = new THREE.Mesh(pagesGeo, pagesMat);
+            pages.position.set(0.9, 0.07, 0.4);
+            pages.rotation.y = -0.15;
+            cameraGroup.add(pages);
+
+            // Brand Accent Bookmark in notebook
+            const markGeo = new THREE.BoxGeometry(0.05, 0.11, 0.2);
+            const markMat = new THREE.MeshPhysicalMaterial({ color: 0xff007a, roughness: 0.4 });
+            const mark = new THREE.Mesh(markGeo, markMat);
+            mark.position.set(0.55, 0.07, 0.2);
+            mark.rotation.y = -0.15;
+            cameraGroup.add(mark);
+
+            // Sleek Pen
+            const penGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.6, 16);
+            const penMat = new THREE.MeshPhysicalMaterial({
+                color: 0xff6b2b, metalness: 0.7, roughness: 0.2
+            });
+            const pen = new THREE.Mesh(penGeo, penMat);
+            pen.position.set(1.4, 0.03, 0.3);
+            pen.rotation.x = Math.PI / 2;
+            pen.rotation.z = 0.4;
+            pen.castShadow = true;
+            cameraGroup.add(pen);
+
+            // ── Desk Legs ──
+            const legGeo = new THREE.CylinderGeometry(0.06, 0.04, 1.5, 16);
+            const legMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, roughness: 0.9, metalness: 0.2 });
+            const legPositions = [
+                [-1.6, -0.825, -1.1],
+                [1.6, -0.825, -1.1],
+                [-1.6, -0.825, 1.1],
+                [1.6, -0.825, 1.1]
+            ];
+            legPositions.forEach(pos => {
+                const leg = new THREE.Mesh(legGeo, legMat);
+                leg.position.set(pos[0], pos[1], pos[2]);
+                leg.castShadow = true;
+                cameraGroup.add(leg);
+            });
+
+            // ── Smartphone (iQOO Neo Style Back) ──
+            const phoneGroup = new THREE.Group();
+            phoneGroup.position.set(-1.3, 0.02, 0.65);
+            phoneGroup.rotation.y = 0.5;
+            cameraGroup.add(phoneGroup);
+
+            // Left side (Clear White)
+            const silverGeo = new THREE.BoxGeometry(0.18, 0.02, 0.75);
+            const silverMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, metalness: 0.1, roughness: 0.1, clearcoat: 1.0 });
+            const silverHalf = new THREE.Mesh(silverGeo, silverMat);
+            silverHalf.position.set(-0.085, 0, 0);
+            silverHalf.castShadow = true;
+            phoneGroup.add(silverHalf);
+
+            // Right side (Red)
+            const redGeo = new THREE.BoxGeometry(0.17, 0.02, 0.75);
+            const redMat = new THREE.MeshPhysicalMaterial({ color: 0xd92d2d, roughness: 0.4, clearcoat: 0.5 });
+            const redHalf = new THREE.Mesh(redGeo, redMat);
+            redHalf.position.set(0.09, 0, 0);
+            redHalf.castShadow = true;
+            phoneGroup.add(redHalf);
+
+            // Camera Lenses
+            const camGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.03, 16);
+            const camMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, roughness: 0.1 });
+            
+            const lens1 = new THREE.Mesh(camGeo, camMat);
+            lens1.position.set(-0.08, 0.015, -0.2);
+            phoneGroup.add(lens1);
+
+            const lens2 = new THREE.Mesh(camGeo, camMat);
+            lens2.position.set(-0.08, 0.015, -0.05);
+            phoneGroup.add(lens2);
+            
+            // Tiny flash
+            const flashGeo = new THREE.BoxGeometry(0.02, 0.02, 0.04);
+            const flashMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const flash = new THREE.Mesh(flashGeo, flashMat);
+            flash.position.set(-0.01, 0.015, -0.2);
+            phoneGroup.add(flash);
+
+            // ── Mini Camera on Tall Tripod ──
+            const mCamGroup = new THREE.Group();
+            mCamGroup.position.set(-1.4, 0.01, -0.75); // Positioned away from laptop
+            mCamGroup.rotation.y = 0.85;
+
+            // Tall Tripod Legs (Matching laptop height ~1.0)
+            const tripodGeo = new THREE.CylinderGeometry(0.03, 0.015, 1.05, 16);
+            const tripodMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, metalness: 0.8, roughness: 0.3 });
+            
+            const leg1 = new THREE.Mesh(tripodGeo, tripodMat);
+            leg1.position.set(0, 0.5, 0.25);
+            leg1.rotation.x = -0.25;
+            mCamGroup.add(leg1);
+
+            const leg2 = new THREE.Mesh(tripodGeo, tripodMat);
+            leg2.position.set(-0.2, 0.5, -0.15);
+            leg2.rotation.x = 0.15; leg2.rotation.z = -0.25;
+            mCamGroup.add(leg2);
+
+            const leg3 = new THREE.Mesh(tripodGeo, tripodMat);
+            leg3.position.set(0.2, 0.5, -0.15);
+            leg3.rotation.x = 0.15; leg3.rotation.z = 0.25;
+            mCamGroup.add(leg3);
+
+            // Camera Upper Group (Body, Lens, Hotshoe)
+            const mCamUpper = new THREE.Group();
+            mCamUpper.position.set(0, 1.0, 0); // Raised to top of tall tripod
+            mCamGroup.add(mCamUpper);
+            
+            // Sleek Black Body
+            const mCamBodyGeo = new THREE.BoxGeometry(0.55, 0.35, 0.15);
+            const mCamBodyMat = new THREE.MeshPhysicalMaterial({ color: 0x111111, metalness: 0.3, roughness: 0.8 });
+            const mCamBody = new THREE.Mesh(mCamBodyGeo, mCamBodyMat);
+            mCamBody.position.set(0, 0.175, 0);
+            mCamBody.castShadow = true;
+            mCamUpper.add(mCamBody);
+
+            // Silver Lens Mount Ring
+            const mountGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.05, 32);
+            const mountMat = new THREE.MeshPhysicalMaterial({ color: 0xdddddd, metalness: 0.9, roughness: 0.1 });
+            const mount = new THREE.Mesh(mountGeo, mountMat);
+            mount.rotation.x = Math.PI / 2;
+            mount.position.set(0, 0.175, 0.08);
+            mCamUpper.add(mount);
+
+            // Black Lens Barrel
+            const mCamLensGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.25, 32);
+            const mCamLensMat = new THREE.MeshPhysicalMaterial({ color: 0x0a0a0a, metalness: 0.5, roughness: 0.5 });
+            const mCamLens = new THREE.Mesh(mCamLensGeo, mCamLensMat);
+            mCamLens.rotation.x = Math.PI / 2;
+            mCamLens.position.set(0, 0.175, 0.22);
+            mCamLens.castShadow = true;
+            mCamUpper.add(mCamLens);
+
+            // Tiny Hotshoe
+            const mCamShoeGeo = new THREE.BoxGeometry(0.12, 0.02, 0.1);
+            const mCamShoe = new THREE.Mesh(mCamShoeGeo, mountMat);
+            mCamShoe.position.set(0, 0.36, 0);
+            mCamUpper.add(mCamShoe);
+
+            cameraGroup.add(mCamGroup);
 
             // ── Position & Add to Scene ──
             cameraGroup.position.set(0, 0.5, 0);
@@ -437,20 +607,13 @@
         .camera-3d-container {
             background: radial-gradient(ellipse at 50% 40%, rgba(26,26,26,0.95) 0%, rgba(10,10,10,0.98) 100%);
             border: 1px solid rgba(255,255,255,0.07);
-            box-shadow:
-                0 24px 80px rgba(0,0,0,0.4),
-                0 0 0 1px rgba(255,107,43,0.1),
-                inset 0 1px 0 rgba(255,255,255,0.05);
+            box-shadow: none;
             transition: box-shadow 0.4s ease, border-color 0.3s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
             will-change: transform;
         }
         .camera-3d-container:hover {
             border-color: rgba(255,107,43,0.3);
-            box-shadow:
-                0 32px 100px rgba(0,0,0,0.5),
-                0 0 0 1.5px rgba(255,107,43,0.35),
-                0 0 80px rgba(255,107,43,0.08),
-                inset 0 1px 0 rgba(255,255,255,0.08);
+            box-shadow: none;
             transform: translateY(-4px);
         }
         #camera3d-canvas {
