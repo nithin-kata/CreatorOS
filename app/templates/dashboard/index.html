@@ -311,42 +311,141 @@
                         </div>
                     </div>
 
+                    <!-- 6-Month Content Heatmap -->
+                    <div class="space-y-2 border-t border-brand-border/20 pt-4">
+                        <span class="floating-label">Content Consistency Heatmap</span>
+                        <div class="heatmap-scroll-container overflow-x-auto pb-2 custom-scrollbar">
+                            <div id="contribution-heatmap" class="heatmap-grid flex gap-1" data-heatmap='{{ heatmap_data|tojson|safe }}'>
+                                <!-- Populated via Javascript -->
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-1.5 text-[9px] font-bold text-brand-textMuted uppercase mt-1 pr-1">
+                            <span>Less</span>
+                            <div class="flex gap-1">
+                                <span class="w-2.5 h-2.5 rounded-sm bg-brand-softCream/50 border border-brand-border/30"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-brand-orange/20 border border-brand-orange/20"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-brand-orange/50 border border-brand-orange/30"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-brand-orange/80 border border-brand-orange/50"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-brand-darkOrange border border-brand-darkOrange"></span>
+                            </div>
+                            <span>More</span>
+                        </div>
+                    </div>
+
                     <script>
                         (function() {
                             try {
+                                // 1. Render Weekly Tracker
                                 const tracker = document.getElementById("weekday-tracker");
-                                if (!tracker) return;
-                                const weeklyPosts = parseInt(tracker.getAttribute("data-posts")) || 0;
-                                
-                                const now = new Date();
-                                let currentDayIdx = now.getDay() - 1; 
-                                if (currentDayIdx === -1) currentDayIdx = 6; // Sunday is 6
-                                
-                                const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-                                tracker.innerHTML = '';
-                                
-                                labels.forEach((label, idx) => {
-                                    const capsule = document.createElement('div');
+                                if (tracker) {
+                                    const weeklyPosts = parseInt(tracker.getAttribute("data-posts")) || 0;
                                     
-                                    if (idx < weeklyPosts) {
-                                        capsule.className = 'weekday-capsule completed';
-                                        capsule.title = 'Activity completed';
-                                    } else if (idx === currentDayIdx) {
-                                        capsule.className = 'weekday-capsule active';
-                                        capsule.title = 'Today';
-                                    } else {
-                                        capsule.className = 'weekday-capsule';
-                                        capsule.title = 'Pending';
+                                    const now = new Date();
+                                    let currentDayIdx = now.getDay() - 1; 
+                                    if (currentDayIdx === -1) currentDayIdx = 6; // Sunday is 6
+                                    
+                                    const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+                                    tracker.innerHTML = '';
+                                    
+                                    labels.forEach((label, idx) => {
+                                        const capsule = document.createElement('div');
+                                        
+                                        if (idx < weeklyPosts) {
+                                            capsule.className = 'weekday-capsule completed';
+                                            capsule.title = 'Activity completed';
+                                        } else if (idx === currentDayIdx) {
+                                            capsule.className = 'weekday-capsule active';
+                                            capsule.title = 'Today';
+                                        } else {
+                                            capsule.className = 'weekday-capsule';
+                                            capsule.title = 'Pending';
+                                        }
+                                        
+                                        capsule.innerHTML = `
+                                            <span class="dot"></span>
+                                            <span class="label">${label}</span>
+                                        `;
+                                        tracker.appendChild(capsule);
+                                    });
+                                }
+
+                                // 2. Render Heatmap
+                                const container = document.getElementById("contribution-heatmap");
+                                if (container) {
+                                    const dataStr = container.getAttribute("data-heatmap");
+                                    const heatmapData = JSON.parse(dataStr || '{}');
+                                    
+                                    // Generate last 180 days (approx 26 weeks)
+                                    const today = new Date();
+                                    const days = [];
+                                    for (let i = 180; i >= 0; i--) {
+                                        const d = new Date(today);
+                                        d.setDate(today.getDate() - i);
+                                        days.push(d);
                                     }
                                     
-                                    capsule.innerHTML = `
-                                        <span class="dot"></span>
-                                        <span class="label">${label}</span>
-                                    `;
-                                    tracker.appendChild(capsule);
-                                });
+                                    // Group by week (columns)
+                                    const weeks = [];
+                                    let currentWeek = [];
+                                    
+                                    days.forEach(d => {
+                                        currentWeek.push(d);
+                                        if(currentWeek.length === 7) {
+                                            weeks.push(currentWeek);
+                                            currentWeek = [];
+                                        }
+                                    });
+                                    if(currentWeek.length > 0) weeks.push(currentWeek);
+                                    
+                                    container.innerHTML = '';
+                                    
+                                    weeks.forEach(week => {
+                                        const col = document.createElement('div');
+                                        col.className = 'flex flex-col gap-1';
+                                        week.forEach(dateObj => {
+                                            // Handle local timezone offset to avoid previous day bug
+                                            const tzOffset = dateObj.getTimezoneOffset() * 60000;
+                                            const localDateObj = new Date(dateObj - tzOffset);
+                                            const localISOTime = localDateObj.toISOString().split('T')[0];
+                                            const level = heatmapData[localISOTime] || 0;
+                                            
+                                            const cell = document.createElement('div');
+                                            cell.className = 'w-2.5 h-2.5 rounded-sm cursor-pointer transition-all hover:scale-125 hover:ring-1 hover:ring-brand-orange z-10 relative group';
+                                            
+                                            // Level colors
+                                            if(level === 0) cell.classList.add('bg-brand-softCream/50', 'border', 'border-brand-border/30');
+                                            else if(level === 1) cell.classList.add('bg-brand-orange/20', 'border', 'border-brand-orange/20');
+                                            else if(level === 2) cell.classList.add('bg-brand-orange/50', 'border', 'border-brand-orange/30');
+                                            else if(level === 3) cell.classList.add('bg-brand-orange/80', 'border', 'border-brand-orange/50');
+                                            else cell.classList.add('bg-brand-darkOrange', 'border', 'border-brand-darkOrange', 'shadow-[0_0_5px_rgba(232,102,0,0.5)]');
+                                            
+                                            // Custom Tooltip
+                                            const tooltip = document.createElement('div');
+                                            tooltip.className = 'absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max bg-gray-900/90 backdrop-blur-sm text-white text-[10px] py-1.5 px-2.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl';
+                                            
+                                            const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+                                            const niceDate = localDateObj.toLocaleDateString('en-US', dateOptions);
+                                            
+                                            if (level === 0) {
+                                                tooltip.innerHTML = `<strong>No activity</strong> on ${niceDate}`;
+                                            } else {
+                                                tooltip.innerHTML = `<strong>${level} post${level > 1 ? 's' : ''}</strong> on ${niceDate}`;
+                                            }
+                                            
+                                            cell.appendChild(tooltip);
+                                            col.appendChild(cell);
+                                        });
+                                        container.appendChild(col);
+                                    });
+                                    
+                                    // Scroll to end to show most recent
+                                    setTimeout(() => {
+                                        const scrollContainer = container.parentElement;
+                                        scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+                                    }, 50);
+                                }
                             } catch(e) {
-                                console.error("Error drawing weekday tracker:", e);
+                                console.error("Error drawing charts:", e);
                             }
                         })();
                     </script>

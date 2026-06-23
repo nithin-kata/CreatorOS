@@ -126,3 +126,39 @@ def analyze_post_content(platform, content_dict):
         "readability": readability,
         "feedback": feedback
     }
+
+def calculate_efficiency_score(model_id, latency, quality_score):
+    """
+    Computes an efficiency score out of 100 based on:
+    - Content Quality Score (60% weight)
+    - Latency (30% weight)
+    - Resource Cost Factor (10% weight)
+    """
+    cost_mapping = {
+        "llama-3.1-8b-instant": 1.0,     # Extremely cheap / lightweight
+        "gemma2-9b-it": 1.2,             # Cheap
+        "mixtral-8x7b-32768": 2.5,       # Medium
+        "llama-3.3-70b-versatile": 4.0   # Expensive / heavy
+    }
+    cost_factor = cost_mapping.get(model_id, 1.5)
+    
+    # 1. Quality Component (60%)
+    quality_comp = quality_score * 0.60
+    
+    # 2. Speed Component (30%)
+    if latency <= 0.5:
+        speed_score = 100
+    elif latency >= 5.0:
+        speed_score = 10
+    else:
+        speed_score = 100 - ((latency - 0.5) / 4.5) * 90
+        
+    speed_comp = speed_score * 0.30
+    
+    # 3. Cost/Resource Component (10%)
+    resource_score = max(10, min(100, 100 / cost_factor))
+    resource_comp = resource_score * 0.10
+    
+    overall_efficiency = quality_comp + speed_comp + resource_comp
+    return round(overall_efficiency)
+

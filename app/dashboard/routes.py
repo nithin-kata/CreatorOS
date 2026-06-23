@@ -70,6 +70,42 @@ def get_weekly_post_count(user_id):
     ).count()
     return count
 
+def get_heatmap_data(user_id):
+    """
+    Returns activity data for the last 180 days mapping ISO date strings to activity level (0-4).
+    """
+    end_date = date.today()
+    start_date = end_date - timedelta(days=180)
+    
+    heatmap = {}
+    for i in range(181):
+        d = start_date + timedelta(days=i)
+        heatmap[d.isoformat()] = 0
+        
+    activities = Activity.query.filter(
+        Activity.user_id == user_id,
+        Activity.activity_date >= start_date
+    ).all()
+    for act in activities:
+        d_str = act.activity_date.isoformat()
+        if d_str in heatmap:
+            heatmap[d_str] = 1
+            
+    contents = Content.query.filter(
+        Content.user_id == user_id,
+        Content.created_at >= datetime.combine(start_date, datetime.min.time())
+    ).all()
+    for c in contents:
+        d_str = c.created_at.date().isoformat()
+        if d_str in heatmap:
+            heatmap[d_str] += 1
+            
+    for k in heatmap:
+        if heatmap[k] > 4:
+            heatmap[k] = 4
+            
+    return heatmap
+
 def generate_insights_and_reminders(goal_obj, weekly_posts, streak):
     reminders = []
     insights = []
@@ -172,6 +208,7 @@ def index():
     streak = calculate_streak(current_user.id)
     monthly_posts = get_monthly_post_count(current_user.id)
     weekly_posts = get_weekly_post_count(current_user.id)
+    heatmap_data = get_heatmap_data(current_user.id)
     
     # Get last activity date text
     last_activity_text = "Never"
@@ -201,6 +238,7 @@ def index():
         streak=streak,
         monthly_posts=monthly_posts,
         weekly_posts=weekly_posts,
+        heatmap_data=heatmap_data,
         last_activity=last_activity_text,
         opportunity=todays_opp,
         alerts=alerts,

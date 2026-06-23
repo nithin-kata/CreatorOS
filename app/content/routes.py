@@ -3,45 +3,19 @@ from flask_login import login_required, current_user
 import json
 import requests
 import io
+import time
+import random
 from app.models import db, Content, Activity, Document
 from app.services import groq_service, memory_service, analyzer_service
 from app.dashboard.routes import log_activity
+from app.utils.document_parser import extract_text_from_file
+import logging
+
+logger = logging.getLogger(__name__)
 
 content = Blueprint('content', __name__)
 
-def extract_text_from_file(file_stream, filename):
-    ext = filename.split('.')[-1].lower()
-    if ext in ['txt', 'md', 'csv', 'json', 'xml', 'html']:
-        return file_stream.read().decode('utf-8', errors='ignore')
-    elif ext == 'pdf':
-        try:
-            import pypdf
-            pdf_bytes = file_stream.read()
-            reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
-            text = ""
-            for page in reader.pages:
-                text += page.extract_text() or ""
-            return text
-        except Exception as e:
-            print(f"Error parsing PDF: {e}")
-            return f"[Error parsing PDF content: {e}]"
-    elif ext == 'docx':
-        try:
-            import docx
-            doc_bytes = file_stream.read()
-            doc = docx.Document(io.BytesIO(doc_bytes))
-            text = []
-            for paragraph in doc.paragraphs:
-                text.append(paragraph.text)
-            return "\n".join(text)
-        except Exception as e:
-            print(f"Error parsing DOCX: {e}")
-            return f"[Error parsing DOCX content: {e}]"
-    else:
-        try:
-            return file_stream.read().decode('utf-8', errors='ignore')
-        except Exception:
-            return ""
+
 
 @content.route('/generate', methods=['GET', 'POST'])
 @login_required
@@ -53,6 +27,7 @@ def generate():
         prompt = request.form.get('prompt')
         platform = request.form.get('platform')
         tone = request.form.get('tone')
+        model = request.form.get('model')
         doc_ids = request.form.getlist('document_ids')
         
         if not prompt or not platform or not tone:
@@ -70,19 +45,53 @@ def generate():
             for d in docs:
                 document_context += f"\n--- Reference Context from Document '{d.filename}' ---\n{d.content_text}\n"
         
-        # 3. Call Groq AI service
-        generated = groq_service.generate_post(
-            goal=user_goal.goal,
-            niche=user_goal.niche,
-            platform=platform,
-            tone=tone,
-            prompt=prompt,
-            memory_context=memory_context,
-            creator_type=user_goal.creator_type,
-            target_audience=user_goal.target_audience,
-            niche_details=user_goal.niche_details,
-            document_context=document_context
-        )
+        # 3. Call Groq AI service with latency tracking
+        start_time = time.time()
+        
+        selected_model = model if model in groq_service.SUPPORTED_MODELS else groq_service.DEFAULT_MODEL
+        
+        try:
+            generated = groq_service.generate_post(
+                goal=user_goal.goal,
+                niche=user_goal.niche,
+                platform=platform,
+                tone=tone,
+                prompt=prompt,
+                memory_context=memory_context,
+                creator_type=user_goal.creator_type,
+                target_audience=user_goal.target_audience,
+                niche_details=user_goal.niche_details,
+                document_context=document_context,
+                model=selected_model
+            )
+        except Exception as e:
+            # Fallback
+            generated = groq_service.get_fallback_generation(
+                goal=user_goal.goal,
+                niche=user_goal.niche,
+                platform=platform,
+                tone=tone,
+                prompt=prompt,
+                creator_type=user_goal.creator_type,
+                target_audience=user_goal.target_audience,
+                document_context=document_context,
+                model=selected_model
+            )
+            generated["_source"] = "fallback"
+
+        latency = round(time.time() - start_time, 2)
+        
+        # Add artificial delays in fallback mode to highlight model performance differences
+        if generated.get("_source") == "fallback":
+            mock_delays = {
+                "llama-3.1-8b-instant": 0.4,
+                "gemma2-9b-it": 0.7,
+                "mixtral-8x7b-32768": 1.4,
+                "llama-3.3-70b-versatile": 2.2
+            }
+            delay = mock_delays.get(selected_model, 0.5)
+            time.sleep(delay)
+            latency = round(delay + random.uniform(-0.05, 0.1), 2)
         
         # Log active generation in Activity table
         log_activity(current_user.id)
@@ -95,6 +104,17 @@ def generate():
         # 5. Perform Engagement & Readability analysis
         analysis = analyzer_service.analyze_post_content(platform, generated)
         
+        # 6. Calculate model efficiency score
+        efficiency_score = analyzer_service.calculate_efficiency_score(selected_model, latency, analysis["score"])
+        
+        cost_levels = {
+            "llama-3.1-8b-instant": "Ultra-Low",
+            "gemma2-9b-it": "Low",
+            "mixtral-8x7b-32768": "Medium",
+            "llama-3.3-70b-versatile": "High"
+        }
+        cost_level = cost_levels.get(selected_model, "Low")
+        
         # Return standard response
         return jsonify({
             "success": True,
@@ -103,7 +123,14 @@ def generate():
                 "is_similar": is_similar,
                 "message": similarity_msg
             },
-            "analysis": analysis
+            "analysis": analysis,
+            "efficiency": {
+                "score": efficiency_score,
+                "latency": latency,
+                "cost_level": cost_level,
+                "model_id": selected_model,
+                "model_name": groq_service.SUPPORTED_MODELS[selected_model]
+            }
         })
         
     # GET Request: Pre-populate parameters if coming from dashboard links
@@ -118,6 +145,113 @@ def generate():
         prefill_tone=prefill_tone,
         goal=current_user.goal
     )
+
+@content.route('/compare', methods=['POST'])
+@login_required
+def compare():
+    if not current_user.goal:
+        return jsonify({"error": "Please complete onboarding first."}), 400
+        
+    prompt = request.form.get('prompt')
+    platform = request.form.get('platform')
+    tone = request.form.get('tone')
+    doc_ids = request.form.getlist('document_ids')
+    
+    if not prompt or not platform or not tone:
+        return jsonify({"error": "Missing required generation inputs."}), 400
+        
+    user_goal = current_user.goal
+    memory_context = memory_service.get_memory_context(current_user.id)
+    
+    document_context = ""
+    if doc_ids:
+        docs = Document.query.filter(Document.id.in_(doc_ids), Document.user_id == current_user.id).all()
+        for d in docs:
+            document_context += f"\n--- Reference Context from Document '{d.filename}' ---\n{d.content_text}\n"
+            
+    models = ["llama-3.1-8b-instant", "gemma2-9b-it", "mixtral-8x7b-32768", "llama-3.3-70b-versatile"]
+    results = {}
+    
+    log_activity(current_user.id)
+    
+    cost_levels = {
+        "llama-3.1-8b-instant": "Ultra-Low",
+        "gemma2-9b-it": "Low",
+        "mixtral-8x7b-32768": "Medium",
+        "llama-3.3-70b-versatile": "High"
+    }
+    
+    for m in models:
+        start_time = time.time()
+        try:
+            generated = groq_service.generate_post(
+                goal=user_goal.goal,
+                niche=user_goal.niche,
+                platform=platform,
+                tone=tone,
+                prompt=prompt,
+                memory_context=memory_context,
+                creator_type=user_goal.creator_type,
+                target_audience=user_goal.target_audience,
+                niche_details=user_goal.niche_details,
+                document_context=document_context,
+                model=m
+            )
+        except Exception as e:
+            generated = groq_service.get_fallback_generation(
+                goal=user_goal.goal,
+                niche=user_goal.niche,
+                platform=platform,
+                tone=tone,
+                prompt=prompt,
+                creator_type=user_goal.creator_type,
+                target_audience=user_goal.target_audience,
+                document_context=document_context,
+                model=m
+            )
+            generated["_source"] = "fallback"
+            
+        latency = round(time.time() - start_time, 2)
+        
+        if generated.get("_source") == "fallback":
+            mock_delays = {
+                "llama-3.1-8b-instant": 0.4,
+                "gemma2-9b-it": 0.7,
+                "mixtral-8x7b-32768": 1.4,
+                "llama-3.3-70b-versatile": 2.2
+            }
+            delay = mock_delays.get(m, 0.5)
+            time.sleep(delay)
+            latency = round(delay + random.uniform(-0.05, 0.1), 2)
+            
+        analysis = analyzer_service.analyze_post_content(platform, generated)
+        eff_score = analyzer_service.calculate_efficiency_score(m, latency, analysis["score"])
+        
+        hook_to_check = generated.get('hook', '')
+        is_similar, similarity_msg = memory_service.check_similarity(current_user.id, prompt, hook_to_check)
+        
+        results[m] = {
+            "data": generated,
+            "analysis": analysis,
+            "similarity": {
+                "is_similar": is_similar,
+                "message": similarity_msg
+            },
+            "efficiency": {
+                "score": eff_score,
+                "latency": latency,
+                "cost_level": cost_levels[m],
+                "model_id": m,
+                "model_name": groq_service.SUPPORTED_MODELS[m]
+            }
+        }
+        
+    db.session.commit()
+    
+    return jsonify({
+        "success": True,
+        "results": results
+    })
 
 @content.route('/saved')
 @login_required
@@ -211,6 +345,7 @@ def refine():
     platform = request.form.get('platform')
     tone = request.form.get('tone')
     topic = request.form.get('topic')
+    model = request.form.get('model')
     doc_ids = request.form.getlist('document_ids')
     
     if not current_draft_str or not refinement_prompt or not platform or not tone or not topic:
@@ -228,11 +363,13 @@ def refine():
         for d in docs:
             document_context += f"\n--- Reference Context from Document '{d.filename}' ---\n{d.content_text}\n"
 
+    selected_model = model if model in groq_service.SUPPORTED_MODELS else groq_service.DEFAULT_MODEL
     headers = groq_service.get_groq_client_headers()
     
     system_prompt = (
         "You are an elite copywriting assistant. You are refining an existing social media draft or blog outline.\n"
         "You must apply the user's refinement instruction precisely, improving readability and impact, while retaining the exact same JSON format.\n"
+        "Strictly avoid using any emojis or symbols in the content.\n"
         "Generate a JSON object matching this structure EXACTLY (do not wrap inside an outer object, return it directly at top level):\n"
     )
     
@@ -272,10 +409,12 @@ def refine():
         user_prompt += f"\nReference Context / Source Material (Analyse this document data for refinement):\n{document_context}\n"
     
     refined = None
+    start_time = time.time()
+    
     if headers:
         try:
             payload = {
-                "model": groq_service.DEFAULT_MODEL,
+                "model": selected_model,
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -289,7 +428,7 @@ def refine():
                 refined = json.loads(content_text)
                 refined["_source"] = "api"
         except Exception as e:
-            print(f"Refinement API call failed: {e}")
+            logger.error(f"Refinement API call failed: {e}")
             
     if not refined:
         # Fallback refinement simulation
@@ -311,13 +450,44 @@ def refine():
             if "body" in refined:
                 refined["body"] = refined["body"] + f"\n\n(Refined: {refinement_prompt})"
                 
+    latency = round(time.time() - start_time, 2)
+    
+    if refined.get("_source") == "fallback":
+        # Simulate delay
+        mock_delays = {
+            "llama-3.1-8b-instant": 0.3,
+            "gemma2-9b-it": 0.5,
+            "mixtral-8x7b-32768": 0.9,
+            "llama-3.3-70b-versatile": 1.5
+        }
+        delay = mock_delays.get(selected_model, 0.4)
+        time.sleep(delay)
+        latency = round(delay + random.uniform(-0.02, 0.05), 2)
+                
     analysis = analyzer_service.analyze_post_content(platform, refined)
+    
+    efficiency_score = analyzer_service.calculate_efficiency_score(selected_model, latency, analysis["score"])
+    cost_levels = {
+        "llama-3.1-8b-instant": "Ultra-Low",
+        "gemma2-9b-it": "Low",
+        "mixtral-8x7b-32768": "Medium",
+        "llama-3.3-70b-versatile": "High"
+    }
+    cost_level = cost_levels.get(selected_model, "Low")
+    
     log_activity(current_user.id)
     
     return jsonify({
         "success": True,
         "data": refined,
-        "analysis": analysis
+        "analysis": analysis,
+        "efficiency": {
+            "score": efficiency_score,
+            "latency": latency,
+            "cost_level": cost_level,
+            "model_id": selected_model,
+            "model_name": groq_service.SUPPORTED_MODELS[selected_model]
+        }
     })
 
 @content.route('/upload-document', methods=['POST'])

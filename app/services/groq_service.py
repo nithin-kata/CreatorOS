@@ -7,6 +7,13 @@ from flask import current_app
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 DEFAULT_MODEL = "llama-3.1-8b-instant"
 
+SUPPORTED_MODELS = {
+    "llama-3.1-8b-instant": "Llama 3.1 8B (Fast & Efficient)",
+    "llama-3.3-70b-versatile": "Llama 3.3 70B (High Intelligence)",
+    "mixtral-8x7b-32768": "Mixtral 8x7B (Balanced Reasoning)",
+    "gemma2-9b-it": "Gemma 2 9B (Creative Writer)"
+}
+
 def get_groq_client_headers():
     api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
@@ -16,11 +23,12 @@ def get_groq_client_headers():
         "Content-Type": "application/json"
     }
 
-def generate_post(goal, niche, platform, tone, prompt, memory_context=None, creator_type=None, target_audience=None, niche_details=None, document_context=None):
+def generate_post(goal, niche, platform, tone, prompt, memory_context=None, creator_type=None, target_audience=None, niche_details=None, document_context=None, model=None):
     """
     Generates structured content using Groq API, with a premium copywriting focus.
     If the API key is not configured or fails, it defaults to a high-quality fallback generator.
     """
+    model_name = model if model in SUPPORTED_MODELS else DEFAULT_MODEL
     headers = get_groq_client_headers()
     
     # Constructing a comprehensive ghostwriter system prompt
@@ -38,7 +46,7 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
         "   - Educational: Actionable listicles, step-by-step blueprints, checklists, immediate value.\n"
         "   - Casual: Relatable, friendly, punchy, conversational, no buzzwords.\n"
         "6. Never use AI clichés like 'delve', 'testament', 'revolutionize', 'tapestry', 'delve deep'.\n"
-        "7. Strictly avoid using any emojis in the content to maintain maximum professionalism.\n\n"
+        "7. Use appropriate emojis and symbols to make the content visually engaging and readable.\n\n"
         "If the target network is 'Blog', generate a JSON object matching this structure EXACTLY:\n"
         "{\n"
         '  "blog_title": "An SEO-optimized, highly click-worthy blog title targeting the audience",\n'
@@ -58,7 +66,7 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
         '  "cta": "An engaging, low-friction call-to-action to maximize comments/shares",\n'
         '  "hashtags": "3-5 relevant, high-impact hashtags",\n'
         '  "caption": "Short visual-focused caption for Instagram only",\n'
-        '  "thread": ["1/ [First tweet - Hook & outline of the thread] [No Emoji]", "2/ [Second tweet - Main value point 1]", "3/ [Third tweet - Value point 2]", "4/ [Fourth tweet - CTA and wrap-up]"]\n'
+        '  "thread": ["1/ [First tweet - Hook & outline of the thread]", "2/ [Second tweet - Main value point 1]", "3/ [Third tweet - Value point 2]", "4/ [Fourth tweet - CTA and wrap-up]"]\n'
         "}\n\n"
         "Do not include any markdown framing outside the JSON, markdown code block backticks (like ```json), or explanatory text. Return raw JSON."
     )
@@ -85,7 +93,7 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
     if headers:
         try:
             payload = {
-                "model": DEFAULT_MODEL,
+                "model": model_name,
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -111,15 +119,32 @@ def generate_post(goal, niche, platform, tone, prompt, memory_context=None, crea
                 current_app.logger.warning(f"Groq API call failed: {e}. Falling back to generator simulator.")
             
     # Fallback high-quality simulation
-    fallback_data = get_fallback_generation(goal, niche, platform, tone, prompt, creator_type, target_audience, document_context)
+    fallback_data = get_fallback_generation(goal, niche, platform, tone, prompt, creator_type, target_audience, document_context, model=model_name)
     fallback_data["_source"] = "fallback"
     return fallback_data
 
-def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=None, target_audience=None, document_context=None):
+def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=None, target_audience=None, document_context=None, model=None):
     """
     Generates premium-level realistic creator content templates dynamically when Groq is unavailable.
     It builds high-impression copy using real copywriting formulas (PAS, Hook-Insight, Contrarian).
     """
+    model_name = model or "llama-3.1-8b-instant"
+    
+    # Adjust copy based on model characteristics for mock generation
+    model_style_prefix = ""
+    model_style_suffix = ""
+    if model_name == "llama-3.3-70b-versatile":
+        model_style_prefix = "[Deep Strategic Analysis] "
+        model_style_suffix = "\n\n(Draft generated with advanced strategic reasoning by Llama 3.3 70B)"
+    elif model_name == "gemma2-9b-it":
+        model_style_prefix = "[Creative Angle] "
+        model_style_suffix = "\n\n(Draft generated with creative copy framing by Gemma 2 9B)"
+    elif model_name == "mixtral-8x7b-32768":
+        model_style_prefix = "[Balanced Synthesis] "
+        model_style_suffix = "\n\n(Draft generated with analytical balance by Mixtral 8x7B)"
+    else:
+        model_style_suffix = "\n\n(Draft generated with rapid efficiency by Llama 3.1 8B)"
+
     clean_prompt = prompt.replace("🔥", "").replace("🚀", "").replace("📈", "").strip()
     primary_niche = niche.split(",")[0].strip() if niche else "personal branding"
     audience = target_audience or "recruitment scouts"
@@ -132,7 +157,7 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
             f"Why 90% of Creators Fail at {clean_prompt} (And the 3-Step System to Fix It)",
             f"The Practitioner's Guide to {clean_prompt}: From Rookie to Authority"
         ]
-        title = random.choice(title_templates)
+        title = model_style_prefix + random.choice(title_templates)
         
         intro = (
             f"Most guides on {clean_prompt} focus on general theories. In this breakdown, we skip the fluff. "
@@ -141,6 +166,8 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
         )
         if document_context:
             intro += "\n\nNote: Content outline aligned using reference documents."
+            
+        intro += model_style_suffix
             
         sections = [
             {
@@ -262,11 +289,22 @@ def get_fallback_generation(goal, niche, platform, tone, prompt, creator_type=No
         f"Double tap if this resonates!"
     )
     
+    # Apply styling prefixes and suffixes for social platforms
+    styled_hook = model_style_prefix + selected_hook
+    styled_body = selected_body + model_style_suffix
+    
+    styled_thread = list(thread)
+    if styled_thread:
+        styled_thread[0] = model_style_prefix + styled_thread[0]
+        styled_thread[-1] = styled_thread[-1] + model_style_suffix
+        
+    styled_caption = caption + model_style_suffix
+
     return {
-        "hook": selected_hook,
-        "body": selected_body,
+        "hook": styled_hook,
+        "body": styled_body,
         "cta": selected_cta,
         "hashtags": hashtags,
-        "caption": caption,
-        "thread": thread
+        "caption": styled_caption,
+        "thread": styled_thread
     }
