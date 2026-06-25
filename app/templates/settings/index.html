@@ -15,7 +15,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start stagger-enter">
         
         <!-- Left Section: Profile Info (1 Col) -->
-        <div data-tilt class="reveal-on-scroll liquid-glass rounded-2xl p-6 shadow-sm space-y-5 text-center sm:text-left card-accent-top">
+        <div data-tilt class="reveal-on-scroll settings-profile-card liquid-glass rounded-2xl p-6 shadow-sm space-y-5 text-center sm:text-left card-accent-top">
             <div class="avatar-ring w-16 h-16 rounded-2xl mx-auto sm:mx-0">
                 <div class="w-16 h-16 rounded-2xl bg-brand-softCream border border-brand-border flex items-center justify-center font-extrabold text-2xl text-brand-orange uppercase">
                     {{ current_user.name[:2] }}
@@ -29,18 +29,22 @@
                 <span class="floating-label justify-center sm:justify-start">Member Since</span>
                 <span class="text-xs font-semibold text-brand-textDark block mt-1.5">{{ current_user.created_at.strftime('%B %d, %Y') }}</span>
             </div>
-            <a href="{{ url_for('auth.logout') }}" class="w-full text-center block px-4 py-2.5 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 font-bold text-xs transition-all">
+            <a href="{{ url_for('auth.logout') }}" class="sign-out-btn w-full text-center block px-4 py-2.5 rounded-xl border font-bold text-xs transition-all">
                 Sign Out
             </a>
         </div>
 
         <!-- Right Section: Preferences Form (2 Cols) -->
-        <div data-tilt class="reveal-on-scroll md:col-span-2 liquid-glass rounded-2xl p-6 shadow-sm space-y-6 card-accent-top">
-            <div class="flex items-center gap-3 pb-3 border-b border-brand-border/30">
-                <div class="icon-box">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <div data-tilt class="reveal-on-scroll md:col-span-2 settings-form liquid-glass rounded-2xl p-6 shadow-sm space-y-6 card-accent-top">
+            <!-- Obsidian Header -->
+            <div class="obsidian-header" style="margin: -24px -24px 16px -24px; padding: 14px 24px;">
+                <div class="flex items-center gap-3">
+                    <div class="icon-box w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    </div>
+                    <h3>AI Engine Target</h3>
                 </div>
-                <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest">AI Engine Target</h3>
+                <span class="obsidian-tooltip"><span class="tooltip-dot"></span> Config</span>
             </div>
             
             <form action="{{ url_for('settings.index') }}" method="POST" class="space-y-5">

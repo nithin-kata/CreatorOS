@@ -13,7 +13,7 @@
         </div>
         
         <!-- Month Navigation -->
-        <div class="flex items-center gap-3 bg-white/60 backdrop-blur-sm border border-brand-border/40 rounded-xl p-1.5 shadow-sm">
+        <div class="calendar-month-nav flex items-center gap-3 rounded-xl p-1.5">
             <a href="{{ url_for('dashboard.calendar', year=prev_year, month=prev_month) }}" 
                class="p-2 hover:bg-brand-softCream text-brand-textDark rounded-lg transition-all"
                title="Previous Month">
@@ -39,20 +39,19 @@
         
         <!-- Left: Unscheduled Drafts Drawer (4 Cols) -->
         <div class="lg:col-span-4 liquid-glass rounded-2xl p-5 shadow-sm flex flex-col h-[650px] relative overflow-hidden card-accent-top">
-            <div class="pb-3 border-b border-brand-border/30 mb-4 flex-shrink-0">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-brand-textDark uppercase tracking-wider flex items-center gap-2">
-                        <div class="icon-box w-8 h-8 rounded-lg">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                        </div>
-                        <span>Unscheduled Drafts</span>
-                        <span class="px-2 py-0.5 rounded-full bg-brand-orange/10 border border-brand-orange/20 text-brand-orange text-xs font-black">
-                            {{ unscheduled_drafts|length }}
-                        </span>
-                    </h3>
+            <!-- Obsidian Header -->
+            <div class="obsidian-header flex-shrink-0 mb-4" style="margin: -20px -20px 16px -20px; padding: 12px 20px;">
+                <div class="flex items-center gap-2">
+                    <div class="icon-box w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    </div>
+                    <h3>Unscheduled Drafts</h3>
+                    <span class="obsidian-badge obsidian-badge-sm">
+                        {{ unscheduled_drafts|length }}
+                    </span>
                 </div>
-                <p class="text-xs text-brand-textMuted mt-1">Drag these onto the calendar cells to schedule them.</p>
             </div>
+            <p class="text-xs text-brand-textMuted mb-3">Drag these onto the calendar cells to schedule them.</p>
 
             <!-- Unscheduled Drop Area / Drawer List -->
             <div id="unscheduled-drawer" 
@@ -122,7 +121,7 @@
         <!-- Right: Monthly Grid (8 Cols) -->
         <div class="lg:col-span-8 liquid-glass rounded-2xl p-5 shadow-sm flex flex-col card-accent-top">
             <!-- Day of week headers -->
-            <div class="grid grid-cols-7 gap-2 text-center font-bold text-xs text-brand-textMuted uppercase tracking-wider pb-3 border-b border-brand-border/40">
+            <div class="calendar-weekday-header grid grid-cols-7 gap-2 text-center font-bold text-xs uppercase tracking-wider">
                 <div>Sun</div>
                 <div>Mon</div>
                 <div>Tue</div>

@@ -17,11 +17,15 @@
         
         <!-- Left Panel: Input Configuration (5 Cols) -->
         <div class="lg:col-span-5 liquid-glass rounded-2xl p-6 shadow-sm space-y-6 card-accent-top">
-            <div class="flex items-center gap-3 pb-3 border-b border-brand-border/30">
-                <div class="icon-box">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            <!-- Obsidian Header -->
+            <div class="obsidian-header" style="margin: -24px -24px 16px -24px; padding: 14px 24px;">
+                <div class="flex items-center gap-3">
+                    <div class="icon-box w-8 h-8 rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </div>
+                    <h3>Configure Draft</h3>
                 </div>
-                <h3 class="text-sm font-bold text-brand-textMuted uppercase tracking-widest">Configure Draft</h3>
+                <span class="obsidian-tooltip"><span class="tooltip-dot"></span> Studio</span>
             </div>
             
             <form id="generator-form" class="space-y-5">
@@ -145,7 +149,7 @@
         </div>
 
         <!-- Right Panel: Canvas Output Preview (7 Cols) -->
-        <div class="lg:col-span-7 liquid-glass rounded-2xl p-6 shadow-sm flex flex-col h-[650px] relative overflow-hidden card-accent-top">
+        <div class="lg:col-span-7 dark-glass rounded-2xl p-6 shadow-sm flex flex-col h-[650px] relative overflow-hidden card-accent-top">
             
             <!-- Shimmer Loading Overlay -->
             <div id="loader-overlay" class="absolute inset-0 bg-white/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-8 text-center space-y-5 hidden">

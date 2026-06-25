@@ -29,7 +29,7 @@
     </script>
     
     <!-- Custom Style Sheet -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.2">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=1.3">
 </head>
 <body class="bg-brand-cream text-brand-textDark antialiased flex flex-col md:flex-row min-h-screen">
 
@@ -57,49 +57,49 @@
 
     {% if current_user.is_authenticated and request.endpoint != 'dashboard.onboarding' %}
     <!-- Mobile Header/Navigation -->
-    <div class="md:hidden flex items-center justify-between p-4 border-b border-brand-border bg-white/80 backdrop-blur-md sticky top-0 z-30">
-        <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-2 font-bold text-xl tracking-tight">
+    <div class="md:hidden flex items-center justify-between p-4 border-b border-zinc-800 bg-zinc-950 sticky top-0 z-30">
+        <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-2 font-bold text-xl tracking-tight text-white">
             <span class="w-8 h-8 rounded-lg bg-brand-orange flex items-center justify-center text-white text-[10px] font-black uppercase tracking-tighter">cOS</span>
             <span>Creator<span class="text-brand-orange">OS</span></span>
         </a>
-        <button id="mobile-sidebar-toggle" class="p-2 border border-brand-border rounded-lg hover:bg-brand-softCream">
-            <svg class="w-6 h-6 text-brand-textDark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button id="mobile-sidebar-toggle" class="p-2 border border-zinc-800 rounded-lg hover:bg-zinc-900 text-white">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
     </div>
 
     <!-- Responsive Sidebar Menu -->
-    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 w-64 bg-white border-r border-brand-border flex flex-col justify-between h-screen overflow-y-auto p-6 md:sticky md:top-0">
+    <aside id="sidebar-menu" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition-transform duration-300 ease-in-out z-40 w-64 bg-zinc-950 border-r border-white/10 flex flex-col justify-between h-screen overflow-y-auto p-6 md:sticky md:top-0 shadow-2xl">
         <div class="space-y-8">
             <!-- App Logo -->
-            <div class="flex items-center gap-2.5 p-3 -mx-3 rounded-xl bg-gradient-to-r from-brand-orange/5 to-transparent">
+            <div class="flex items-center gap-2.5 p-3 -mx-3 rounded-xl bg-gradient-to-r from-brand-orange/10 to-transparent">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-orange to-brand-darkOrange flex items-center justify-center text-white text-[11px] font-black uppercase tracking-tighter shadow-lg shadow-brand-orange/25">cOS</div>
                 <div class="flex flex-col">
-                    <span class="font-extrabold text-lg leading-tight tracking-tight">Creator<span class="text-brand-orange">OS</span></span>
-                    <span class="text-[10px] text-brand-textMuted font-medium uppercase tracking-widest">Brand engine</span>
+                    <span class="font-extrabold text-lg leading-tight tracking-tight text-white">Creator<span class="text-brand-orange">OS</span></span>
+                    <span class="text-[10px] text-zinc-500 font-medium uppercase tracking-widest">Brand engine</span>
                 </div>
             </div>
 
             <!-- Navigation Links -->
             <nav class="space-y-1">
-                <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'dashboard.index' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                <a href="{{ url_for('dashboard.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-zinc-900/60 hover:text-white {% if request.endpoint == 'dashboard.index' %}sidebar-link-active{% else %}text-zinc-400{% endif %}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span>Dashboard</span>
                 </a>
-                <a href="{{ url_for('content.generate') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'content.generate' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                <a href="{{ url_for('content.generate') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-zinc-900/60 hover:text-white {% if request.endpoint == 'content.generate' %}sidebar-link-active{% else %}text-zinc-400{% endif %}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                     <span>Content Generator</span>
                 </a>
-                <a href="{{ url_for('dashboard.calendar') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'dashboard.calendar' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                <a href="{{ url_for('dashboard.calendar') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-zinc-900/60 hover:text-white {% if request.endpoint == 'dashboard.calendar' %}sidebar-link-active{% else %}text-zinc-400{% endif %}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span>Content Calendar</span>
                 </a>
-                <a href="{{ url_for('content.saved') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'content.saved' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                <a href="{{ url_for('content.saved') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-zinc-900/60 hover:text-white {% if request.endpoint == 'content.saved' %}sidebar-link-active{% else %}text-zinc-400{% endif %}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                     <span>Saved Drafts</span>
                 </a>
-                <a href="{{ url_for('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-brand-softCream hover:text-brand-orange {% if request.endpoint == 'settings.index' %}nav-link-active{% else %}text-brand-textMuted{% endif %}">
+                <a href="{{ url_for('settings.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-sm font-medium transition-all duration-200 hover:bg-zinc-900/60 hover:text-white {% if request.endpoint == 'settings.index' %}sidebar-link-active{% else %}text-zinc-400{% endif %}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     <span>Settings</span>
                 </a>
@@ -107,20 +107,20 @@
         </div>
 
         <!-- User profile section at bottom -->
-        <div class="border-t border-brand-border/40 pt-4">
-            <div class="flex items-center justify-between p-2 rounded-xl bg-brand-softCream/30 backdrop-blur-sm">
+        <div class="border-t border-zinc-800 pt-4">
+            <div class="flex items-center justify-between p-2 rounded-xl bg-zinc-900/50 border border-white/5 backdrop-blur-sm">
                 <div class="flex items-center gap-3 overflow-hidden">
                     <div class="avatar-ring w-10 h-10 rounded-xl">
-                        <div class="w-10 h-10 rounded-xl bg-brand-softCream border border-brand-border flex items-center justify-center font-bold text-brand-orange uppercase flex-shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center font-bold text-brand-orange uppercase flex-shrink-0">
                             {{ current_user.name[:2] }}
                         </div>
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <span class="text-sm font-semibold truncate">{{ current_user.name }}</span>
-                        <span class="text-[11px] text-brand-textMuted truncate">{{ current_user.email }}</span>
+                        <span class="text-sm font-semibold text-white truncate">{{ current_user.name }}</span>
+                        <span class="text-[11px] text-zinc-400 truncate">{{ current_user.email }}</span>
                     </div>
                 </div>
-                <a href="{{ url_for('auth.logout') }}" class="p-2 text-brand-textMuted hover:text-red-500 rounded-lg hover:bg-brand-softCream transition-all duration-200" title="Logout">
+                <a href="{{ url_for('auth.logout') }}" class="p-2 text-zinc-400 hover:text-red-400 rounded-lg hover:bg-zinc-900 transition-all duration-200" title="Logout">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 </a>
             </div>
